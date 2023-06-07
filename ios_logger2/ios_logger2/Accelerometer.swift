@@ -10,6 +10,8 @@ import Foundation
 
 class Accelerometer: Sensor {
     func collectData(motion: Motion) {
+        var info = BookInfo()
+        info.author = "test"
       //  motion.motionSensors.
     }
 }
