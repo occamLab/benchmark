@@ -5,3 +5,7 @@ message BookInfo {
    string title = 2;
    string author = 3;
 }
+
+message Test {
+    repeated BookInfo id = 1;
+}

@@ -21,7 +21,9 @@
 		61500B4B2A30C81F001FE294 /* SwiftProtobufPluginLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = 61500B4A2A30C81F001FE294 /* SwiftProtobufPluginLibrary */; };
 		61500B4D2A30C81F001FE294 /* protoc-gen-swift in Frameworks */ = {isa = PBXBuildFile; productRef = 61500B4C2A30C81F001FE294 /* protoc-gen-swift */; };
 		61500B5C2A30CCB0001FE294 /* test.proto in Sources */ = {isa = PBXBuildFile; fileRef = 61500B5B2A30CCB0001FE294 /* test.proto */; };
-		61500B5E2A30CD06001FE294 /* test.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61500B5D2A30CD06001FE294 /* test.pb.swift */; };
+		61500B622A30E0CD001FE294 /* test.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61500B612A30E0CD001FE294 /* test.pb.swift */; };
+		61500B642A30F1C4001FE294 /* accelerometer.proto in Sources */ = {isa = PBXBuildFile; fileRef = 61500B632A30F1C4001FE294 /* accelerometer.proto */; };
+		61500B662A30F61A001FE294 /* accelerometer.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61500B652A30F61A001FE294 /* accelerometer.pb.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,7 +58,9 @@
 		61500B412A2FC34B001FE294 /* Accelerometer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Accelerometer.swift; sourceTree = "<group>"; };
 		61500B432A2FCC83001FE294 /* Motion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Motion.swift; sourceTree = "<group>"; };
 		61500B5B2A30CCB0001FE294 /* test.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; path = test.proto; sourceTree = "<group>"; };
-		61500B5D2A30CD06001FE294 /* test.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = test.pb.swift; sourceTree = "<group>"; };
+		61500B612A30E0CD001FE294 /* test.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = test.pb.swift; sourceTree = "<group>"; };
+		61500B632A30F1C4001FE294 /* accelerometer.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; path = accelerometer.proto; sourceTree = "<group>"; };
+		61500B652A30F61A001FE294 /* accelerometer.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = accelerometer.pb.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -150,8 +154,10 @@
 		61500B5A2A30CC76001FE294 /* protos */ = {
 			isa = PBXGroup;
 			children = (
-				61500B5D2A30CD06001FE294 /* test.pb.swift */,
+				61500B612A30E0CD001FE294 /* test.pb.swift */,
+				61500B652A30F61A001FE294 /* accelerometer.pb.swift */,
 				61500B5B2A30CCB0001FE294 /* test.proto */,
+				61500B632A30F1C4001FE294 /* accelerometer.proto */,
 			);
 			path = protos;
 			sourceTree = "<group>";
@@ -294,11 +300,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				61500B642A30F1C4001FE294 /* accelerometer.proto in Sources */,
 				61500B5C2A30CCB0001FE294 /* test.proto in Sources */,
 				61500B182A2FBAB7001FE294 /* ContentView.swift in Sources */,
 				61500B422A2FC34B001FE294 /* Accelerometer.swift in Sources */,
 				61500B402A2FBEEB001FE294 /* Sensor.swift in Sources */,
-				61500B5E2A30CD06001FE294 /* test.pb.swift in Sources */,
+				61500B622A30E0CD001FE294 /* test.pb.swift in Sources */,
+				61500B662A30F61A001FE294 /* accelerometer.pb.swift in Sources */,
 				61500B442A2FCC83001FE294 /* Motion.swift in Sources */,
 				61500B162A2FBAB7001FE294 /* ios_logger2App.swift in Sources */,
 			);
