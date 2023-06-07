@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+message AccelerometerTimestamp {
+    double timestamp = 1;
+    double xAcceleration = 2;
+    double yAcceleration = 3;
+    double zAcceleration = 4;
+
+}
+
+message AccelerometerSeries {
+    repeated AccelerometerTimestamp measurements = 1;
+}
+
