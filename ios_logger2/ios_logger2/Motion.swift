@@ -10,7 +10,14 @@ import CoreMotion
 
 
 class Motion {
-    var motionSensors = CMMotionManager()
+    public var motionSensors = CMMotionManager()
     
-    
+    private init() {
+        // Set the update frequencies for gyro, accelerometer, and motion
+        let imuUpdateFreqMillis: Double = 10
+        let imuUpdateFreqSeconds: Double = imuUpdateFreqMillis /  1000
+        motionSensors.gyroUpdateInterval = imuUpdateFreqSeconds
+        motionSensors.accelerometerUpdateInterval = imuUpdateFreqSeconds
+        motionSensors.deviceMotionUpdateInterval = imuUpdateFreqSeconds
+    }
 }

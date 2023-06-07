@@ -9,6 +9,6 @@ import Foundation
 
 protocol Sensor {
     /* Collect a snapshot of data */
-    func collectData() -> Void
+    func collectData(motion: Motion) -> Void
     
 }
