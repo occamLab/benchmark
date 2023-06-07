@@ -6,9 +6,11 @@
 //
 
 import Foundation
+import ARKit
+import CoreMotion
 
 protocol Sensor {
     /* Collect a snapshot of data */
-    func collectData(motion: Motion) -> Void
+    func collectData(motion: CMDeviceMotion?, frame: ARFrame?) -> Void
     
 }

@@ -7,10 +7,16 @@
 
 import Foundation
 import CoreMotion
+import ARKit
 
 
-class Motion {
+class Motion: NSObject, ARSessionDelegate {
     public var motionSensors = CMMotionManager()
+    public var arSession = ARSession()
+    
+    // all of our loggers go here
+    private let accelerometerLogger = Accelerometer()
+    private let videoLogger = Video()
     
     
     private func initMotionSensors() {
@@ -25,6 +31,8 @@ class Motion {
         motionSensors.startGyroUpdates()
         motionSensors.startAccelerometerUpdates()
         motionSensors.startDeviceMotionUpdates()
+        
+        motionSensors.startDeviceMotionUpdates(to: OperationQueue(), withHandler: delegate_motion)
     }
     
     private func stopMotionSensors() {
@@ -34,7 +42,24 @@ class Motion {
         motionSensors.stopDeviceMotionUpdates()
     }
     
-    private init() {
+    private func initArSession() {
+        arSession.delegate = self
+    }
+    
+    // delegate ARFrame updates to video and other sensor loggers
+    func session(_ session: ARSession, didUpdate frame: ARFrame) {
+        videoLogger.collectData(motion: nil, frame: frame)
+    }
+    
+    // delegate motion updates to accelerometer and other sensor loggers
+    func delegate_motion(motion: CMDeviceMotion?, error: Error?) {
+        accelerometerLogger.collectData(motion: motion, frame: nil)
+    }
+    
+    
+    override private init() {
+        super.init()
         initMotionSensors()
+        initArSession()
     }
 }
