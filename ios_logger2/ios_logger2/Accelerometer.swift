@@ -4,7 +4,8 @@
 //
 
 import Foundation
-
+import ARKit
+import CoreMotion
 
 /*
  *  Implements data collection and encoding into a protobuf message for timeseries of accelerometer data
@@ -12,13 +13,12 @@ import Foundation
 class Accelerometer: Sensor {
     public var series = AccelerometerSeries()
     
-    func collectData(motion: Motion) {
-        if(motion.motionSensors.accelerometerData != nil) {
-            let reading = motion.motionSensors.accelerometerData
-            let timestamp: Double = reading!.timestamp.magnitude
-            let acceleration_x: Double = reading!.acceleration.x
-            let acceleration_y: Double = reading!.acceleration.y
-            let acceleration_z: Double = reading!.acceleration.z
+    func collectData(motion: CMDeviceMotion?, frame: ARFrame?) {
+        if(motion != nil) {
+            let timestamp: Double = motion!.timestamp
+            let acceleration_x: Double = motion!.userAcceleration.x
+            let acceleration_y: Double =  motion!.userAcceleration.y
+            let acceleration_z: Double =  motion!.userAcceleration.z
             
             
             var measurement = AccelerometerTimestamp()
