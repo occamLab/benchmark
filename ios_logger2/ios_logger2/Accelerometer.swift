@@ -9,7 +9,7 @@ import Foundation
 
 
 class Accelerometer: Sensor {
-    func collectData() {
-        
+    func collectData(motion: Motion) {
+      //  motion.motionSensors.
     }
 }
