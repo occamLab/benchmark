@@ -47,7 +47,7 @@ class Video: Sensor {
                 let imageBuffer: CVPixelBuffer = frame!.capturedImage
                 let bufferTimestamp: CMTime = CMTimeMake(value: frameNum, timescale: frameRate) // this seems very wrong but this is the way ios_logger had it written
                 if(!bufferInput.append(imageBuffer, withPresentationTime: bufferTimestamp)) {
-                    print("[WARN]: Failed to ARFrame to video buffer")
+                    print("[WARN]: Failed to add ARFrame to video buffer")
                 }
                 else {
                     print("[INFO]: Appended ARFrame to video buffer")
