@@ -14,5 +14,4 @@ struct ios_logger2App: App {
             ContentView()
         }
     }
-    let motion = Motion()
 }

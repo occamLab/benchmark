@@ -35,7 +35,16 @@ class Video: Sensor {
         bufferInput = AVAssetWriterInputPixelBufferAdaptor(assetWriterInput: encoderInput, sourcePixelBufferAttributes: nil)
         bufferInput.assetWriterInput.expectsMediaDataInRealTime = true
         
-        encoder.startWriting()
+        if(encoder.canAdd(encoderInput)) {
+            encoder.add(encoderInput)
+        }
+        else {
+            print("[ERROR] While starting video encoder")
+        }
+        
+        if(!encoder.startWriting()) {
+            print("[ERROR] While starting video encoder")
+        }
         encoder.startSession(atSourceTime: CMTime.zero)
     }
     
@@ -43,7 +52,7 @@ class Video: Sensor {
     
     func collectData(motion: CMDeviceMotion?, frame: ARFrame?) {
         if(frame != nil) {
-            print("frame gotten")
+            //print("frame gotten")
             if(encoderInput.isReadyForMoreMediaData) {
                 let imageBuffer: CVPixelBuffer = frame!.capturedImage
                 let bufferTimestamp: CMTime = CMTimeMake(value: frameNum, timescale: frameRate) // this seems very wrong but this is the way ios_logger had it written
@@ -56,11 +65,11 @@ class Video: Sensor {
                 frameNum += 1
             }
             else {
-                print("not ready")
+                //print("not ready")
             }
         }
         else {
-            print("empty frame")
+            //print("empty frame")
         }
 
     }
