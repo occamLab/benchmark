@@ -47,14 +47,12 @@ class Motion: NSObject, ARSessionDelegate {
         arSession.delegate = self
         arConfiguration.worldAlignment = ARConfiguration.WorldAlignment.gravity
         arConfiguration.isAutoFocusEnabled = true
-        if(arSession.)
         arSession.run(arConfiguration)
     }
     
     // delegate ARFrame updates to video and other sensor loggers
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
-        print("arframe event")
-       // videoLogger.collectData(motion: nil, frame: frame)
+        videoLogger.collectData(motion: nil, frame: frame)
     }
     
     // delegate motion updates to accelerometer and other sensor loggers
