@@ -47,7 +47,13 @@ class Motion: NSObject, ARSessionDelegate {
         arSession.delegate = self
         arConfiguration.worldAlignment = ARConfiguration.WorldAlignment.gravity
         arConfiguration.isAutoFocusEnabled = true
-        arSession.run(arConfiguration)
+        arSession.run(arConfiguration, options: [ARSession.RunOptions.resetTracking, ARSession.RunOptions.resetSceneReconstruction])
+    }
+    
+    private func stopArSession() {
+        arSession.pause()
+        var depth = DepthData()
+        depth.depthValues = [1.2, 3.4]
     }
     
     // delegate ARFrame updates to video and other sensor loggers
@@ -58,6 +64,12 @@ class Motion: NSObject, ARSessionDelegate {
     // delegate motion updates to accelerometer and other sensor loggers
     func delegate_motion(motion: CMDeviceMotion?, error: Error?) {
         accelerometerLogger.collectData(motion: motion, frame: nil)
+    }
+    
+    // finished collecting data, export the results
+    func export() {
+        stopArSession()
+        stopMotionSensors()
     }
     
     

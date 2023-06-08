@@ -8,6 +8,10 @@ message AccelerometerTimestamp {
 
 }
 
+message DepthData {
+    repeated float depthValues = 1;
+}
+
 message AccelerometerSeries {
     repeated AccelerometerTimestamp measurements = 1;
 }
