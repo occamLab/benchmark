@@ -24,6 +24,15 @@
 		61500B642A30F1C4001FE294 /* accelerometer.proto in Sources */ = {isa = PBXBuildFile; fileRef = 61500B632A30F1C4001FE294 /* accelerometer.proto */; };
 		61500B662A30F61A001FE294 /* accelerometer.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61500B652A30F61A001FE294 /* accelerometer.pb.swift */; };
 		61500B682A3101D7001FE294 /* Video.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61500B672A3101D7001FE294 /* Video.swift */; };
+		61500B6E2A32447A001FE294 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 61500B6D2A32447A001FE294 /* FirebaseAuth */; };
+		61500B702A32447A001FE294 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = 61500B6F2A32447A001FE294 /* FirebaseDatabase */; };
+		61500B722A32447A001FE294 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 61500B712A32447A001FE294 /* FirebaseFirestore */; };
+		61500B742A32447A001FE294 /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 61500B732A32447A001FE294 /* FirebaseFirestoreSwift */; };
+		61500B762A32447A001FE294 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 61500B752A32447A001FE294 /* FirebaseStorage */; };
+		61500B782A3244B5001FE294 /* FireBaseUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61500B772A3244B5001FE294 /* FireBaseUpload.swift */; };
+		61500B7C2A324C87001FE294 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 61500B7B2A324C87001FE294 /* GoogleService-Info.plist */; };
+		61500B7E2A324F18001FE294 /* UploadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61500B7D2A324F18001FE294 /* UploadManager.swift */; };
+		61500B812A324F56001FE294 /* SWCompression in Frameworks */ = {isa = PBXBuildFile; productRef = 61500B802A324F56001FE294 /* SWCompression */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -61,6 +70,9 @@
 		61500B632A30F1C4001FE294 /* accelerometer.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; path = accelerometer.proto; sourceTree = "<group>"; };
 		61500B652A30F61A001FE294 /* accelerometer.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = accelerometer.pb.swift; sourceTree = "<group>"; };
 		61500B672A3101D7001FE294 /* Video.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Video.swift; sourceTree = "<group>"; };
+		61500B772A3244B5001FE294 /* FireBaseUpload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FireBaseUpload.swift; sourceTree = "<group>"; };
+		61500B7B2A324C87001FE294 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		61500B7D2A324F18001FE294 /* UploadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,9 +80,15 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				61500B812A324F56001FE294 /* SWCompression in Frameworks */,
+				61500B702A32447A001FE294 /* FirebaseDatabase in Frameworks */,
 				61500B4B2A30C81F001FE294 /* SwiftProtobufPluginLibrary in Frameworks */,
 				61500B492A30C81F001FE294 /* SwiftProtobuf in Frameworks */,
+				61500B742A32447A001FE294 /* FirebaseFirestoreSwift in Frameworks */,
 				61500B4D2A30C81F001FE294 /* protoc-gen-swift in Frameworks */,
+				61500B762A32447A001FE294 /* FirebaseStorage in Frameworks */,
+				61500B6E2A32447A001FE294 /* FirebaseAuth in Frameworks */,
+				61500B722A32447A001FE294 /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -114,9 +132,12 @@
 		61500B142A2FBAB7001FE294 /* ios_logger2 */ = {
 			isa = PBXGroup;
 			children = (
+				61500B7B2A324C87001FE294 /* GoogleService-Info.plist */,
 				61500B5A2A30CC76001FE294 /* protos */,
 				61500B152A2FBAB7001FE294 /* ios_logger2App.swift */,
+				61500B7D2A324F18001FE294 /* UploadManager.swift */,
 				61500B3F2A2FBEEB001FE294 /* Sensor.swift */,
+				61500B772A3244B5001FE294 /* FireBaseUpload.swift */,
 				61500B412A2FC34B001FE294 /* Accelerometer.swift */,
 				61500B432A2FCC83001FE294 /* Motion.swift */,
 				61500B672A3101D7001FE294 /* Video.swift */,
@@ -182,6 +203,12 @@
 				61500B482A30C81F001FE294 /* SwiftProtobuf */,
 				61500B4A2A30C81F001FE294 /* SwiftProtobufPluginLibrary */,
 				61500B4C2A30C81F001FE294 /* protoc-gen-swift */,
+				61500B6D2A32447A001FE294 /* FirebaseAuth */,
+				61500B6F2A32447A001FE294 /* FirebaseDatabase */,
+				61500B712A32447A001FE294 /* FirebaseFirestore */,
+				61500B732A32447A001FE294 /* FirebaseFirestoreSwift */,
+				61500B752A32447A001FE294 /* FirebaseStorage */,
+				61500B802A324F56001FE294 /* SWCompression */,
 			);
 			productName = ios_logger2;
 			productReference = 61500B122A2FBAB7001FE294 /* ios_logger2.app */;
@@ -257,6 +284,8 @@
 			mainGroup = 61500B092A2FBAB7001FE294;
 			packageReferences = (
 				61500B472A30C81F001FE294 /* XCRemoteSwiftPackageReference "swift-protobuf" */,
+				61500B6C2A32447A001FE294 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				61500B7F2A324F56001FE294 /* XCRemoteSwiftPackageReference "SWCompression" */,
 			);
 			productRefGroup = 61500B132A2FBAB7001FE294 /* Products */;
 			projectDirPath = "";
@@ -276,6 +305,7 @@
 			files = (
 				61500B1D2A2FBAB8001FE294 /* Preview Assets.xcassets in Resources */,
 				61500B1A2A2FBAB8001FE294 /* Assets.xcassets in Resources */,
+				61500B7C2A324C87001FE294 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -300,6 +330,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				61500B7E2A324F18001FE294 /* UploadManager.swift in Sources */,
 				61500B642A30F1C4001FE294 /* accelerometer.proto in Sources */,
 				61500B5C2A30CCB0001FE294 /* test.proto in Sources */,
 				61500B182A2FBAB7001FE294 /* ContentView.swift in Sources */,
@@ -309,6 +340,7 @@
 				61500B442A2FCC83001FE294 /* Motion.swift in Sources */,
 				61500B162A2FBAB7001FE294 /* ios_logger2App.swift in Sources */,
 				61500B682A3101D7001FE294 /* Video.swift in Sources */,
+				61500B782A3244B5001FE294 /* FireBaseUpload.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -467,7 +499,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"ios_logger2/Preview Content\"";
-				DEVELOPMENT_TEAM = WDTS954UVV;
+				DEVELOPMENT_TEAM = 787TUDMR8Q;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "ios-logger2-Info.plist";
@@ -483,7 +515,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "olin.ios-logger2";
+				PRODUCT_BUNDLE_IDENTIFIER = "edu.occamlab.ios-logger";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -499,7 +531,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"ios_logger2/Preview Content\"";
-				DEVELOPMENT_TEAM = WDTS954UVV;
+				DEVELOPMENT_TEAM = 787TUDMR8Q;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "ios-logger2-Info.plist";
@@ -515,7 +547,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "olin.ios-logger2";
+				PRODUCT_BUNDLE_IDENTIFIER = "edu.occamlab.ios-logger";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -649,6 +681,22 @@
 				minimumVersion = 1.21.0;
 			};
 		};
+		61500B6C2A32447A001FE294 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 10.0.0;
+			};
+		};
+		61500B7F2A324F56001FE294 /* XCRemoteSwiftPackageReference "SWCompression" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/tsolomko/SWCompression";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -666,6 +714,36 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 61500B472A30C81F001FE294 /* XCRemoteSwiftPackageReference "swift-protobuf" */;
 			productName = "protoc-gen-swift";
+		};
+		61500B6D2A32447A001FE294 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 61500B6C2A32447A001FE294 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		61500B6F2A32447A001FE294 /* FirebaseDatabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 61500B6C2A32447A001FE294 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseDatabase;
+		};
+		61500B712A32447A001FE294 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 61500B6C2A32447A001FE294 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		61500B732A32447A001FE294 /* FirebaseFirestoreSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 61500B6C2A32447A001FE294 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestoreSwift;
+		};
+		61500B752A32447A001FE294 /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 61500B6C2A32447A001FE294 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
+		};
+		61500B802A324F56001FE294 /* SWCompression */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 61500B7F2A324F56001FE294 /* XCRemoteSwiftPackageReference "SWCompression" */;
+			productName = SWCompression;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -1,2 +1,3 @@
 # ignore generated protobuf files for now
 *.pb.swift
+GoogleService-Info.plist
