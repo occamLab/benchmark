@@ -44,10 +44,12 @@ class Motion: NSObject, ARSessionDelegate {
     
     private func initArSession() {
         arSession.delegate = self
+        arSession.run(<#T##configuration: ARConfiguration##ARConfiguration#>)
     }
     
     // delegate ARFrame updates to video and other sensor loggers
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
+        print("arframe event")
         videoLogger.collectData(motion: nil, frame: frame)
     }
     
@@ -57,7 +59,7 @@ class Motion: NSObject, ARSessionDelegate {
     }
     
     
-    override private init() {
+    override init() {
         super.init()
         initMotionSensors()
         initArSession()

@@ -28,6 +28,11 @@ class Accelerometer: Sensor {
             measurement.zAcceleration = acceleration_z
             series.measurements.append(measurement)
             
+            // print(acceleration_x, acceleration_y)
+            
+            // frame!.camera.
+            // frame!.sceneDepth.
+            
         }
     }
 }
