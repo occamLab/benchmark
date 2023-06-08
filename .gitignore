@@ -11,6 +11,8 @@ xcuserdata/
 GoogleService-Info.plist
 ios_logger2.xcodeproj/xcuserdata/*
 ios_logger2/ios_logger2.xcodeproj/project.xcworkspace/xcuserdata/*
+ios_logger2/ios_logger2.xcodeproj/project.xcworkspace/xcuserdata
+ios_logger2/ios_logger2.xcodeproj/project.xcworkspace/xcuserdata/danielsudz.xcuserdatad/UserInterfaceState.xcuserstate
 
 ## compatibility with Xcode 8 and earlier (ignoring not required starting Xcode 9)
 *.xcscmblueprint
