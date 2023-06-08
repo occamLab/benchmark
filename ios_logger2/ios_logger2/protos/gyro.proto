@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+message GyroTimestamp {
+    double timestamp = 1;
+    double xRotationRate = 2;
+    double yRotationRate = 3;
+    double zRotationRate = 4;
+
+}
+
+message GyroSeries {
+    repeated GyroTimestamp measurements = 1;
+}
+
