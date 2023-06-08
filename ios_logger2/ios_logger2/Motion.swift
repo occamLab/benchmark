@@ -13,6 +13,7 @@ import ARKit
 class Motion: NSObject, ARSessionDelegate {
     public var motionSensors = CMMotionManager()
     public var arSession = ARSession()
+    public var arConfiguration = ARWorldTrackingConfiguration()
     
     // all of our loggers go here
     private let accelerometerLogger = Accelerometer()
@@ -44,6 +45,9 @@ class Motion: NSObject, ARSessionDelegate {
     
     private func initArSession() {
         arSession.delegate = self
+        arConfiguration.worldAlignment = ARConfiguration.WorldAlignment.gravity
+        arConfiguration.isAutoFocusEnabled = true
+        arSession.run(arConfiguration)
     }
     
     // delegate ARFrame updates to video and other sensor loggers
@@ -57,7 +61,7 @@ class Motion: NSObject, ARSessionDelegate {
     }
     
     
-    override private init() {
+    override init() {
         super.init()
         initMotionSensors()
         initArSession()

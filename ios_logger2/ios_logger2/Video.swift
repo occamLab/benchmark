@@ -17,8 +17,9 @@ class Video: Sensor {
     private let fileLocation: URL
     private var encoder: AVAssetWriter
     private let encoderInput: AVAssetWriterInput
-    private var frameNum = 0
-    private var frameRate = 60
+    private let bufferInput: AVAssetWriterInputPixelBufferAdaptor
+    private var frameNum: Int64 = 0
+    private var frameRate: Int32 = 60
     
     init() {
         fileLocation = NSURL.fileURL(withPathComponents: [NSTemporaryDirectory(), NSUUID().uuidString])!
@@ -26,11 +27,13 @@ class Video: Sensor {
         
         let outputSettings: [String: Any] = [
             AVVideoCodecKey: AVVideoCodecType.hevc,
-         // todo figure this out
+            // todo figure this out
             AVVideoWidthKey:  1920, // CVPixelBufferGetWidthOfPlane(pixelBuffer,0),
             AVVideoHeightKey: 1080 // CVPixelBufferGetHeightOfPlane(pixelBuffer, 0)],
         ]
         encoderInput = AVAssetWriterInput(mediaType: AVMediaType.video, outputSettings: outputSettings)
+        bufferInput = AVAssetWriterInputPixelBufferAdaptor(assetWriterInput: encoderInput, sourcePixelBufferAttributes: nil)
+        bufferInput.assetWriterInput.expectsMediaDataInRealTime = true
         
         encoder.startWriting()
         encoder.startSession(atSourceTime: CMTime.zero)
@@ -39,9 +42,26 @@ class Video: Sensor {
     
     
     func collectData(motion: CMDeviceMotion?, frame: ARFrame?) {
-        if(encoderInput.isReadyForMoreMediaData) {
-            
-            frameNum += 1
+        if(frame != nil) {
+            print("frame gotten")
+            if(encoderInput.isReadyForMoreMediaData) {
+                let imageBuffer: CVPixelBuffer = frame!.capturedImage
+                let bufferTimestamp: CMTime = CMTimeMake(value: frameNum, timescale: frameRate) // this seems very wrong but this is the way ios_logger had it written
+                if(!bufferInput.append(imageBuffer, withPresentationTime: bufferTimestamp)) {
+                    print("[WARN]: Failed to add ARFrame to video buffer")
+                }
+                else {
+                    print("[INFO]: Appended ARFrame to video buffer")
+                }
+                frameNum += 1
+            }
+            else {
+                print("not ready")
+            }
         }
+        else {
+            print("empty frame")
+        }
+
     }
 }
