@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+message LidarTimestamp {
+    double timestamp = 1;
+    repeated float lidar = 2;
+    repeated uint32 conf = 3;
+}
+
+message LidarSeries {
+    repeated LidarTimestamp measurements = 1;
+}
