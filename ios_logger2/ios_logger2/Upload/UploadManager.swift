@@ -17,6 +17,7 @@ fileprivate func getURL(filename: String) -> URL {
 
 /// The upload manager takes care of sending data to Firebase.  Currently we have commented out the section that allows upload jobs to be serialized to local storage: The manager will write the files that should be upload to the phone's local storage if the data cannot be uploaded to Firebase (e.g., if the app enters the background or if the Internet connection drops)
 class UploadManager {
+    public static let rootFolder: String = "iosLoggerDemo"
     public static let maximumRetryCount = 3
     public static let overrideAllRetries = true
     public static let useCompression = false
@@ -136,7 +137,7 @@ class UploadManager {
                     }
                 }
                 let container = TarContainer.create(from: files)
-                let storageRef = Storage.storage().reference().child(ARLogger.shared.dataDir ?? "").child(Auth.auth().currentUser!.uid).child("\(UUID().uuidString).tar" + (Self.useCompression ? ".gz" : ""))
+                let storageRef = Storage.storage().reference().child(UploadManager.rootFolder).child(Auth.auth().currentUser!.uid).child("\(UUID().uuidString).tar" + (Self.useCompression ? ".gz" : ""))
                 let fileType = StorageMetadata()
                 let dataToUpload: Data
                 if Self.useCompression {
