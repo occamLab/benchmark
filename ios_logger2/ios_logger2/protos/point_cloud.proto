@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+message PointCloudTimestamp {
+    double timestamp = 1;
+    uint32 pointsInCloud = 2;
+}
+
+message PointCloudSeries {
+    repeated PointCloudTimestamp measurements = 1;
+}
