@@ -8,7 +8,7 @@
 import Foundation
 import CoreMotion
 import ARKit
-
+import FirebaseStorage
 
 class Motion: NSObject, ARSessionDelegate {
     public var motionSensors = CMMotionManager()
@@ -52,8 +52,6 @@ class Motion: NSObject, ARSessionDelegate {
     
     private func stopArSession() {
         arSession.pause()
-        var depth = DepthData()
-        depth.depthValues = [1.2, 3.4]
     }
     
     // delegate ARFrame updates to video and other sensor loggers
@@ -68,8 +66,18 @@ class Motion: NSObject, ARSessionDelegate {
     
     // finished collecting data, export the results
     func export() {
+        // cleanup
         stopArSession()
         stopMotionSensors()
+        
+        // queue data for upload
+        accelerometerLogger.uploadProtobuf()
+        videoLogger.uploadProtobuf()
+        
+        // batch upload the data
+        UploadManager.shared.uploadLocalDataToCloud {(storageMetadata: StorageMetadata?, error: Error?)  in
+            print("done uploading data")
+        }
     }
     
     

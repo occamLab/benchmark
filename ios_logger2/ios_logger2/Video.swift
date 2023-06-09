@@ -13,6 +13,9 @@ import CoreMotion
  *  Implements data collection and encoding of image frames from ARKit
  */
 class Video: Sensor {
+    var sensorName: String = "video"
+    var series: AccelerometerSeries = AccelerometerSeries() // placeholder for now does not do anything
+    
     private let fileType: AVFileType = AVFileType.mp4
     private let fileLocation: URL
     private var encoder: AVAssetWriter

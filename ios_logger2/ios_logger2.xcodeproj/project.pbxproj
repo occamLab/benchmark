@@ -29,10 +29,10 @@
 		61500B722A32447A001FE294 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 61500B712A32447A001FE294 /* FirebaseFirestore */; };
 		61500B742A32447A001FE294 /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 61500B732A32447A001FE294 /* FirebaseFirestoreSwift */; };
 		61500B762A32447A001FE294 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 61500B752A32447A001FE294 /* FirebaseStorage */; };
-		61500B782A3244B5001FE294 /* FireBaseUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61500B772A3244B5001FE294 /* FireBaseUpload.swift */; };
-		61500B7C2A324C87001FE294 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 61500B7B2A324C87001FE294 /* GoogleService-Info.plist */; };
 		61500B7E2A324F18001FE294 /* UploadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61500B7D2A324F18001FE294 /* UploadManager.swift */; };
 		61500B812A324F56001FE294 /* SWCompression in Frameworks */ = {isa = PBXBuildFile; productRef = 61500B802A324F56001FE294 /* SWCompression */; };
+		61500B832A3252B5001FE294 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 61500B822A3252B5001FE294 /* GoogleService-Info.plist */; };
+		61500B862A325629001FE294 /* InternetConnectionUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61500B852A325629001FE294 /* InternetConnectionUtil.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,9 +70,9 @@
 		61500B632A30F1C4001FE294 /* accelerometer.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; path = accelerometer.proto; sourceTree = "<group>"; };
 		61500B652A30F61A001FE294 /* accelerometer.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = accelerometer.pb.swift; sourceTree = "<group>"; };
 		61500B672A3101D7001FE294 /* Video.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Video.swift; sourceTree = "<group>"; };
-		61500B772A3244B5001FE294 /* FireBaseUpload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FireBaseUpload.swift; sourceTree = "<group>"; };
-		61500B7B2A324C87001FE294 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		61500B7D2A324F18001FE294 /* UploadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadManager.swift; sourceTree = "<group>"; };
+		61500B822A3252B5001FE294 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		61500B852A325629001FE294 /* InternetConnectionUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InternetConnectionUtil.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -132,12 +132,11 @@
 		61500B142A2FBAB7001FE294 /* ios_logger2 */ = {
 			isa = PBXGroup;
 			children = (
-				61500B7B2A324C87001FE294 /* GoogleService-Info.plist */,
+				61500B822A3252B5001FE294 /* GoogleService-Info.plist */,
 				61500B5A2A30CC76001FE294 /* protos */,
 				61500B152A2FBAB7001FE294 /* ios_logger2App.swift */,
-				61500B7D2A324F18001FE294 /* UploadManager.swift */,
+				61500B842A325600001FE294 /* Upload */,
 				61500B3F2A2FBEEB001FE294 /* Sensor.swift */,
-				61500B772A3244B5001FE294 /* FireBaseUpload.swift */,
 				61500B412A2FC34B001FE294 /* Accelerometer.swift */,
 				61500B432A2FCC83001FE294 /* Motion.swift */,
 				61500B672A3101D7001FE294 /* Video.swift */,
@@ -181,6 +180,15 @@
 				61500B632A30F1C4001FE294 /* accelerometer.proto */,
 			);
 			path = protos;
+			sourceTree = "<group>";
+		};
+		61500B842A325600001FE294 /* Upload */ = {
+			isa = PBXGroup;
+			children = (
+				61500B7D2A324F18001FE294 /* UploadManager.swift */,
+				61500B852A325629001FE294 /* InternetConnectionUtil.swift */,
+			);
+			path = Upload;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -304,8 +312,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				61500B1D2A2FBAB8001FE294 /* Preview Assets.xcassets in Resources */,
+				61500B832A3252B5001FE294 /* GoogleService-Info.plist in Resources */,
 				61500B1A2A2FBAB8001FE294 /* Assets.xcassets in Resources */,
-				61500B7C2A324C87001FE294 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -332,6 +340,7 @@
 			files = (
 				61500B7E2A324F18001FE294 /* UploadManager.swift in Sources */,
 				61500B642A30F1C4001FE294 /* accelerometer.proto in Sources */,
+				61500B862A325629001FE294 /* InternetConnectionUtil.swift in Sources */,
 				61500B5C2A30CCB0001FE294 /* test.proto in Sources */,
 				61500B182A2FBAB7001FE294 /* ContentView.swift in Sources */,
 				61500B422A2FC34B001FE294 /* Accelerometer.swift in Sources */,
@@ -340,7 +349,6 @@
 				61500B442A2FCC83001FE294 /* Motion.swift in Sources */,
 				61500B162A2FBAB7001FE294 /* ios_logger2App.swift in Sources */,
 				61500B682A3101D7001FE294 /* Video.swift in Sources */,
-				61500B782A3244B5001FE294 /* FireBaseUpload.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

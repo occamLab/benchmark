@@ -17,7 +17,7 @@ struct ContentView: View {
                 .foregroundColor(.accentColor)
 
             Button(action: {
-                sqrt(10)
+                motion.export()
             }) {
                 Text("Main Test")
             }
