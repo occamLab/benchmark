@@ -16,8 +16,7 @@ class Motion: NSObject, ARSessionDelegate {
     public var arConfiguration = ARWorldTrackingConfiguration()
     
     // all of our loggers go here
-    private let accelerometerLogger = Accelerometer()
-    private let videoLogger = Video()
+    private let sensors: [any Sensor] = [Accelerometer(), Video()]
     
     
     private func initMotionSensors() {
@@ -56,23 +55,29 @@ class Motion: NSObject, ARSessionDelegate {
     
     // delegate ARFrame updates to video and other sensor loggers
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
-        videoLogger.collectData(motion: nil, frame: frame)
+        for sensor in sensors {
+            sensor.collectData(motion: nil, frame: frame)
+        }
     }
     
     // delegate motion updates to accelerometer and other sensor loggers
     func delegate_motion(motion: CMDeviceMotion?, error: Error?) {
-        accelerometerLogger.collectData(motion: motion, frame: nil)
+        for sensor in sensors {
+            sensor.collectData(motion: motion, frame: nil)
+        }
     }
     
     // finished collecting data, export the results
-    func export() {
+    func export() async {
         // cleanup
         stopArSession()
         stopMotionSensors()
         
         // queue data for upload
-        accelerometerLogger.uploadProtobuf()
-        videoLogger.uploadProtobuf()
+        for sensor in sensors {
+            sensor.uploadProtobuf()
+            await sensor.additionalUpload()
+        }
         
         // batch upload the data
         UploadManager.shared.uploadLocalDataToCloud {(storageMetadata: StorageMetadata?, error: Error?)  in

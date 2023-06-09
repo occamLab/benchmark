@@ -22,6 +22,8 @@ protocol Sensor {
     
     /* Collect a snapshot of data */
     func collectData(motion: CMDeviceMotion?, frame: ARFrame?) -> Void
+    
+    func additionalUpload() async -> Void
 }
 
 extension Sensor {
@@ -31,4 +33,10 @@ extension Sensor {
         let data: Data? = try? series.serializedData()
         UploadManager.shared.putData(data!, contentType: "application/protobuf", fullPath: sensorName + ".proto")
     }
+    
+    /* Can be implemented by sensors such as video if needed */
+    func additionalUpload() async -> Void {
+        
+    }
+    
 }
