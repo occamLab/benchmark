@@ -14,6 +14,7 @@ import CoreMotion
  */
 
 class Gyro: Sensor {
+    var sensorName: String = "gyroscope"
     public var series = GyroSeries()
     
     func collectData(motion: CMDeviceMotion?, frame: ARFrame?) {

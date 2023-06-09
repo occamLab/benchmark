@@ -14,6 +14,8 @@ import CoreMotion
  *  Implements data collection and encoding into a protobuf message for timeseries of ambient light data
  */
 class Light: Sensor {
+    var sensorName: String = "ambient_light"
+    
     public var series = LightSeries()
     
     func collectData(motion: CMDeviceMotion?, frame: ARFrame?) {

@@ -13,6 +13,8 @@ import CoreMotion
  *  Implements data collection and encoding into a protobuf message for timeseries of point cloud data, specifically the number of points in the point cloud
  */
 class PointCloud: Sensor {
+    var sensorName: String = "point_cloud"
+    
     public var series = PointCloudSeries()
     
     func collectData(motion: CMDeviceMotion?, frame: ARFrame?) {
