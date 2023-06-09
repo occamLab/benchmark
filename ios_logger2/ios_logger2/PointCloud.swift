@@ -14,7 +14,6 @@ import CoreMotion
  */
 class PointCloud: Sensor {
     var sensorName: String = "point_cloud"
-    
     public var series = PointCloudSeries()
     
     func collectData(motion: CMDeviceMotion?, frame: ARFrame?) {

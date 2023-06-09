@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+message IntrinsicsTimestamp {
+    double timestamp = 1;
+    repeated float cameraIntrinsics = 2;
+}
+
+message IntrinsicsSeries {
+    repeated IntrinsicsTimestamp measurements = 1;
+}
