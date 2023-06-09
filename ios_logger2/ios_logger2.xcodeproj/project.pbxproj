@@ -33,6 +33,22 @@
 		61500B812A324F56001FE294 /* SWCompression in Frameworks */ = {isa = PBXBuildFile; productRef = 61500B802A324F56001FE294 /* SWCompression */; };
 		61500B832A3252B5001FE294 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 61500B822A3252B5001FE294 /* GoogleService-Info.plist */; };
 		61500B862A325629001FE294 /* InternetConnectionUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61500B852A325629001FE294 /* InternetConnectionUtil.swift */; };
+		61500B882A33805C001FE294 /* LiDAR.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61500B872A33805C001FE294 /* LiDAR.swift */; };
+		61500B8A2A338061001FE294 /* Light.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61500B892A338061001FE294 /* Light.swift */; };
+		61500B8C2A338067001FE294 /* Gyro.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61500B8B2A338067001FE294 /* Gyro.swift */; };
+		61500B8E2A33806C001FE294 /* PointCloud.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61500B8D2A33806C001FE294 /* PointCloud.swift */; };
+		61500B9B2A3380B7001FE294 /* light.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61500B8F2A3380B7001FE294 /* light.pb.swift */; };
+		61500B9C2A3380B7001FE294 /* test.proto in Sources */ = {isa = PBXBuildFile; fileRef = 61500B902A3380B7001FE294 /* test.proto */; };
+		61500B9D2A3380B7001FE294 /* accelerometer.proto in Sources */ = {isa = PBXBuildFile; fileRef = 61500B912A3380B7001FE294 /* accelerometer.proto */; };
+		61500B9E2A3380B7001FE294 /* accelerometer.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61500B922A3380B7001FE294 /* accelerometer.pb.swift */; };
+		61500B9F2A3380B7001FE294 /* lidar.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61500B932A3380B7001FE294 /* lidar.pb.swift */; };
+		61500BA02A3380B7001FE294 /* point_cloud.proto in Sources */ = {isa = PBXBuildFile; fileRef = 61500B942A3380B7001FE294 /* point_cloud.proto */; };
+		61500BA12A3380B7001FE294 /* gyro.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61500B952A3380B7001FE294 /* gyro.pb.swift */; };
+		61500BA22A3380B7001FE294 /* point_cloud.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61500B962A3380B7001FE294 /* point_cloud.pb.swift */; };
+		61500BA32A3380B7001FE294 /* lidar.proto in Sources */ = {isa = PBXBuildFile; fileRef = 61500B972A3380B7001FE294 /* lidar.proto */; };
+		61500BA42A3380B7001FE294 /* gyro.proto in Sources */ = {isa = PBXBuildFile; fileRef = 61500B982A3380B7001FE294 /* gyro.proto */; };
+		61500BA52A3380B7001FE294 /* test.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61500B992A3380B7001FE294 /* test.pb.swift */; };
+		61500BA62A3380B7001FE294 /* light.proto in Sources */ = {isa = PBXBuildFile; fileRef = 61500B9A2A3380B7001FE294 /* light.proto */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -73,6 +89,22 @@
 		61500B7D2A324F18001FE294 /* UploadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadManager.swift; sourceTree = "<group>"; };
 		61500B822A3252B5001FE294 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		61500B852A325629001FE294 /* InternetConnectionUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InternetConnectionUtil.swift; sourceTree = "<group>"; };
+		61500B872A33805C001FE294 /* LiDAR.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LiDAR.swift; sourceTree = "<group>"; };
+		61500B892A338061001FE294 /* Light.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Light.swift; sourceTree = "<group>"; };
+		61500B8B2A338067001FE294 /* Gyro.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Gyro.swift; sourceTree = "<group>"; };
+		61500B8D2A33806C001FE294 /* PointCloud.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PointCloud.swift; sourceTree = "<group>"; };
+		61500B8F2A3380B7001FE294 /* light.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = light.pb.swift; sourceTree = "<group>"; };
+		61500B902A3380B7001FE294 /* test.proto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.protobuf; path = test.proto; sourceTree = "<group>"; };
+		61500B912A3380B7001FE294 /* accelerometer.proto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.protobuf; path = accelerometer.proto; sourceTree = "<group>"; };
+		61500B922A3380B7001FE294 /* accelerometer.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = accelerometer.pb.swift; sourceTree = "<group>"; };
+		61500B932A3380B7001FE294 /* lidar.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = lidar.pb.swift; sourceTree = "<group>"; };
+		61500B942A3380B7001FE294 /* point_cloud.proto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.protobuf; path = point_cloud.proto; sourceTree = "<group>"; };
+		61500B952A3380B7001FE294 /* gyro.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = gyro.pb.swift; sourceTree = "<group>"; };
+		61500B962A3380B7001FE294 /* point_cloud.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = point_cloud.pb.swift; sourceTree = "<group>"; };
+		61500B972A3380B7001FE294 /* lidar.proto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.protobuf; path = lidar.proto; sourceTree = "<group>"; };
+		61500B982A3380B7001FE294 /* gyro.proto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.protobuf; path = gyro.proto; sourceTree = "<group>"; };
+		61500B992A3380B7001FE294 /* test.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = test.pb.swift; sourceTree = "<group>"; };
+		61500B9A2A3380B7001FE294 /* light.proto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.protobuf; path = light.proto; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -139,6 +171,10 @@
 				61500B3F2A2FBEEB001FE294 /* Sensor.swift */,
 				61500B412A2FC34B001FE294 /* Accelerometer.swift */,
 				61500B432A2FCC83001FE294 /* Motion.swift */,
+				61500B872A33805C001FE294 /* LiDAR.swift */,
+				61500B892A338061001FE294 /* Light.swift */,
+				61500B8D2A33806C001FE294 /* PointCloud.swift */,
+				61500B8B2A338067001FE294 /* Gyro.swift */,
 				61500B672A3101D7001FE294 /* Video.swift */,
 				61500B172A2FBAB7001FE294 /* ContentView.swift */,
 				61500B192A2FBAB8001FE294 /* Assets.xcassets */,
@@ -175,6 +211,18 @@
 		61500B5A2A30CC76001FE294 /* protos */ = {
 			isa = PBXGroup;
 			children = (
+				61500B922A3380B7001FE294 /* accelerometer.pb.swift */,
+				61500B912A3380B7001FE294 /* accelerometer.proto */,
+				61500B952A3380B7001FE294 /* gyro.pb.swift */,
+				61500B982A3380B7001FE294 /* gyro.proto */,
+				61500B932A3380B7001FE294 /* lidar.pb.swift */,
+				61500B972A3380B7001FE294 /* lidar.proto */,
+				61500B8F2A3380B7001FE294 /* light.pb.swift */,
+				61500B9A2A3380B7001FE294 /* light.proto */,
+				61500B962A3380B7001FE294 /* point_cloud.pb.swift */,
+				61500B942A3380B7001FE294 /* point_cloud.proto */,
+				61500B992A3380B7001FE294 /* test.pb.swift */,
+				61500B902A3380B7001FE294 /* test.proto */,
 				61500B652A30F61A001FE294 /* accelerometer.pb.swift */,
 				61500B5B2A30CCB0001FE294 /* test.proto */,
 				61500B632A30F1C4001FE294 /* accelerometer.proto */,
@@ -338,17 +386,33 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				61500BA02A3380B7001FE294 /* point_cloud.proto in Sources */,
+				61500B9C2A3380B7001FE294 /* test.proto in Sources */,
 				61500B7E2A324F18001FE294 /* UploadManager.swift in Sources */,
+				61500B9B2A3380B7001FE294 /* light.pb.swift in Sources */,
 				61500B642A30F1C4001FE294 /* accelerometer.proto in Sources */,
+				61500B882A33805C001FE294 /* LiDAR.swift in Sources */,
+				61500BA62A3380B7001FE294 /* light.proto in Sources */,
+				61500B9F2A3380B7001FE294 /* lidar.pb.swift in Sources */,
 				61500B862A325629001FE294 /* InternetConnectionUtil.swift in Sources */,
 				61500B5C2A30CCB0001FE294 /* test.proto in Sources */,
+				61500BA32A3380B7001FE294 /* lidar.proto in Sources */,
 				61500B182A2FBAB7001FE294 /* ContentView.swift in Sources */,
+				61500BA22A3380B7001FE294 /* point_cloud.pb.swift in Sources */,
+				61500B9D2A3380B7001FE294 /* accelerometer.proto in Sources */,
+				61500BA12A3380B7001FE294 /* gyro.pb.swift in Sources */,
+				61500B8C2A338067001FE294 /* Gyro.swift in Sources */,
 				61500B422A2FC34B001FE294 /* Accelerometer.swift in Sources */,
+				61500B8A2A338061001FE294 /* Light.swift in Sources */,
 				61500B402A2FBEEB001FE294 /* Sensor.swift in Sources */,
+				61500B8E2A33806C001FE294 /* PointCloud.swift in Sources */,
+				61500B9E2A3380B7001FE294 /* accelerometer.pb.swift in Sources */,
 				61500B662A30F61A001FE294 /* accelerometer.pb.swift in Sources */,
 				61500B442A2FCC83001FE294 /* Motion.swift in Sources */,
+				61500BA52A3380B7001FE294 /* test.pb.swift in Sources */,
 				61500B162A2FBAB7001FE294 /* ios_logger2App.swift in Sources */,
 				61500B682A3101D7001FE294 /* Video.swift in Sources */,
+				61500BA42A3380B7001FE294 /* gyro.proto in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
