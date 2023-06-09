@@ -8,16 +8,19 @@
 import SwiftUI
 
 struct ContentView: View {
+    let motion = Motion()
+    
     var body: some View {
         VStack {
             Image(systemName: "globe")
                 .imageScale(.large)
                 .foregroundColor(.accentColor)
 
-            Button(action: {
-                sqrt(10)
+            Button(action:  {
+                Task {
+                    await self.motion.export()
+                }
             }) {
-                
                 Text("Main Test")
             }
         }

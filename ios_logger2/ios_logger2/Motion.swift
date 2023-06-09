@@ -8,15 +8,15 @@
 import Foundation
 import CoreMotion
 import ARKit
-
+import FirebaseStorage
 
 class Motion: NSObject, ARSessionDelegate {
     public var motionSensors = CMMotionManager()
     public var arSession = ARSession()
+    public var arConfiguration = ARWorldTrackingConfiguration()
     
     // all of our loggers go here
-    private let accelerometerLogger = Accelerometer()
-    private let videoLogger = Video()
+    private let sensors: [any Sensor] = [Accelerometer(), Video()]
     
     
     private func initMotionSensors() {
@@ -44,20 +44,49 @@ class Motion: NSObject, ARSessionDelegate {
     
     private func initArSession() {
         arSession.delegate = self
+        arConfiguration.worldAlignment = ARConfiguration.WorldAlignment.gravity
+        arConfiguration.isAutoFocusEnabled = true
+        arSession.run(arConfiguration, options: [ARSession.RunOptions.resetTracking, ARSession.RunOptions.resetSceneReconstruction])
+    }
+    
+    private func stopArSession() {
+        arSession.pause()
     }
     
     // delegate ARFrame updates to video and other sensor loggers
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
-        videoLogger.collectData(motion: nil, frame: frame)
+        for sensor in sensors {
+            sensor.collectData(motion: nil, frame: frame)
+        }
     }
     
     // delegate motion updates to accelerometer and other sensor loggers
     func delegate_motion(motion: CMDeviceMotion?, error: Error?) {
-        accelerometerLogger.collectData(motion: motion, frame: nil)
+        for sensor in sensors {
+            sensor.collectData(motion: motion, frame: nil)
+        }
+    }
+    
+    // finished collecting data, export the results
+    func export() async {
+        // cleanup
+        stopArSession()
+        stopMotionSensors()
+        
+        // queue data for upload
+        for sensor in sensors {
+            sensor.uploadProtobuf()
+            await sensor.additionalUpload()
+        }
+        
+        // batch upload the data
+        UploadManager.shared.uploadLocalDataToCloud {(storageMetadata: StorageMetadata?, error: Error?)  in
+            print("done uploading data")
+        }
     }
     
     
-    override private init() {
+    override init() {
         super.init()
         initMotionSensors()
         initArSession()

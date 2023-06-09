@@ -10,6 +10,7 @@ import ARKit
 import CoreMotion
 
 class LiDAR : Sensor {
+    var sensorName: String = "lidar"
     public var series = LidarSeries()
     
     func collectData(motion: CMDeviceMotion?, frame: ARFrame?) {

@@ -4,7 +4,15 @@
 # gitignore contributors: remember to update Global/Xcode.gitignore, Objective-C.gitignore & Swift.gitignore
 
 ## User settings
+*.xcuserstate
+project.xcworkspace/
 xcuserdata/
+*.pb.swift
+GoogleService-Info.plist
+ios_logger2.xcodeproj/xcuserdata/*
+ios_logger2/ios_logger2.xcodeproj/project.xcworkspace/xcuserdata/*
+ios_logger2/ios_logger2.xcodeproj/project.xcworkspace/xcuserdata
+ios_logger2/ios_logger2.xcodeproj/project.xcworkspace/xcuserdata/danielsudz.xcuserdatad/UserInterfaceState.xcuserstate
 
 ## compatibility with Xcode 8 and earlier (ignoring not required starting Xcode 9)
 *.xcscmblueprint
