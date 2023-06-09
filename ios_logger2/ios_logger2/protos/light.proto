@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+message LightTimestamp {
+    double timestamp = 1;
+    double lightIntensity = 2;
+}
+
+message LightSeries {
+    repeated LightTimestamp measurements = 1;
+}
