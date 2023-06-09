@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+message PoseTimestamp {
+    double timestamp = 1;
+    repeated float cameraPose = 2;
+}
+
+message PoseSeries {
+    repeated PoseTimestamp measurements = 1;
+}
+
