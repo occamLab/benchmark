@@ -13,11 +13,12 @@ import CoreMotion
  *  Implements data collection and encoding into a protobuf message for timeseries of camera intrinsics data
  */
 class Intrinsics: Sensor {
+    var sensorName: String = "lidar"
     public var series = IntrinsicsSeries()
     
     func collectData(motion: CMDeviceMotion?, frame: ARFrame?) {
         if(frame != nil) {
-            let timestamp: Double = motion!.timestamp
+            let timestamp: Double = frame!.timestamp
             let intrinsics: [Float] = frame!.camera.intrinsics.toRowMajor()
             
             var measurement = IntrinsicsTimestamp()
