@@ -55,7 +55,6 @@ class Video: Sensor {
     
     func collectData(motion: CMDeviceMotion?, frame: ARFrame?) {
         if(frame != nil) {
-            //print("frame gotten")
             if(encoderInput.isReadyForMoreMediaData) {
                 let imageBuffer: CVPixelBuffer = frame!.capturedImage
                 let bufferTimestamp: CMTime = CMTimeMake(value: frameNum, timescale: frameRate) // this seems very wrong but this is the way ios_logger had it written
@@ -75,5 +74,19 @@ class Video: Sensor {
             //print("empty frame")
         }
 
+    }
+    
+    func additionalUpload() async {
+        encoderInput.markAsFinished()
+        await encoder.finishWriting()
+        print("[INFO]: Video encoder finished writing file to disk")
+        
+        let videoData: Data? = try? Data(contentsOf: fileLocation)
+        if(videoData != nil) {
+            UploadManager.shared.putData(videoData!, contentType: "application/protobuf", fullPath: sensorName + ".mp4")
+        }
+        else {
+            print("[EROR]: Reading video file from disk")
+        }
     }
 }

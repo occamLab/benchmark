@@ -16,8 +16,10 @@ struct ContentView: View {
                 .imageScale(.large)
                 .foregroundColor(.accentColor)
 
-            Button(action: {
-                motion.export()
+            Button(action:  {
+                Task {
+                    await self.motion.export()
+                }
             }) {
                 Text("Main Test")
             }
