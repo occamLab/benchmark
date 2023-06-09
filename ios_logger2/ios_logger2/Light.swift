@@ -20,12 +20,9 @@ class Light: Sensor {
     
     func collectData(motion: CMDeviceMotion?, frame: ARFrame?) {
         if(frame != nil) {
-            guard let lightEstimate = frame!.lightEstimate
-            else {
-                return
-            }
-            let timestamp: Double = motion!.timestamp
-            let light_intensity: Double = lightEstimate.ambientIntensity
+            let lightEstimate = frame!.lightEstimate
+            let timestamp: Double = frame!.timestamp
+            let light_intensity: Double = lightEstimate!.ambientIntensity
             
             var measurement = LightTimestamp()
             measurement.timestamp = timestamp

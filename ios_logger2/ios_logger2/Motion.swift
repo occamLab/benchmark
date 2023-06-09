@@ -16,7 +16,14 @@ class Motion: NSObject, ARSessionDelegate {
     public var arConfiguration = ARWorldTrackingConfiguration()
     
     // all of our loggers go here
-    private let sensors: [any Sensor] = [Accelerometer(), Video()]
+    private let sensors: [any Sensor] = [
+        Accelerometer(),
+        Video(),
+        LiDAR(),
+        Light(),
+        Gyro(),
+        PointCloud(),
+    ]
     
     
     private func initMotionSensors() {

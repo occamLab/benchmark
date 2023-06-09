@@ -19,14 +19,14 @@ class PointCloud: Sensor {
     
     func collectData(motion: CMDeviceMotion?, frame: ARFrame?) {
         if(frame != nil) {
-            let timestamp: Double = motion!.timestamp
-            let points_in_cloud: UInt32 = UInt32(frame!.rawFeaturePoints!.points.count)
-            
-            var measurement = PointCloudTimestamp()
-            measurement.timestamp = timestamp
-            measurement.pointsInCloud = points_in_cloud
-            series.measurements.append(measurement)
-            
+            let timestamp: Double = frame!.timestamp
+            if(frame!.rawFeaturePoints?.points.count != nil) {
+                let points_in_cloud: UInt32 = UInt32(frame!.rawFeaturePoints!.points.count)
+                var measurement = PointCloudTimestamp()
+                measurement.timestamp = timestamp
+                measurement.pointsInCloud = points_in_cloud
+                series.measurements.append(measurement)
+            }
         }
     }
 }
