@@ -1,0 +1,4 @@
+
+message VideoAttributes {
+    required double videoStartUnixTimestamp = 1;
+}

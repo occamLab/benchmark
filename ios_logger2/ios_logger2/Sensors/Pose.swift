@@ -18,7 +18,7 @@ class Pose: Sensor {
     
     func collectData(motion: CMDeviceMotion?, frame: ARFrame?) {
         if(frame != nil) {
-            let timestamp: Double = frame!.timestamp
+            let timestamp: Double = getUnixTimestamp(moment: frame!.timestamp)
             let transform: [Float] = frame!.camera.transform.toRowMajor()
             
             var measurement = PoseTimestamp()

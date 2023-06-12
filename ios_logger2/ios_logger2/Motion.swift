@@ -23,6 +23,8 @@ class Motion: NSObject, ARSessionDelegate {
         Light(),
         Gyro(),
         PointCloud(),
+        Pose(),
+        Intrinsics(),
     ]
     
     
