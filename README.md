@@ -23,3 +23,11 @@ Then to get swift to recognize them:
 2) https://github.com/firebase/firebase-ios-sdk (used to upload data to firebase)
 3) https://github.com/apple/swift-protobuf (used to encode swift types to binary) 
 4) https://github.com/google-ar/arcore-ios-sdk (ArCore for CloudAnchors)
+
+# Note on https://github.com/google-ar/arcore-ios-sdk
+1) Linker flag -ObjC must be turned on as per https://github.com/google-ar/arcore-ios-sdk/tree/master#installation
+2) Otherwise you will get the most cryptic crash message that will waste way too much of your time. The error will be along the lines of: 
+```swift
+2023-06-12 15:25:58.395537-0400 ios_logger2[24686:2190906] +[GARDeviceProfile profileForIdentifier:osVersion:configurationManager:]: unrecognized selector sent to class 0x104ecf820
+2023-06-12 15:25:58.396973-0400 ios_logger2[24686:2190906] *** Terminating app due to uncaught exception 'NSInvalidArgumentException', reason: '+[GARDeviceProfile profileForIdentifier:osVersion:configurationManager:]: unrecognized selector sent to class 0x104ecf820'
+```
