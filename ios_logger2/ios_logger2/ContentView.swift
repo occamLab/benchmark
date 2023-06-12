@@ -9,6 +9,8 @@ import SwiftUI
 
 struct ContentView: View {
     let motion = Motion()
+    @State var isPresentingConfirm: Bool = false
+    @State var hideButton: Bool = false
     
     var body: some View {
         VStack {
@@ -16,13 +18,21 @@ struct ContentView: View {
                 .imageScale(.large)
                 .foregroundColor(.accentColor)
 
-            Button(action:  {
-                Task {
-                    await self.motion.export()
-                }
-            }) {
-                Text("Main Test")
+            if(!hideButton) {
+                Button("Upload Data", role: .destructive) {
+                    isPresentingConfirm = true;
+                    }
+                   .confirmationDialog("Are you sure?",
+                                       isPresented: $isPresentingConfirm) {
+                     Button("Send Data? (data was recorded since app launch)", role: .destructive) {
+                         Task {
+                             await self.motion.export()
+                             hideButton = true;
+                         }
+                      }
+                   }
             }
+
         }
         .padding()
     }

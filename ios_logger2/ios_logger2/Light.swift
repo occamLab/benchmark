@@ -24,7 +24,7 @@ class Light: Sensor {
             let light_intensity: Double = lightEstimate!.ambientIntensity
             
             var measurement = LightTimestamp()
-            measurement.timestamp = timestamp
+            measurement.timestamp = getUnixTimestamp(moment: timestamp)
             measurement.lightIntensity = light_intensity
             series.measurements.append(measurement)
         }

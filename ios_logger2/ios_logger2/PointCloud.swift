@@ -22,7 +22,7 @@ class PointCloud: Sensor {
             if(frame!.rawFeaturePoints?.points.count != nil) {
                 let points_in_cloud: UInt32 = UInt32(frame!.rawFeaturePoints!.points.count)
                 var measurement = PointCloudTimestamp()
-                measurement.timestamp = timestamp
+                measurement.timestamp = getUnixTimestamp(moment: timestamp)
                 measurement.pointsInCloud = points_in_cloud
                 series.measurements.append(measurement)
             }

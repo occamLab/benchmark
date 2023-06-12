@@ -17,7 +17,7 @@ class Accelerometer: Sensor {
     
     func collectData(motion: CMDeviceMotion?, frame: ARFrame?) {
         if(motion != nil) {
-            let timestamp: Double = motion!.timestamp
+            let timestamp: Double = getUnixTimestamp(moment: motion!.timestamp)
             let acceleration_x: Double = motion!.userAcceleration.x
             let acceleration_y: Double =  motion!.userAcceleration.y
             let acceleration_z: Double =  motion!.userAcceleration.z
