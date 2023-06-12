@@ -10,13 +10,21 @@ import Firebase
 import FirebaseStorage
 import FirebaseAuth
 
+import ARCoreGARSession
+
+
 @main
 struct ios_logger2App: App {
+    
+    
+    init() {
+        FirebaseApp.configure()
+    }
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
                 .onAppear() {
-                    FirebaseApp.configure()
                     Auth.auth().signInAnonymously() {authResult,error in
                         print("Auth.auth().currentUID \(Auth.auth().currentUser?.uid)")
                     }
