@@ -52,6 +52,7 @@
 		61500BF72A376100001FE294 /* point_cloud.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61500BEF2A376100001FE294 /* point_cloud.pb.swift */; };
 		61500BF92A37645E001FE294 /* video.proto in Sources */ = {isa = PBXBuildFile; fileRef = 61500BF82A37645E001FE294 /* video.proto */; };
 		61500BFB2A37650E001FE294 /* video.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61500BFA2A37650E001FE294 /* video.pb.swift */; };
+		61500BFE2A376C1C001FE294 /* ARCoreCloudAnchors in Frameworks */ = {isa = PBXBuildFile; productRef = 61500BFD2A376C1C001FE294 /* ARCoreCloudAnchors */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -123,6 +124,7 @@
 				61500B4B2A30C81F001FE294 /* SwiftProtobufPluginLibrary in Frameworks */,
 				61500B492A30C81F001FE294 /* SwiftProtobuf in Frameworks */,
 				61500B742A32447A001FE294 /* FirebaseFirestoreSwift in Frameworks */,
+				61500BFE2A376C1C001FE294 /* ARCoreCloudAnchors in Frameworks */,
 				61500B4D2A30C81F001FE294 /* protoc-gen-swift in Frameworks */,
 				61500B762A32447A001FE294 /* FirebaseStorage in Frameworks */,
 				61500B6E2A32447A001FE294 /* FirebaseAuth in Frameworks */,
@@ -290,6 +292,7 @@
 				61500B732A32447A001FE294 /* FirebaseFirestoreSwift */,
 				61500B752A32447A001FE294 /* FirebaseStorage */,
 				61500B802A324F56001FE294 /* SWCompression */,
+				61500BFD2A376C1C001FE294 /* ARCoreCloudAnchors */,
 			);
 			productName = ios_logger2;
 			productReference = 61500B122A2FBAB7001FE294 /* ios_logger2.app */;
@@ -367,6 +370,7 @@
 				61500B472A30C81F001FE294 /* XCRemoteSwiftPackageReference "swift-protobuf" */,
 				61500B6C2A32447A001FE294 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				61500B7F2A324F56001FE294 /* XCRemoteSwiftPackageReference "SWCompression" */,
+				61500BFC2A376C1C001FE294 /* XCRemoteSwiftPackageReference "arcore-ios-sdk" */,
 			);
 			productRefGroup = 61500B132A2FBAB7001FE294 /* Products */;
 			projectDirPath = "";
@@ -797,6 +801,14 @@
 				minimumVersion = 4.0.0;
 			};
 		};
+		61500BFC2A376C1C001FE294 /* XCRemoteSwiftPackageReference "arcore-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google-ar/arcore-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -844,6 +856,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 61500B7F2A324F56001FE294 /* XCRemoteSwiftPackageReference "SWCompression" */;
 			productName = SWCompression;
+		};
+		61500BFD2A376C1C001FE294 /* ARCoreCloudAnchors */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 61500BFC2A376C1C001FE294 /* XCRemoteSwiftPackageReference "arcore-ios-sdk" */;
+			productName = ARCoreCloudAnchors;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

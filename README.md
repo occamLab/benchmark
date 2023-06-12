@@ -22,3 +22,4 @@ Then to get swift to recognize them:
 1) https://github.com/tsolomko/SWCompression (used in UploadManager.swift)
 2) https://github.com/firebase/firebase-ios-sdk (used to upload data to firebase)
 3) https://github.com/apple/swift-protobuf (used to encode swift types to binary) 
+4) https://github.com/google-ar/arcore-ios-sdk (ArCore for CloudAnchors)
