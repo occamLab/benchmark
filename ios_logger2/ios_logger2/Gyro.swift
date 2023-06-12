@@ -19,7 +19,7 @@ class Gyro: Sensor {
     
     func collectData(motion: CMDeviceMotion?, frame: ARFrame?) {
         if(motion != nil) {
-            let timestamp: Double = motion!.timestamp
+            let timestamp: Double = getUnixTimestamp(moment: motion!.timestamp)
             let rotation_rate_x: Double = motion!.rotationRate.x
             let rotation_rate_y: Double =  motion!.rotationRate.y
             let rotation_rate_z: Double =  motion!.rotationRate.z

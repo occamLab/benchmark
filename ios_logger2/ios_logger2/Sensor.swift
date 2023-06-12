@@ -39,4 +39,13 @@ extension Sensor {
         
     }
     
+    /* Process the timestamp from CMDeviceMotion/ARFrame and convert it to unix timestamp
+     * The timestamps are technically undocumented and could break in the future
+     */
+    func getUnixTimestamp(moment: TimeInterval) -> Double {
+        let refDate: Date = Date.now - ProcessInfo.processInfo.systemUptime
+        let curTime: Date = Date(timeInterval: moment, since: refDate)
+        return curTime.timeIntervalSince1970
+    }
+    
 }

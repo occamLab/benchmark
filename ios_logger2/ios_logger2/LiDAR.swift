@@ -45,7 +45,7 @@ class LiDAR : Sensor {
         }
         
         var measurement = LidarTimestamp()
-        measurement.timestamp = frame.capturedDepthDataTimestamp
+        measurement.timestamp = getUnixTimestamp(moment: frame.capturedDepthDataTimestamp)
         measurement.lidar = depthCopy
         measurement.conf = confInts
         series.measurements.append(measurement)

@@ -21,8 +21,8 @@ class Video: Sensor {
     private var encoder: AVAssetWriter
     private let encoderInput: AVAssetWriterInput
     private let bufferInput: AVAssetWriterInputPixelBufferAdaptor
-    private var frameNum: Int64 = 0
     private var frameRate: Int32 = 60
+    private var initialTimestamp: Double? = nil
     
     init() {
         fileLocation = NSURL.fileURL(withPathComponents: [NSTemporaryDirectory(), NSUUID().uuidString])!
@@ -30,9 +30,12 @@ class Video: Sensor {
         
         let outputSettings: [String: Any] = [
             AVVideoCodecKey: AVVideoCodecType.hevc,
-            // todo figure this out
             AVVideoWidthKey:  1920, // CVPixelBufferGetWidthOfPlane(pixelBuffer,0),
-            AVVideoHeightKey: 1080 // CVPixelBufferGetHeightOfPlane(pixelBuffer, 0)],
+            AVVideoHeightKey: 1080, // CVPixelBufferGetHeightOfPlane(pixelBuffer, 0)],
+            AVVideoCompressionPropertiesKey: [
+                AVVideoAverageBitRateKey: 1024 * 100, // 100 Kib/seconds,
+                AVVideoQualityKey: 0.7, // between 0 and 1.0, some people say it does not do anything, some people say it does...
+            ] as [String : Any],
         ]
         encoderInput = AVAssetWriterInput(mediaType: AVMediaType.video, outputSettings: outputSettings)
         bufferInput = AVAssetWriterInputPixelBufferAdaptor(assetWriterInput: encoderInput, sourcePixelBufferAttributes: nil)
@@ -55,23 +58,24 @@ class Video: Sensor {
     
     func collectData(motion: CMDeviceMotion?, frame: ARFrame?) {
         if(frame != nil) {
+            initialTimestamp = initialTimestamp ?? frame!.timestamp // set the first frame time as reference if needed
+            let currentTimestamp = frame!.timestamp - initialTimestamp! // absolute time since first frame
+            
             if(encoderInput.isReadyForMoreMediaData) {
+                // the bufferTimestamp should conform to value/timescale = seconds since atSourceTime (CMTime.zero)
                 let imageBuffer: CVPixelBuffer = frame!.capturedImage
-                let bufferTimestamp: CMTime = CMTimeMake(value: frameNum, timescale: frameRate) // this seems very wrong but this is the way ios_logger had it written
+                let bufferTimestamp: CMTime = CMTimeMake(value: Int64(currentTimestamp * Double(frameRate) * 1000.0), timescale: frameRate * 1000)
                 if(!bufferInput.append(imageBuffer, withPresentationTime: bufferTimestamp)) {
                     print("[WARN]: Failed to add ARFrame to video buffer")
                 }
                 else {
                     print("[INFO]: Appended ARFrame to video buffer")
                 }
-                frameNum += 1
             }
             else {
-                //print("not ready")
             }
         }
         else {
-            //print("empty frame")
         }
 
     }
