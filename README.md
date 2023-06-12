@@ -11,7 +11,7 @@ brew install swift-protobuf
 First you need to compile the protobuf files: 
 ```
 cd ios_logger2
-protoc --swift_out=. protos/*.proto
+protoc --swift_opt=FileNaming=DropPath --swift_out=protos/codegen protos/*.proto
 ```
 Then to get swift to recognize them: 
   1) Right click on the "protos" folder 
