@@ -9,6 +9,8 @@ project.xcworkspace/
 xcuserdata/
 *.pb.swift
 GoogleService-Info.plist
+Secrets.swift
+Secrets/*
 ios_logger2.xcodeproj/xcuserdata/*
 ios_logger2/ios_logger2.xcodeproj/project.xcworkspace/xcuserdata/*
 ios_logger2/ios_logger2.xcodeproj/project.xcworkspace/xcuserdata

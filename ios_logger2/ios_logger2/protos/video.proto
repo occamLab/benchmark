@@ -1,4 +1,5 @@
+syntax = "proto3";
 
 message VideoAttributes {
-    required double videoStartUnixTimestamp = 1;
+    double videoStartUnixTimestamp = 1;
 }
