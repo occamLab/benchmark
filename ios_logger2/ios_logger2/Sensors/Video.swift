@@ -14,7 +14,7 @@ import CoreMotion
  */
 class Video: Sensor {
     var sensorName: String = "video"
-    var series: AccelerometerSeries = AccelerometerSeries() // placeholder for now does not do anything
+    var series: VideoAttributes = VideoAttributes()
     
     private let fileType: AVFileType = AVFileType.mp4
     private let fileLocation: URL
@@ -59,12 +59,14 @@ class Video: Sensor {
     func collectData(motion: CMDeviceMotion?, frame: ARFrame?) {
         if(frame != nil) {
             initialTimestamp = initialTimestamp ?? frame!.timestamp // set the first frame time as reference if needed
-            let currentTimestamp = frame!.timestamp - initialTimestamp! // absolute time since first frame
+            series.videoStartUnixTimestamp = getUnixTimestamp(moment: (initialTimestamp ?? frame!.timestamp))
+            
+            let timeSinceStart = frame!.timestamp - initialTimestamp! // absolute time since first frame
             
             if(encoderInput.isReadyForMoreMediaData) {
                 // the bufferTimestamp should conform to value/timescale = seconds since atSourceTime (CMTime.zero)
                 let imageBuffer: CVPixelBuffer = frame!.capturedImage
-                let bufferTimestamp: CMTime = CMTimeMake(value: Int64(currentTimestamp * Double(frameRate) * 1000.0), timescale: frameRate * 1000)
+                let bufferTimestamp: CMTime = CMTimeMake(value: Int64(timeSinceStart * Double(frameRate) * 1000.0), timescale: frameRate * 1000)
                 if(!bufferInput.append(imageBuffer, withPresentationTime: bufferTimestamp)) {
                     print("[WARN]: Failed to add ARFrame to video buffer")
                 }

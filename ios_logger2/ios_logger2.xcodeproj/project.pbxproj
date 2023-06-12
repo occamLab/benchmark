@@ -40,7 +40,6 @@
 		61500BE12A375FDB001FE294 /* lidar.proto in Sources */ = {isa = PBXBuildFile; fileRef = 61500BD92A375FDB001FE294 /* lidar.proto */; };
 		61500BE22A375FDB001FE294 /* intrinsics.proto in Sources */ = {isa = PBXBuildFile; fileRef = 61500BDA2A375FDB001FE294 /* intrinsics.proto */; };
 		61500BE32A375FDB001FE294 /* accelerometer.proto in Sources */ = {isa = PBXBuildFile; fileRef = 61500BDB2A375FDB001FE294 /* accelerometer.proto */; };
-		61500BE42A375FDB001FE294 /* test.proto in Sources */ = {isa = PBXBuildFile; fileRef = 61500BDC2A375FDB001FE294 /* test.proto */; };
 		61500BE52A375FDB001FE294 /* light.proto in Sources */ = {isa = PBXBuildFile; fileRef = 61500BDD2A375FDB001FE294 /* light.proto */; };
 		61500BE62A375FDB001FE294 /* point_cloud.proto in Sources */ = {isa = PBXBuildFile; fileRef = 61500BDE2A375FDB001FE294 /* point_cloud.proto */; };
 		61500BE72A375FDB001FE294 /* pose.proto in Sources */ = {isa = PBXBuildFile; fileRef = 61500BDF2A375FDB001FE294 /* pose.proto */; };
@@ -49,9 +48,10 @@
 		61500BF22A376100001FE294 /* accelerometer.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61500BEA2A376100001FE294 /* accelerometer.pb.swift */; };
 		61500BF32A376100001FE294 /* pose.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61500BEB2A376100001FE294 /* pose.pb.swift */; };
 		61500BF42A376100001FE294 /* lidar.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61500BEC2A376100001FE294 /* lidar.pb.swift */; };
-		61500BF52A376100001FE294 /* test.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61500BED2A376100001FE294 /* test.pb.swift */; };
 		61500BF62A376100001FE294 /* intrinsics.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61500BEE2A376100001FE294 /* intrinsics.pb.swift */; };
 		61500BF72A376100001FE294 /* point_cloud.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61500BEF2A376100001FE294 /* point_cloud.pb.swift */; };
+		61500BF92A37645E001FE294 /* video.proto in Sources */ = {isa = PBXBuildFile; fileRef = 61500BF82A37645E001FE294 /* video.proto */; };
+		61500BFB2A37650E001FE294 /* video.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61500BFA2A37650E001FE294 /* video.pb.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -99,7 +99,6 @@
 		61500BD92A375FDB001FE294 /* lidar.proto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.protobuf; name = lidar.proto; path = ios_logger2/protos/lidar.proto; sourceTree = SOURCE_ROOT; };
 		61500BDA2A375FDB001FE294 /* intrinsics.proto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.protobuf; name = intrinsics.proto; path = ios_logger2/protos/intrinsics.proto; sourceTree = SOURCE_ROOT; };
 		61500BDB2A375FDB001FE294 /* accelerometer.proto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.protobuf; name = accelerometer.proto; path = ios_logger2/protos/accelerometer.proto; sourceTree = SOURCE_ROOT; };
-		61500BDC2A375FDB001FE294 /* test.proto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.protobuf; name = test.proto; path = ios_logger2/protos/test.proto; sourceTree = SOURCE_ROOT; };
 		61500BDD2A375FDB001FE294 /* light.proto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.protobuf; name = light.proto; path = ios_logger2/protos/light.proto; sourceTree = SOURCE_ROOT; };
 		61500BDE2A375FDB001FE294 /* point_cloud.proto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.protobuf; name = point_cloud.proto; path = ios_logger2/protos/point_cloud.proto; sourceTree = SOURCE_ROOT; };
 		61500BDF2A375FDB001FE294 /* pose.proto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.protobuf; name = pose.proto; path = ios_logger2/protos/pose.proto; sourceTree = SOURCE_ROOT; };
@@ -108,9 +107,10 @@
 		61500BEA2A376100001FE294 /* accelerometer.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = accelerometer.pb.swift; sourceTree = "<group>"; };
 		61500BEB2A376100001FE294 /* pose.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = pose.pb.swift; sourceTree = "<group>"; };
 		61500BEC2A376100001FE294 /* lidar.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = lidar.pb.swift; sourceTree = "<group>"; };
-		61500BED2A376100001FE294 /* test.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = test.pb.swift; sourceTree = "<group>"; };
 		61500BEE2A376100001FE294 /* intrinsics.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = intrinsics.pb.swift; sourceTree = "<group>"; };
 		61500BEF2A376100001FE294 /* point_cloud.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = point_cloud.pb.swift; sourceTree = "<group>"; };
+		61500BF82A37645E001FE294 /* video.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; path = video.proto; sourceTree = "<group>"; };
+		61500BFA2A37650E001FE294 /* video.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = video.pb.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -213,13 +213,13 @@
 			children = (
 				61500BD72A375F51001FE294 /* codegen */,
 				61500BDB2A375FDB001FE294 /* accelerometer.proto */,
+				61500BF82A37645E001FE294 /* video.proto */,
 				61500BD82A375FDB001FE294 /* gyro.proto */,
 				61500BDA2A375FDB001FE294 /* intrinsics.proto */,
 				61500BD92A375FDB001FE294 /* lidar.proto */,
 				61500BDD2A375FDB001FE294 /* light.proto */,
 				61500BDE2A375FDB001FE294 /* point_cloud.proto */,
 				61500BDF2A375FDB001FE294 /* pose.proto */,
-				61500BDC2A375FDB001FE294 /* test.proto */,
 			);
 			path = protos;
 			sourceTree = "<group>";
@@ -252,6 +252,7 @@
 		61500BD72A375F51001FE294 /* codegen */ = {
 			isa = PBXGroup;
 			children = (
+				61500BFA2A37650E001FE294 /* video.pb.swift */,
 				61500BEA2A376100001FE294 /* accelerometer.pb.swift */,
 				61500BE82A376100001FE294 /* gyro.pb.swift */,
 				61500BEE2A376100001FE294 /* intrinsics.pb.swift */,
@@ -259,7 +260,6 @@
 				61500BE92A376100001FE294 /* light.pb.swift */,
 				61500BEF2A376100001FE294 /* point_cloud.pb.swift */,
 				61500BEB2A376100001FE294 /* pose.pb.swift */,
-				61500BED2A376100001FE294 /* test.pb.swift */,
 			);
 			path = codegen;
 			sourceTree = "<group>";
@@ -417,9 +417,9 @@
 				61500BD12A375F06001FE294 /* Light.swift in Sources */,
 				61500BE52A375FDB001FE294 /* light.proto in Sources */,
 				61500BD02A375F06001FE294 /* LiDAR.swift in Sources */,
-				61500BF52A376100001FE294 /* test.pb.swift in Sources */,
 				61500BD32A375F06001FE294 /* Sensor.swift in Sources */,
 				61500BCE2A375F06001FE294 /* PointCloud.swift in Sources */,
+				61500BF92A37645E001FE294 /* video.proto in Sources */,
 				61500B7E2A324F18001FE294 /* UploadManager.swift in Sources */,
 				61500BD42A375F06001FE294 /* Intrinsics.swift in Sources */,
 				61500B862A325629001FE294 /* InternetConnectionUtil.swift in Sources */,
@@ -433,10 +433,10 @@
 				61500BD62A375F06001FE294 /* Video.swift in Sources */,
 				61500BE22A375FDB001FE294 /* intrinsics.proto in Sources */,
 				61500BB32A375CF1001FE294 /* ios_logger2App.swift in Sources */,
+				61500BFB2A37650E001FE294 /* video.pb.swift in Sources */,
 				61500BF12A376100001FE294 /* light.pb.swift in Sources */,
 				61500BD22A375F06001FE294 /* Pose.swift in Sources */,
 				61500BE72A375FDB001FE294 /* pose.proto in Sources */,
-				61500BE42A375FDB001FE294 /* test.proto in Sources */,
 				61500B442A2FCC83001FE294 /* Motion.swift in Sources */,
 				61500BD52A375F06001FE294 /* Gyro.swift in Sources */,
 				61500BF22A376100001FE294 /* accelerometer.pb.swift in Sources */,
