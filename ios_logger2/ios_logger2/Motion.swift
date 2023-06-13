@@ -36,19 +36,12 @@ class Motion: NSObject, ARSessionDelegate {
         motionSensors.gyroUpdateInterval = imuUpdateFreqSeconds
         motionSensors.accelerometerUpdateInterval = imuUpdateFreqSeconds
         motionSensors.deviceMotionUpdateInterval = imuUpdateFreqSeconds
-        
         // start collecting data
-        motionSensors.startGyroUpdates()
-        motionSensors.startAccelerometerUpdates()
-        motionSensors.startDeviceMotionUpdates()
-        
         motionSensors.startDeviceMotionUpdates(to: OperationQueue(), withHandler: delegate_motion)
     }
     
     private func stopMotionSensors() {
         // stop collecting data
-        motionSensors.stopGyroUpdates()
-        motionSensors.stopAccelerometerUpdates()
         motionSensors.stopDeviceMotionUpdates()
     }
     
