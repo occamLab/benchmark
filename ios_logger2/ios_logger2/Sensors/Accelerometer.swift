@@ -28,6 +28,8 @@ class Accelerometer: Sensor {
             measurement.xAcceleration = acceleration_x
             measurement.yAcceleration = acceleration_y
             measurement.zAcceleration = acceleration_z
+
+
             series.measurements.append(measurement)
         }
     }

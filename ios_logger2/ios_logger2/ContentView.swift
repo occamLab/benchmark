@@ -8,31 +8,33 @@
 import SwiftUI
 
 struct ContentView: View {
-    let motion = Motion()
+    let motion = Motion.shared
     @State var isPresentingConfirm: Bool = false
     @State var hideButton: Bool = false
     
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-
-            if(!hideButton) {
-                Button("Upload Data", role: .destructive) {
-                    isPresentingConfirm = true;
+        ZStack {
+            ARViewRepresentable(arDelegate: motion)
+            VStack {
+                Image(systemName: "globe")
+                    .imageScale(.large)
+                    .foregroundColor(.accentColor)
+                
+                if(!hideButton) {
+                    Button("Upload Data", role: .destructive) {
+                        isPresentingConfirm = true;
                     }
-                   .confirmationDialog("Are you sure?",
-                                       isPresented: $isPresentingConfirm) {
-                     Button("Send Data? (data was recorded since app launch)", role: .destructive) {
-                         Task {
-                             await self.motion.export()
-                             hideButton = true;
-                         }
-                      }
-                   }
+                    .confirmationDialog("Are you sure?",
+                                        isPresented: $isPresentingConfirm) {
+                        Button("Send Data? (data was recorded since app launch)", role: .destructive) {
+                            Task {
+                                await self.motion.export()
+                                hideButton = true;
+                            }
+                        }
+                    }
+                }
             }
-
         }
         .padding()
     }
