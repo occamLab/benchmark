@@ -71,7 +71,7 @@ class Video: Sensor {
                     print("[WARN]: Failed to add ARFrame to video buffer")
                 }
                 else {
-                    print("[INFO]: Appended ARFrame to video buffer")
+                   // print("[INFO]: Appended ARFrame to video buffer")
                 }
             }
             else {

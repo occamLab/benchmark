@@ -25,6 +25,7 @@ class Motion: NSObject, ARSessionDelegate {
         PointCloud(),
         Pose(),
         Intrinsics(),
+        GoogleCloudAnchor(),
     ]
     
     
@@ -84,8 +85,9 @@ class Motion: NSObject, ARSessionDelegate {
         
         // queue data for upload
         for sensor in sensors {
-            sensor.uploadProtobuf()
+            // some of our sensors like GoogleCloudAnchor/Video need to do async work before the protobuf data is availiable for packaging
             await sensor.additionalUpload()
+            sensor.uploadProtobuf()
         }
         
         // batch upload the data

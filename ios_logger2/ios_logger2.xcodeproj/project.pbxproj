@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		613B110B2A3775EF002CA4DD /* GoogleCloudAnchor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 613B110A2A3775EF002CA4DD /* GoogleCloudAnchor.swift */; };
+		613B110E2A378E75002CA4DD /* Secrets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 613B110D2A378E75002CA4DD /* Secrets.swift */; };
+		613B11132A379104002CA4DD /* google_cloud_anchor.proto in Sources */ = {isa = PBXBuildFile; fileRef = 613B11122A379104002CA4DD /* google_cloud_anchor.proto */; };
+		613B11152A37913D002CA4DD /* google_cloud_anchor.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 613B11142A37913D002CA4DD /* google_cloud_anchor.pb.swift */; };
 		61500B182A2FBAB7001FE294 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61500B172A2FBAB7001FE294 /* ContentView.swift */; };
 		61500B1A2A2FBAB8001FE294 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 61500B192A2FBAB8001FE294 /* Assets.xcassets */; };
 		61500B1D2A2FBAB8001FE294 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 61500B1C2A2FBAB8001FE294 /* Preview Assets.xcassets */; };
@@ -52,6 +56,7 @@
 		61500BF72A376100001FE294 /* point_cloud.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61500BEF2A376100001FE294 /* point_cloud.pb.swift */; };
 		61500BF92A37645E001FE294 /* video.proto in Sources */ = {isa = PBXBuildFile; fileRef = 61500BF82A37645E001FE294 /* video.proto */; };
 		61500BFB2A37650E001FE294 /* video.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61500BFA2A37650E001FE294 /* video.pb.swift */; };
+		61500BFE2A376C1C001FE294 /* ARCoreCloudAnchors in Frameworks */ = {isa = PBXBuildFile; productRef = 61500BFD2A376C1C001FE294 /* ARCoreCloudAnchors */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -72,6 +77,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		613B110A2A3775EF002CA4DD /* GoogleCloudAnchor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleCloudAnchor.swift; sourceTree = "<group>"; };
+		613B110D2A378E75002CA4DD /* Secrets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Secrets.swift; sourceTree = "<group>"; };
+		613B110F2A379015002CA4DD /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		613B11122A379104002CA4DD /* google_cloud_anchor.proto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.protobuf; path = google_cloud_anchor.proto; sourceTree = "<group>"; };
+		613B11142A37913D002CA4DD /* google_cloud_anchor.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = google_cloud_anchor.pb.swift; sourceTree = "<group>"; };
 		61500B122A2FBAB7001FE294 /* ios_logger2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ios_logger2.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		61500B172A2FBAB7001FE294 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		61500B192A2FBAB8001FE294 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -123,6 +133,7 @@
 				61500B4B2A30C81F001FE294 /* SwiftProtobufPluginLibrary in Frameworks */,
 				61500B492A30C81F001FE294 /* SwiftProtobuf in Frameworks */,
 				61500B742A32447A001FE294 /* FirebaseFirestoreSwift in Frameworks */,
+				61500BFE2A376C1C001FE294 /* ARCoreCloudAnchors in Frameworks */,
 				61500B4D2A30C81F001FE294 /* protoc-gen-swift in Frameworks */,
 				61500B762A32447A001FE294 /* FirebaseStorage in Frameworks */,
 				61500B6E2A32447A001FE294 /* FirebaseAuth in Frameworks */,
@@ -147,6 +158,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		613B110C2A378E64002CA4DD /* Secrets */ = {
+			isa = PBXGroup;
+			children = (
+				613B110D2A378E75002CA4DD /* Secrets.swift */,
+				613B110F2A379015002CA4DD /* README.md */,
+			);
+			path = Secrets;
+			sourceTree = "<group>";
+		};
 		61500B092A2FBAB7001FE294 = {
 			isa = PBXGroup;
 			children = (
@@ -171,12 +191,13 @@
 			isa = PBXGroup;
 			children = (
 				61500B822A3252B5001FE294 /* GoogleService-Info.plist */,
+				613B110C2A378E64002CA4DD /* Secrets */,
 				61500B5A2A30CC76001FE294 /* protos */,
 				61500B842A325600001FE294 /* Upload */,
 				61500BC42A375EC7001FE294 /* Sensors */,
-				61500B432A2FCC83001FE294 /* Motion.swift */,
 				61500B172A2FBAB7001FE294 /* ContentView.swift */,
 				61500BA72A375CF1001FE294 /* ios_logger2App.swift */,
+				61500B432A2FCC83001FE294 /* Motion.swift */,
 				61500B192A2FBAB8001FE294 /* Assets.xcassets */,
 				61500B1B2A2FBAB8001FE294 /* Preview Content */,
 			);
@@ -220,6 +241,7 @@
 				61500BDD2A375FDB001FE294 /* light.proto */,
 				61500BDE2A375FDB001FE294 /* point_cloud.proto */,
 				61500BDF2A375FDB001FE294 /* pose.proto */,
+				613B11122A379104002CA4DD /* google_cloud_anchor.proto */,
 			);
 			path = protos;
 			sourceTree = "<group>";
@@ -245,6 +267,7 @@
 				61500BC92A375F06001FE294 /* Pose.swift */,
 				61500BCA2A375F06001FE294 /* Sensor.swift */,
 				61500BCD2A375F06001FE294 /* Video.swift */,
+				613B110A2A3775EF002CA4DD /* GoogleCloudAnchor.swift */,
 			);
 			path = Sensors;
 			sourceTree = "<group>";
@@ -260,6 +283,7 @@
 				61500BE92A376100001FE294 /* light.pb.swift */,
 				61500BEF2A376100001FE294 /* point_cloud.pb.swift */,
 				61500BEB2A376100001FE294 /* pose.pb.swift */,
+				613B11142A37913D002CA4DD /* google_cloud_anchor.pb.swift */,
 			);
 			path = codegen;
 			sourceTree = "<group>";
@@ -290,6 +314,7 @@
 				61500B732A32447A001FE294 /* FirebaseFirestoreSwift */,
 				61500B752A32447A001FE294 /* FirebaseStorage */,
 				61500B802A324F56001FE294 /* SWCompression */,
+				61500BFD2A376C1C001FE294 /* ARCoreCloudAnchors */,
 			);
 			productName = ios_logger2;
 			productReference = 61500B122A2FBAB7001FE294 /* ios_logger2.app */;
@@ -367,6 +392,7 @@
 				61500B472A30C81F001FE294 /* XCRemoteSwiftPackageReference "swift-protobuf" */,
 				61500B6C2A32447A001FE294 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				61500B7F2A324F56001FE294 /* XCRemoteSwiftPackageReference "SWCompression" */,
+				61500BFC2A376C1C001FE294 /* XCRemoteSwiftPackageReference "arcore-ios-sdk" */,
 			);
 			productRefGroup = 61500B132A2FBAB7001FE294 /* Products */;
 			projectDirPath = "";
@@ -412,6 +438,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				61500BF62A376100001FE294 /* intrinsics.pb.swift in Sources */,
+				613B110E2A378E75002CA4DD /* Secrets.swift in Sources */,
+				613B110B2A3775EF002CA4DD /* GoogleCloudAnchor.swift in Sources */,
 				61500BF72A376100001FE294 /* point_cloud.pb.swift in Sources */,
 				61500BE62A375FDB001FE294 /* point_cloud.proto in Sources */,
 				61500BD12A375F06001FE294 /* Light.swift in Sources */,
@@ -421,6 +449,7 @@
 				61500BCE2A375F06001FE294 /* PointCloud.swift in Sources */,
 				61500BF92A37645E001FE294 /* video.proto in Sources */,
 				61500B7E2A324F18001FE294 /* UploadManager.swift in Sources */,
+				613B11132A379104002CA4DD /* google_cloud_anchor.proto in Sources */,
 				61500BD42A375F06001FE294 /* Intrinsics.swift in Sources */,
 				61500B862A325629001FE294 /* InternetConnectionUtil.swift in Sources */,
 				61500BF02A376100001FE294 /* gyro.pb.swift in Sources */,
@@ -436,6 +465,7 @@
 				61500BFB2A37650E001FE294 /* video.pb.swift in Sources */,
 				61500BF12A376100001FE294 /* light.pb.swift in Sources */,
 				61500BD22A375F06001FE294 /* Pose.swift in Sources */,
+				613B11152A37913D002CA4DD /* google_cloud_anchor.pb.swift in Sources */,
 				61500BE72A375FDB001FE294 /* pose.proto in Sources */,
 				61500B442A2FCC83001FE294 /* Motion.swift in Sources */,
 				61500BD52A375F06001FE294 /* Gyro.swift in Sources */,
@@ -615,6 +645,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = "edu.occamlab.ios-logger";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -647,6 +678,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = "edu.occamlab.ios-logger";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -797,6 +829,14 @@
 				minimumVersion = 4.0.0;
 			};
 		};
+		61500BFC2A376C1C001FE294 /* XCRemoteSwiftPackageReference "arcore-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google-ar/arcore-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -844,6 +884,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 61500B7F2A324F56001FE294 /* XCRemoteSwiftPackageReference "SWCompression" */;
 			productName = SWCompression;
+		};
+		61500BFD2A376C1C001FE294 /* ARCoreCloudAnchors */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 61500BFC2A376C1C001FE294 /* XCRemoteSwiftPackageReference "arcore-ios-sdk" */;
+			productName = ARCoreCloudAnchors;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

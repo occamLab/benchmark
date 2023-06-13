@@ -10,6 +10,15 @@
       }
     },
     {
+      "identity" : "arcore-ios-sdk",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/google-ar/arcore-ios-sdk",
+      "state" : {
+        "revision" : "774f726163f0861698ef56c30b2c9e757eb01e8a",
+        "version" : "1.37.0"
+      }
+    },
+    {
       "identity" : "bitbytedata",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/tsolomko/BitByteData",
