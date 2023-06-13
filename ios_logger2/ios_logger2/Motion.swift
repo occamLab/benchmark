@@ -9,11 +9,34 @@ import Foundation
 import CoreMotion
 import ARKit
 import FirebaseStorage
+import SwiftUI
+
+struct ARViewRepresentable: UIViewRepresentable {
+    let arDelegate: Motion
+    
+    func makeUIView(context: Context) -> some UIView {
+        let arView = ARSCNView(frame: .zero)
+        arDelegate.setARView(arView)
+        return arView
+    }
+    
+    func updateUIView(_ uiView: UIViewType, context: Context) {
+        
+    }
+}
 
 class Motion: NSObject, ARSessionDelegate {
+    public static var shared = Motion()
     public var motionSensors = CMMotionManager()
-    public var arSession = ARSession()
+    public var arView: ARSCNView?
     public var arConfiguration = ARWorldTrackingConfiguration()
+    private var aprilTagDetector = AprilTagDetector()
+    private var isDetectingAprilTags = false
+    
+    func setARView(_ arView: ARSCNView) {
+        self.arView = arView
+        initArSession()
+    }
     
     // all of our loggers go here
     private let sensors: [any Sensor] = [
@@ -46,18 +69,30 @@ class Motion: NSObject, ARSessionDelegate {
     }
     
     private func initArSession() {
-        arSession.delegate = self
+        arView?.session.delegate = self
+        arView?.debugOptions = [.showWorldOrigin]
         arConfiguration.worldAlignment = ARConfiguration.WorldAlignment.gravity
         arConfiguration.isAutoFocusEnabled = true
-        arSession.run(arConfiguration, options: [ARSession.RunOptions.resetTracking, ARSession.RunOptions.resetSceneReconstruction])
+        arView?.session.run(arConfiguration, options: [ARSession.RunOptions.resetTracking, ARSession.RunOptions.resetSceneReconstruction])
     }
     
     private func stopArSession() {
-        arSession.pause()
+        arView?.session.pause()
+    }
+    
+    private func getAprilTags(frame: ARFrame) {
+        isDetectingAprilTags = true
+        DispatchQueue.global(qos: .userInteractive).async {
+            let markers = self.aprilTagDetector.detectMarkers(inImage: frame.capturedImage, phoneToWorld: frame.camera.transform, K: frame.camera.intrinsics)
+            self.isDetectingAprilTags = false
+        }
     }
     
     // delegate ARFrame updates to video and other sensor loggers
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
+        if !isDetectingAprilTags {
+            getAprilTags(frame: frame)
+        }
         for sensor in sensors {
             sensor.collectData(motion: nil, frame: frame)
         }
@@ -90,7 +125,7 @@ class Motion: NSObject, ARSessionDelegate {
     }
     
     
-    override init() {
+    private override init() {
         super.init()
         initMotionSensors()
         initArSession()

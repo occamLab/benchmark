@@ -8,6 +8,7 @@
 import Foundation
 import ARKit
 import CoreMotion
+import opencv2
 
 /*
  *  Implements data collection and encoding into a protobuf message for timeseries of camera intrinsics data
@@ -33,5 +34,9 @@ class Intrinsics: Sensor {
 extension simd_float3x3 {
     public func toRowMajor()->[Float] {
         return [self[0,0], self[0,1], self[0,2], self[1,0], self[1,1], self[1,2], self[2,0], self[2,1], self[2,2]]
+    }
+    
+    public func toOpenCV()->Mat {
+        return Mat.eye(rows: 3, cols: 3, type: CvType.CV_64FC1)
     }
 }
