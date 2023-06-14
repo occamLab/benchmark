@@ -23,6 +23,7 @@ Then to get swift to recognize them:
 2) https://github.com/firebase/firebase-ios-sdk (used to upload data to firebase)
 3) https://github.com/apple/swift-protobuf (used to encode swift types to binary) 
 4) https://github.com/google-ar/arcore-ios-sdk (ArCore for CloudAnchors)
+5) https://github.com/yeatse/opencv-spm (swift wrapper for opencv)
 
 # Note on https://github.com/google-ar/arcore-ios-sdk
 1) Linker flag -ObjC must be turned on as per https://github.com/google-ar/arcore-ios-sdk/tree/master#installation
