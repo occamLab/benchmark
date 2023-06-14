@@ -100,6 +100,15 @@
       }
     },
     {
+      "identity" : "opencv-spm",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/yeatse/opencv-spm",
+      "state" : {
+        "revision" : "820cb9a7bcade123b39ac8833885b08539358a67",
+        "version" : "4.7.0"
+      }
+    },
+    {
       "identity" : "promises",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/promises.git",
