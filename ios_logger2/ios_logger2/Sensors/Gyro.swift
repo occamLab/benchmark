@@ -15,7 +15,7 @@ import CoreMotion
 
 class Gyro: Sensor {
     var sensorName: String = "gyroscope"
-    public var series = GyroSeries()
+    public var series = GyroData()
     
     func collectData(motion: CMDeviceMotion?, frame: ARFrame?) {
         if(motion != nil) {
@@ -30,8 +30,7 @@ class Gyro: Sensor {
             measurement.xRotationRate = rotation_rate_x
             measurement.yRotationRate = rotation_rate_y
             measurement.zRotationRate = rotation_rate_z
-            series.measurements.append(measurement)
-            
+            series.mappingPhase.measurements.append(measurement)
         }
     }
 }

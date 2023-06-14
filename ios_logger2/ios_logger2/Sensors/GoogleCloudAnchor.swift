@@ -12,7 +12,7 @@ import ARCoreGARSession
 
 class GoogleCloudAnchor: Sensor {
     var sensorName: String = "google_cloud_anchor"
-    var series: GoogleCloudAnchorMetadata = GoogleCloudAnchorMetadata()
+    var series: GoogleCloudAnchorData = GoogleCloudAnchorData()
     var garSession: GARSession?
 
      init() {
@@ -56,9 +56,7 @@ class GoogleCloudAnchor: Sensor {
             return
         }
         print("[INFO]: Hosted cloud anchor with name]", anchorName)
-        series.cloudAnchorName = anchorName
+        series.mappingPhase.cloudAnchorMetadata.cloudAnchorName = anchorName
     }
     
 }
-
-

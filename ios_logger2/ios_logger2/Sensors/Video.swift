@@ -14,7 +14,7 @@ import CoreMotion
  */
 class Video: Sensor {
     var sensorName: String = "video"
-    var series: VideoAttributes = VideoAttributes()
+    var series: VideoData = VideoData()
     
     private let fileType: AVFileType = AVFileType.mp4
     private let fileLocation: URL
@@ -59,7 +59,7 @@ class Video: Sensor {
     func collectData(motion: CMDeviceMotion?, frame: ARFrame?) {
         if(frame != nil) {
             initialTimestamp = initialTimestamp ?? frame!.timestamp // set the first frame time as reference if needed
-            series.videoStartUnixTimestamp = getUnixTimestamp(moment: (initialTimestamp ?? frame!.timestamp))
+            series.mappingPhase.videoAttributes.videoStartUnixTimestamp = getUnixTimestamp(moment: (initialTimestamp ?? frame!.timestamp))
             
             let timeSinceStart = frame!.timestamp - initialTimestamp! // absolute time since first frame
             

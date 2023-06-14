@@ -6,6 +6,13 @@ message LidarTimestamp {
     repeated uint32 conf = 3;
 }
 
-message LidarSeries {
-    repeated LidarTimestamp measurements = 1;
+message LidarData {
+    message MappingPhase {
+        repeated LidarTimestamp measurements = 1;
+    }
+    message LocalizationPhase {
+        repeated LidarTimestamp measurements = 1;
+    }
+    MappingPhase mappingPhase = 1;
+    LocalizationPhase localizationPhase = 2;
 }

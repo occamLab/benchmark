@@ -14,7 +14,7 @@ import CoreMotion
  */
 class Pose: Sensor {
     var sensorName: String = "pose"
-    public var series = PoseSeries()
+    public var series = PoseData()
     
     func collectData(motion: CMDeviceMotion?, frame: ARFrame?) {
         if(frame != nil) {
@@ -24,7 +24,7 @@ class Pose: Sensor {
             var measurement = PoseTimestamp()
             measurement.timestamp = timestamp
             measurement.cameraPose = transform
-            series.measurements.append(measurement)
+            series.mappingPhase.measurements.append(measurement)
         }
     }
 }

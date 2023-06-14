@@ -5,6 +5,14 @@ message IntrinsicsTimestamp {
     repeated float cameraIntrinsics = 2;
 }
 
-message IntrinsicsSeries {
-    repeated IntrinsicsTimestamp measurements = 1;
+message IntrinsicsData {
+    message MappingPhase {
+        repeated IntrinsicsTimestamp measurements = 1;
+    }
+    message LocalizationPhase {
+        repeated IntrinsicsTimestamp measurements = 1;
+
+    }
+    MappingPhase mappingPhase = 1;
+    LocalizationPhase localizationPhase = 2;
 }

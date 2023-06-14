@@ -14,7 +14,7 @@ import CoreMotion
  */
 class PointCloud: Sensor {
     var sensorName: String = "point_cloud"
-    public var series = PointCloudSeries()
+    public var series = PointCloudData()
     
     func collectData(motion: CMDeviceMotion?, frame: ARFrame?) {
         if(frame != nil) {
@@ -24,7 +24,7 @@ class PointCloud: Sensor {
                 var measurement = PointCloudTimestamp()
                 measurement.timestamp = timestamp
                 measurement.pointsInCloud = points_in_cloud
-                series.measurements.append(measurement)
+                series.mappingPhase.measurements.append(measurement)
             }
         }
     }

@@ -5,14 +5,17 @@ message AccelerometerTimestamp {
     double xAcceleration = 2;
     double yAcceleration = 3;
     double zAcceleration = 4;
-
 }
 
-message DepthData {
-    repeated float depthValues = 1;
-}
 
-message AccelerometerSeries {
-    repeated AccelerometerTimestamp measurements = 1;
-}
+message AccelerometerData {
+    message MappingPhase {
+        repeated AccelerometerTimestamp measurements = 1;
+    }
+    message LocalizationPhase {
+        repeated AccelerometerTimestamp measurements = 1;
 
+    }
+    MappingPhase mappingPhase = 1;
+    LocalizationPhase localizationPhase = 2;
+}

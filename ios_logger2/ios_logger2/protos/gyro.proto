@@ -8,7 +8,14 @@ message GyroTimestamp {
 
 }
 
-message GyroSeries {
-    repeated GyroTimestamp measurements = 1;
+message GyroData {
+    message MappingPhase {
+        repeated GyroTimestamp measurements = 1;
+    }
+    message LocalizationPhase {
+        repeated GyroTimestamp measurements = 1;
+    }
+    MappingPhase mappingPhase = 1;
+    LocalizationPhase localizationPhase = 2;
 }
 
