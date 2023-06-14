@@ -15,7 +15,7 @@ import CoreMotion
  */
 class Light: Sensor {
     var sensorName: String = "ambient_light"
-    public var series = LightSeries()
+    public var series = LightData()
     
     func collectData(motion: CMDeviceMotion?, frame: ARFrame?) {
         if(frame != nil) {
@@ -26,7 +26,7 @@ class Light: Sensor {
             var measurement = LightTimestamp()
             measurement.timestamp = timestamp
             measurement.lightIntensity = light_intensity
-            series.measurements.append(measurement)
+            series.mappingPhase.measurements.append(measurement)
         }
     }
 }

@@ -11,7 +11,7 @@ import CoreMotion
 
 class LiDAR : Sensor {
     var sensorName: String = "lidar"
-    public var series = LidarSeries()
+    public var series = LidarData()
     
     func collectData(motion: CMDeviceMotion?, frame: ARFrame?) {
         if(frame != nil) {
@@ -48,7 +48,7 @@ class LiDAR : Sensor {
         measurement.timestamp = getUnixTimestamp(moment: frame.capturedDepthDataTimestamp)
         measurement.lidar = depthCopy
         measurement.conf = confInts
-        series.measurements.append(measurement)
-
+        
+        series.mappingPhase.measurements.append(measurement)
     }
 }

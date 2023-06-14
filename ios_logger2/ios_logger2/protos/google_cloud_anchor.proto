@@ -1,5 +1,17 @@
 syntax = "proto3";
 
-message GoogleCloudAnchorMetadata {
+message CloudAnchorMetadata {
     string cloudAnchorName = 1;
+}
+
+message GoogleCloudAnchorData {
+    message MappingPhase {
+        CloudAnchorMetadata cloudAnchorMetadata = 1;
+    }
+    message LocalizationPhase {
+        // cloud anchor resolves should be saved here later
+    }
+    
+    MappingPhase mappingPhase = 1;
+    LocalizationPhase localizationPhase = 2;
 }

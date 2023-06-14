@@ -15,7 +15,7 @@ import opencv2
  */
 class Intrinsics: Sensor {
     var sensorName: String = "intrinsics"
-    public var series = IntrinsicsSeries()
+    public var series = IntrinsicsData()
     
     func collectData(motion: CMDeviceMotion?, frame: ARFrame?) {
         if(frame != nil) {
@@ -25,7 +25,8 @@ class Intrinsics: Sensor {
             var measurement = IntrinsicsTimestamp()
             measurement.timestamp = timestamp
             measurement.cameraIntrinsics = intrinsics
-            series.measurements.append(measurement)
+            
+            series.mappingPhase.measurements.append(measurement)
         }
     }
 }

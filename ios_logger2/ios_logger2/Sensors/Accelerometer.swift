@@ -13,7 +13,7 @@ import SwiftProtobuf
  */
 class Accelerometer: Sensor {
     var sensorName: String = "accelerometer"
-    var series: AccelerometerSeries = AccelerometerSeries()
+    var series: AccelerometerData = AccelerometerData()
     
     func collectData(motion: CMDeviceMotion?, frame: ARFrame?) {
         if(motion != nil) {
@@ -30,7 +30,7 @@ class Accelerometer: Sensor {
             measurement.zAcceleration = acceleration_z
 
 
-            series.measurements.append(measurement)
+            series.mappingPhase.measurements.append(measurement)
         }
     }
 }

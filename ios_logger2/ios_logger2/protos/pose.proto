@@ -5,7 +5,13 @@ message PoseTimestamp {
     repeated float cameraPose = 2;
 }
 
-message PoseSeries {
-    repeated PoseTimestamp measurements = 1;
+message PoseData {
+    message MappingPhase {
+        repeated PoseTimestamp measurements = 1;
+    }
+    message LocalizationPhase {
+        repeated PoseTimestamp measurements = 1;
+    }
+    MappingPhase mappingPhase = 1;
+    LocalizationPhase localizationPhase = 2;
 }
-

@@ -5,6 +5,13 @@ message PointCloudTimestamp {
     uint32 pointsInCloud = 2;
 }
 
-message PointCloudSeries {
-    repeated PointCloudTimestamp measurements = 1;
+message PointCloudData {
+    message MappingPhase {
+        repeated PointCloudTimestamp measurements = 1;
+    }
+    message LocalizationPhase {
+        repeated PointCloudTimestamp measurements = 1;
+    }
+    MappingPhase mappingPhase = 1;
+    LocalizationPhase localizationPhase = 2;
 }
