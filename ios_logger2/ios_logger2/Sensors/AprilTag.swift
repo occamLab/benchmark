@@ -25,7 +25,7 @@ extension UIImage {
 }
 
 /// A class that uses OpenCV's support for Aruco detection to detect April tags
-class AprilTag: Sensor {
+class AprilTag: Sensor, SensorProtocol {
     private var isDetectingAprilTags = false
     var sensorName: String = "april_tag"
     public var series = AprilTagData()
@@ -33,7 +33,7 @@ class AprilTag: Sensor {
     let detector: ArucoDetector
 
     /// The init method creates the detector with the April tag corner refinement method and the 36h11 tag family
-    init() {
+    override init() {
         let parameters = DetectorParameters()
         parameters.cornerRefinementMethod = .CORNER_REFINE_APRILTAG
         let refineParams = RefineParameters()

@@ -77,13 +77,6 @@ class Motion: NSObject, ARSessionDelegate {
         arView?.session.run(arConfiguration, options: [ARSession.RunOptions.resetTracking, ARSession.RunOptions.resetSceneReconstruction])
     }
     
-    private func getAprilTags(frame: ARFrame) {
-        isDetectingAprilTags = true
-        DispatchQueue.global(qos: .userInteractive).async {
-            let markers = self.aprilTagDetector.detectMarkers(inImage: frame.capturedImage, phoneToWorld: frame.camera.transform, K: frame.camera.intrinsics)
-            self.isDetectingAprilTags = false
-        }
-    }
     
     // delegate ARFrame updates to video and other sensor loggers
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
