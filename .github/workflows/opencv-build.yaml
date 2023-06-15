@@ -1,0 +1,67 @@
+name: Build and release a new version of opencv
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macOS-latest
+
+    steps:
+      - name: actions-setup-cmake
+        uses: jwlawson/actions-setup-cmake@v1.13.1
+        with:
+          cmake-version: 3.24
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Checkout OpenCV
+        uses: actions/checkout@v3
+        with:
+          repository: opencv/opencv
+          ref: refs/tags/4.7.0
+          path: 'opencv'
+          
+      - name: Build xcframework
+        working-directory: opencv
+        run: |
+          pip3 install pathlib
+          python3 platforms/apple/build_xcframework.py --disable-bitcode -o build
+        
+      - name: Zip artifact
+        working-directory: opencv
+        run: zip -r opencv2.xcframework.zip build/opencv2.xcframework
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: opencv2.xcframework.zip
+          path: opencv/opencv2.xcframework.zip
+          if-no-files-found: error
+          
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: opencv2.xcframework.zip
+
+      - name: Commit and push
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "GitHub Actions"
+          git add Package.swift
+          git commit -m "[ci skip] Update Package.swift"
+          git push
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: opencv2.xcframework.zip
+          tag_name: ${{ steps.get_version.outputs.VERSION }}
