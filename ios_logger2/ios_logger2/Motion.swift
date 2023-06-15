@@ -105,11 +105,10 @@ class Motion: NSObject, ARSessionDelegate {
             await sensor.additionalUpload()
             sensor.currentPhase = Phase.localizationPhase
             // some sensors such as video may need to hook on this action to reset state
-            
-
         }
-        
-
+        // reset our knowledge of our position
+        initMotionSensors()
+        initArSession()
     }
     
     func finalExport() async {
@@ -124,7 +123,6 @@ class Motion: NSObject, ARSessionDelegate {
             print("done uploading data")
         }
     }
-    
     
     
     private override init() {

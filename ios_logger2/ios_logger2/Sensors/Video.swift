@@ -76,7 +76,7 @@ class Video: Sensor, SensorProtocol {
                 let imageBuffer: CVPixelBuffer = frame!.capturedImage
                 let bufferTimestamp: CMTime = CMTimeMake(value: Int64(timeSinceStart * Double(currentVideo.frameRate) * 1000.0), timescale: currentVideo.frameRate * 1000)
                 if(!currentVideo.bufferInput.append(imageBuffer, withPresentationTime: bufferTimestamp)) {
-                    print("[WARN]: Failed to add ARFrame to video buffer")
+                   // print("[WARN]: Failed to add ARFrame to video buffer")
                 }
                 else {
                    // print("[INFO]: Appended ARFrame to video buffer")

@@ -11,6 +11,7 @@ struct ContentView: View {
     let motion = Motion.shared
     @State var isPresentingConfirm: Bool = false
     @State var hideButton: Bool = false
+    @State var phaseText: String = "Currently in mapping phase!!"
     
     var body: some View {
         ZStack {
@@ -20,20 +21,17 @@ struct ContentView: View {
                     .imageScale(.large)
                     .foregroundColor(.accentColor)
                 
-                if(!hideButton) {
-                    Button("Upload Data", role: .destructive) {
-                        isPresentingConfirm = true;
-                    }
-                    .confirmationDialog("Are you sure?",
-                                        isPresented: $isPresentingConfirm) {
-                        Button("Send Data? (data was recorded since app launch)", role: .destructive) {
-                            Task {
-                              //  await self.motion.export()
-                                hideButton = true;
-                            }
-                        }
+                Text(phaseText)
+                
+                let mappingTimer = Timer.scheduledTimer(withTimeInterval: 10, repeats: false) { timer in
+                    Task {
+                        phaseText = "Transitioning between phases!!"
+                        await Motion.shared.switchToLocalization()
+                        phaseText = "Currently in localization phase!!"
+                        
                     }
                 }
+                
             }
         }
         .padding()
