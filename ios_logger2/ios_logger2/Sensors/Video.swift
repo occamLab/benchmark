@@ -9,20 +9,13 @@ import ARKit
 import CoreMotion
 
 
-/*
- *  Implements data collection and encoding of image frames from ARKit
- */
-class Video: Sensor {
-    var sensorName: String = "video"
-    var series: VideoData = VideoData()
-    
-    private let fileType: AVFileType = AVFileType.mp4
-    private let fileLocation: URL
-    private var encoder: AVAssetWriter
-    private let encoderInput: AVAssetWriterInput
-    private let bufferInput: AVAssetWriterInputPixelBufferAdaptor
-    private var frameRate: Int32 = 60
-    private var initialTimestamp: Double? = nil
+struct CurrentVideo {
+    let fileType: AVFileType = AVFileType.mp4
+    let fileLocation: URL
+    let encoder: AVAssetWriter
+    let encoderInput: AVAssetWriterInput
+    let bufferInput: AVAssetWriterInputPixelBufferAdaptor
+    let frameRate: Int32 = 60
     
     init() {
         fileLocation = NSURL.fileURL(withPathComponents: [NSTemporaryDirectory(), NSUUID().uuidString])!
@@ -53,22 +46,37 @@ class Video: Sensor {
         }
         encoder.startSession(atSourceTime: CMTime.zero)
     }
-    
+}
+
+/*
+ *  Implements data collection and encoding of image frames from ARKit
+ */
+class Video: Sensor, SensorProtocol {
+    var sensorName: String = "video"
+    var series: VideoData = VideoData()
+    var currentVideo: CurrentVideo = CurrentVideo()
+    private var initialTimestamp: Double? = nil
     
     
     func collectData(motion: CMDeviceMotion?, frame: ARFrame?) {
         if(frame != nil) {
             initialTimestamp = initialTimestamp ?? frame!.timestamp // set the first frame time as reference if needed
-            series.mappingPhase.videoAttributes.videoStartUnixTimestamp = getUnixTimestamp(moment: (initialTimestamp ?? frame!.timestamp))
+            // save the absolute time when the video started into metadata attributes if needed
+            if case currentPhase = Phase.mappingPhase {
+                series.mappingPhase.videoAttributes.videoStartUnixTimestamp = getUnixTimestamp(moment: (initialTimestamp ?? frame!.timestamp))
+            }
+            else {
+                series.localizationPhase.videoAttributes.videoStartUnixTimestamp = getUnixTimestamp(moment: (initialTimestamp ?? frame!.timestamp))
+            }
             
             let timeSinceStart = frame!.timestamp - initialTimestamp! // absolute time since first frame
             
-            if(encoderInput.isReadyForMoreMediaData) {
+            if(currentVideo.encoderInput.isReadyForMoreMediaData) {
                 // the bufferTimestamp should conform to value/timescale = seconds since atSourceTime (CMTime.zero)
                 let imageBuffer: CVPixelBuffer = frame!.capturedImage
-                let bufferTimestamp: CMTime = CMTimeMake(value: Int64(timeSinceStart * Double(frameRate) * 1000.0), timescale: frameRate * 1000)
-                if(!bufferInput.append(imageBuffer, withPresentationTime: bufferTimestamp)) {
-                    print("[WARN]: Failed to add ARFrame to video buffer")
+                let bufferTimestamp: CMTime = CMTimeMake(value: Int64(timeSinceStart * Double(currentVideo.frameRate) * 1000.0), timescale: currentVideo.frameRate * 1000)
+                if(!currentVideo.bufferInput.append(imageBuffer, withPresentationTime: bufferTimestamp)) {
+                   // print("[WARN]: Failed to add ARFrame to video buffer")
                 }
                 else {
                    // print("[INFO]: Appended ARFrame to video buffer")
@@ -83,16 +91,25 @@ class Video: Sensor {
     }
     
     func additionalUpload() async {
-        encoderInput.markAsFinished()
-        await encoder.finishWriting()
+        currentVideo.encoderInput.markAsFinished()
+        await currentVideo.encoder.finishWriting()
         print("[INFO]: Video encoder finished writing file to disk")
         
-        let videoData: Data? = try? Data(contentsOf: fileLocation)
+        let videoData: Data? = try? Data(contentsOf: currentVideo.fileLocation)
         if(videoData != nil) {
-            UploadManager.shared.putData(videoData!, contentType: "application/protobuf", fullPath: sensorName + ".mp4")
+            let phaseExtension =  (isMappingPhase() ? "-mapping" : "-localiztion")
+            let fileExtension = ".mp4"
+            UploadManager.shared.putData(videoData!, contentType: "application/protobuf", fullPath: sensorName + phaseExtension + fileExtension)
         }
         else {
             print("[EROR]: Reading video file from disk")
         }
+    }
+    
+    func switchToLocalization() {
+        // reset to a new video
+        currentVideo = CurrentVideo()
+        // initial frame timestamp needs to be set
+        initialTimestamp = nil
     }
 }

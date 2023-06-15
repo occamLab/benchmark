@@ -13,7 +13,7 @@ import CoreMotion
 /*
  *  Implements data collection and encoding into a protobuf message for timeseries of ambient light data
  */
-class Light: Sensor {
+class Light: Sensor, SensorProtocol {
     var sensorName: String = "ambient_light"
     public var series = LightData()
     
@@ -26,7 +26,13 @@ class Light: Sensor {
             var measurement = LightTimestamp()
             measurement.timestamp = timestamp
             measurement.lightIntensity = light_intensity
-            series.mappingPhase.measurements.append(measurement)
+            
+            if case currentPhase = Phase.mappingPhase {
+                series.mappingPhase.measurements.append(measurement)
+            }
+            else {
+                series.localizationPhase.measurements.append(measurement)
+            }
         }
     }
 }

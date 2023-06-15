@@ -13,7 +13,7 @@ import CoreMotion
  *  Implements data collection and encoding into a protobuf message for timeseries of gyroscope data
  */
 
-class Gyro: Sensor {
+class Gyro: Sensor, SensorProtocol {
     var sensorName: String = "gyroscope"
     public var series = GyroData()
     
@@ -30,7 +30,12 @@ class Gyro: Sensor {
             measurement.xRotationRate = rotation_rate_x
             measurement.yRotationRate = rotation_rate_y
             measurement.zRotationRate = rotation_rate_z
-            series.mappingPhase.measurements.append(measurement)
+            if case currentPhase = Phase.mappingPhase {
+                series.mappingPhase.measurements.append(measurement)
+            }
+            else {
+                series.localizationPhase.measurements.append(measurement)
+            }
         }
     }
 }

@@ -12,7 +12,7 @@ import CoreMotion
 /*
  *  Implements data collection and encoding into a protobuf message for timeseries of point cloud data, specifically the number of points in the point cloud
  */
-class PointCloud: Sensor {
+class PointCloud: Sensor, SensorProtocol {
     var sensorName: String = "point_cloud"
     public var series = PointCloudData()
     
@@ -24,7 +24,13 @@ class PointCloud: Sensor {
                 var measurement = PointCloudTimestamp()
                 measurement.timestamp = timestamp
                 measurement.pointsInCloud = points_in_cloud
-                series.mappingPhase.measurements.append(measurement)
+                
+                if case currentPhase = Phase.mappingPhase {
+                    series.mappingPhase.measurements.append(measurement)
+                }
+                else {
+                    series.localizationPhase.measurements.append(measurement)
+                }
             }
         }
     }
