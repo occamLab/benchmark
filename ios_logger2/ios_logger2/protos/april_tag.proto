@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+message AprilTagTimestamp {
+    double timestamp = 1;
+    repeated float tagCenterPose = 2;
+}
+
+message AprilTagData {
+    message MappingPhase {
+        repeated AprilTagTimestamp measurements = 1;
+    }
+    message LocalizationPhase {
+        repeated AprilTagTimestamp measurements = 1;
+    }
+    MappingPhase mappingPhase = 1;
+    LocalizationPhase localizationPhase = 2;
+}
