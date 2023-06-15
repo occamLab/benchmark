@@ -7,34 +7,69 @@
 
 import SwiftUI
 
+class MotionManager: ObservableObject {
+    var motion = Motion.shared
+    @Published var phaseText: String = "Currently in mapping phase!!"
+    @Published var isPresentingUploadConfirmation: Bool = false
+
+    
+    init() {
+        // note that UI updates must happen on the main thread which is why DispatchQueue.main.sync is used
+        Task {
+            try! await Task.sleep(for: .seconds(10)) // allow time for mapping phase
+            DispatchQueue.main.sync {
+                self.phaseText = "Transitioning between phases!!"
+            }
+            await Motion.shared.switchToLocalization()
+            DispatchQueue.main.sync {
+                self.phaseText = "Currently in localization phase!!"
+            }
+            try! await Task.sleep(for: .seconds(10)) // allow time for localization phase
+            DispatchQueue.main.sync {
+                self.phaseText = "Finished localization phase!!"
+                self.isPresentingUploadConfirmation = true
+            }
+        }
+    }
+}
+
+
 struct ContentView: View {
-    let motion = Motion.shared
-    @State var isPresentingConfirm: Bool = false
-    @State var hideButton: Bool = false
-    @State var phaseText: String = "Currently in mapping phase!!"
+    @ObservedObject var motionManager = MotionManager()
     
     var body: some View {
         ZStack {
-            ARViewRepresentable(arDelegate: motion)
+            if(!motionManager.isPresentingUploadConfirmation) {
+                ARViewRepresentable(arDelegate: motionManager.motion)
+            }
             VStack {
                 Image(systemName: "globe")
                     .imageScale(.large)
                     .foregroundColor(.accentColor)
                 
-                Text(phaseText)
+                Text(motionManager.phaseText)
                 
-                let mappingTimer = Timer.scheduledTimer(withTimeInterval: 10, repeats: false) { timer in
-                    Task {
-                        phaseText = "Transitioning between phases!!"
-                        await Motion.shared.switchToLocalization()
-                        phaseText = "Currently in localization phase!!"
-                        
-                    }
+                .confirmationDialog("Upload Data",
+                                    isPresented: $motionManager.isPresentingUploadConfirmation) {
+                    Button("Cancel Upload Data", role: .cancel, action: {
+                        Task {
+                            motionManager.motion.stopDataCollection()
+                            motionManager.phaseText = "Cancelled uploading data"
+                            motionManager.isPresentingUploadConfirmation = false
+                        }
+                    })
+                    Button("Upload Data?", role: .destructive, action: {
+                        Task {
+                            await motionManager.motion.finalExport()
+                            motionManager.phaseText = "Uploaded data"
+                            motionManager.isPresentingUploadConfirmation = false
+                        }
+                    })
                 }
-                
+            
             }
+            .padding()
         }
-        .padding()
     }
 }
 

@@ -7,8 +7,8 @@
 
 import Foundation
 import opencv2
-import VideoToolbox
 import ARKit
+import VideoToolbox.VTUtilities
 
 extension UIImage {
     public convenience init?(pixelBuffer: CVPixelBuffer) {
@@ -30,6 +30,7 @@ class AprilTagDetector {
 
     /// The init method creates the detector with the April tag corner refinement method and the 36h11 tag family
     init() {
+        VideoWriter()
         let parameters = DetectorParameters()
         parameters.cornerRefinementMethod = .CORNER_REFINE_APRILTAG
         let refineParams = RefineParameters()

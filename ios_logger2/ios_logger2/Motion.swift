@@ -62,9 +62,11 @@ class Motion: NSObject, ARSessionDelegate {
         motionSensors.startDeviceMotionUpdates(to: OperationQueue(), withHandler: delegate_motion)
     }
     
-    private func stopMotionSensors() {
+    public func stopDataCollection() {
         // stop collecting data
         motionSensors.stopDeviceMotionUpdates()
+        arView?.session.pause()
+
     }
     
     private func initArSession() {
@@ -75,8 +77,12 @@ class Motion: NSObject, ARSessionDelegate {
         arView?.session.run(arConfiguration, options: [ARSession.RunOptions.resetTracking, ARSession.RunOptions.resetSceneReconstruction])
     }
     
-    private func stopArSession() {
-        arView?.session.pause()
+    private func getAprilTags(frame: ARFrame) {
+        isDetectingAprilTags = true
+        DispatchQueue.global(qos: .userInteractive).async {
+            let markers = self.aprilTagDetector.detectMarkers(inImage: frame.capturedImage, phoneToWorld: frame.camera.transform, K: frame.camera.intrinsics)
+            self.isDetectingAprilTags = false
+        }
     }
     
     // delegate ARFrame updates to video and other sensor loggers
@@ -96,8 +102,7 @@ class Motion: NSObject, ARSessionDelegate {
     // finished collecting mapping data, swith to collecting localization data
     func switchToLocalization() async {
         // stop feeds of data, I'm assuming this happens instantly right now
-        stopArSession()
-        stopMotionSensors()
+        stopDataCollection()
         
         // queue data for upload
         for sensor in sensors {
@@ -112,6 +117,7 @@ class Motion: NSObject, ARSessionDelegate {
     }
     
     func finalExport() async {
+        stopDataCollection()
         for sensor in sensors {
             // some of our sensors like GoogleCloudAnchor/Video need to do async work before the protobuf data is availiable for packaging
             await sensor.additionalUpload()
