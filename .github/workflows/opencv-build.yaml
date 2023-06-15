@@ -5,7 +5,7 @@ on:
 
 jobs:
   build:
-    runs-on: macOS-latest
+    runs-on: macos-12
 
     steps:
       - name: actions-setup-cmake
