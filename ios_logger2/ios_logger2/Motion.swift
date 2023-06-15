@@ -30,8 +30,6 @@ class Motion: NSObject, ARSessionDelegate {
     public var motionSensors = CMMotionManager()
     public var arView: ARSCNView?
     public var arConfiguration = ARWorldTrackingConfiguration()
-    private var aprilTagDetector = AprilTag()
-    private var isDetectingAprilTags = false
     
     func setARView(_ arView: ARSCNView) {
         self.arView = arView
@@ -49,6 +47,7 @@ class Motion: NSObject, ARSessionDelegate {
         Pose(),
         Intrinsics(),
         GoogleCloudAnchor(),
+        AprilTag()
     ]
     
     
@@ -80,19 +79,8 @@ class Motion: NSObject, ARSessionDelegate {
         arView?.session.pause()
     }
     
-    private func getAprilTags(frame: ARFrame) {
-        isDetectingAprilTags = true
-        DispatchQueue.global(qos: .userInteractive).async {
-            let markers = self.aprilTagDetector.collectData(motion: nil, frame: frame)
-            self.isDetectingAprilTags = false
-        }
-    }
-    
     // delegate ARFrame updates to video and other sensor loggers
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
-        if !isDetectingAprilTags {
-            getAprilTags(frame: frame)
-        }
         for sensor in sensors {
             sensor.collectData(motion: nil, frame: frame)
         }
