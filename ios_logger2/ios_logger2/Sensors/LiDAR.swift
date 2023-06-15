@@ -9,7 +9,7 @@ import Foundation
 import ARKit
 import CoreMotion
 
-class LiDAR : Sensor {
+class LiDAR : Sensor, SensorProtocol {
     var sensorName: String = "lidar"
     public var series = LidarData()
     
@@ -49,6 +49,12 @@ class LiDAR : Sensor {
         measurement.lidar = depthCopy
         measurement.conf = confInts
         
-        series.mappingPhase.measurements.append(measurement)
+        if case currentPhase = Phase.mappingPhase {
+            series.mappingPhase.measurements.append(measurement)
+        }
+        else {
+            series.localizationPhase.measurements.append(measurement)
+        }
+        
     }
 }

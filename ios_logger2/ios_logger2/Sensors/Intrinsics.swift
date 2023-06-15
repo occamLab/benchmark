@@ -13,7 +13,7 @@ import opencv2
 /*
  *  Implements data collection and encoding into a protobuf message for timeseries of camera intrinsics data
  */
-class Intrinsics: Sensor {
+class Intrinsics: Sensor, SensorProtocol {
     var sensorName: String = "intrinsics"
     public var series = IntrinsicsData()
     
@@ -26,7 +26,13 @@ class Intrinsics: Sensor {
             measurement.timestamp = timestamp
             measurement.cameraIntrinsics = intrinsics
             
-            series.mappingPhase.measurements.append(measurement)
+            if case currentPhase = Phase.mappingPhase {
+                series.mappingPhase.measurements.append(measurement)
+            }
+            else {
+                series.localizationPhase.measurements.append(measurement)
+            }
+            
         }
     }
 }

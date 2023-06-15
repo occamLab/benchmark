@@ -37,7 +37,7 @@ class Motion: NSObject, ARSessionDelegate {
     }
     
     // all of our loggers go here
-    private let sensors: [any Sensor] = [
+    private let sensors: [any SensorProtocol & Sensor] = [
         Accelerometer(),
         Video(),
         LiDAR(),
@@ -93,9 +93,9 @@ class Motion: NSObject, ARSessionDelegate {
         }
     }
     
-    // finished collecting data, export the results
-    func export() async {
-        // cleanup
+    // finished collecting mapping data, swith to collecting localization data
+    func switchToLocalization() async {
+        // stop feeds of data, I'm assuming this happens instantly right now
         stopArSession()
         stopMotionSensors()
         
@@ -103,14 +103,28 @@ class Motion: NSObject, ARSessionDelegate {
         for sensor in sensors {
             // some of our sensors like GoogleCloudAnchor/Video need to do async work before the protobuf data is availiable for packaging
             await sensor.additionalUpload()
-            sensor.uploadProtobuf()
+            sensor.currentPhase = Phase.localizationPhase
+            // some sensors such as video may need to hook on this action to reset state
+            
+
         }
         
+
+    }
+    
+    func finalExport() async {
+        for sensor in sensors {
+            // some of our sensors like GoogleCloudAnchor/Video need to do async work before the protobuf data is availiable for packaging
+            await sensor.additionalUpload()
+            // protobufs are now finalized and can be queued for uploading
+            sensor.uploadProtobuf()
+        }
         // batch upload the data
         UploadManager.shared.uploadLocalDataToCloud {(storageMetadata: StorageMetadata?, error: Error?)  in
             print("done uploading data")
         }
     }
+    
     
     
     private override init() {

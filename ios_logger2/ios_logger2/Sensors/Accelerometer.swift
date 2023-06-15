@@ -11,7 +11,7 @@ import SwiftProtobuf
 /*
  *  Implements data collection and encoding into a protobuf message for timeseries of accelerometer data
  */
-class Accelerometer: Sensor {
+class Accelerometer: Sensor, SensorProtocol {
     var sensorName: String = "accelerometer"
     var series: AccelerometerData = AccelerometerData()
     
@@ -29,8 +29,12 @@ class Accelerometer: Sensor {
             measurement.yAcceleration = acceleration_y
             measurement.zAcceleration = acceleration_z
 
-
-            series.mappingPhase.measurements.append(measurement)
+            if case currentPhase = Phase.mappingPhase {
+                series.mappingPhase.measurements.append(measurement)
+            }
+            else {
+                series.localizationPhase.measurements.append(measurement)
+            }
         }
     }
 }

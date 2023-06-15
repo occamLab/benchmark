@@ -28,7 +28,7 @@ struct ContentView: View {
                                         isPresented: $isPresentingConfirm) {
                         Button("Send Data? (data was recorded since app launch)", role: .destructive) {
                             Task {
-                                await self.motion.export()
+                              //  await self.motion.export()
                                 hideButton = true;
                             }
                         }

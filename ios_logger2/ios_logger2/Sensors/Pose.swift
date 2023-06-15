@@ -12,7 +12,7 @@ import CoreMotion
 /*
  *  Implements data collection and encoding into a protobuf message for timeseries of camera pose data
  */
-class Pose: Sensor {
+class Pose: Sensor, SensorProtocol {
     var sensorName: String = "pose"
     public var series = PoseData()
     
@@ -24,7 +24,13 @@ class Pose: Sensor {
             var measurement = PoseTimestamp()
             measurement.timestamp = timestamp
             measurement.cameraPose = transform
-            series.mappingPhase.measurements.append(measurement)
+            
+            if case currentPhase = Phase.mappingPhase {
+                series.mappingPhase.measurements.append(measurement)
+            }
+            else {
+                series.localizationPhase.measurements.append(measurement)
+            }
         }
     }
 }
