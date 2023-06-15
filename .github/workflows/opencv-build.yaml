@@ -27,7 +27,7 @@ jobs:
         working-directory: opencv
         run: |
           pip3 install pathlib
-          python3 platforms/ios/build_framework.py --without video --iphoneos_archs arm64 --iphonesimulator_archs arm64 build
+          python3 platforms/ios/build_framework.py --without video --iphoneos_archs arm64 --build_only_specified_archs build
         
       - name: Zip artifact
         working-directory: opencv
