@@ -31,7 +31,7 @@ jobs:
         
       - name: Zip artifact
         working-directory: opencv
-        run: zip -r opencv2.xcframework.zip build/opencv2.xcframework
+        run: zip -r opencv2.xcframework.zip build
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
@@ -52,16 +52,8 @@ jobs:
         with:
           name: opencv2.xcframework.zip
 
-      - name: Commit and push
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "GitHub Actions"
-          git add Package.swift
-          git commit -m "[ci skip] Update Package.swift"
-          git push
-
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
           files: opencv2.xcframework.zip
-          tag_name: ${{ steps.get_version.outputs.VERSION }}
+          tag_name: 1.0
