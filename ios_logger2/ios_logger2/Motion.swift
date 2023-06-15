@@ -30,7 +30,7 @@ class Motion: NSObject, ARSessionDelegate {
     public var motionSensors = CMMotionManager()
     public var arView: ARSCNView?
     public var arConfiguration = ARWorldTrackingConfiguration()
-    private var aprilTagDetector = AprilTagDetector()
+    private var aprilTagDetector = AprilTag()
     private var isDetectingAprilTags = false
     
     func setARView(_ arView: ARSCNView) {
@@ -83,7 +83,7 @@ class Motion: NSObject, ARSessionDelegate {
     private func getAprilTags(frame: ARFrame) {
         isDetectingAprilTags = true
         DispatchQueue.global(qos: .userInteractive).async {
-            let markers = self.aprilTagDetector.detectMarkers(inImage: frame.capturedImage, phoneToWorld: frame.camera.transform, K: frame.camera.intrinsics)
+            let markers = self.aprilTagDetector.collectData(motion: nil, frame: frame)
             self.isDetectingAprilTags = false
         }
     }

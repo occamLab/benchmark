@@ -9,6 +9,7 @@ import Foundation
 import opencv2
 import VideoToolbox
 import ARKit
+import CoreMotion
 
 extension UIImage {
     public convenience init?(pixelBuffer: CVPixelBuffer) {
@@ -24,7 +25,9 @@ extension UIImage {
 }
 
 /// A class that uses OpenCV's support for Aruco detection to detect April tags
-class AprilTagDetector {
+class AprilTag: Sensor {
+    var sensorName: String = "april_tag"
+    public var series = AprilTagData()
     /// The underlying OpenCV detector
     let detector: ArucoDetector
 
@@ -40,10 +43,16 @@ class AprilTagDetector {
     
     /// Detect the markers in the specified image
     /// - Parameter image: the image taken from, e.g., an `ARFrame`
-    func detectMarkers(inImage image: CVPixelBuffer, phoneToWorld: simd_float4x4, K: simd_float3x3) {
+    func collectData(motion: CMDeviceMotion?, frame: ARFrame?) {
+    //func detectMarkers(inImage image: CVPixelBuffer, phoneToWorld: simd_float4x4, K: simd_float3x3) {
+        // inImage: frame.capturedImage, phoneToWorld: frame.camera.transform, K: frame.camera.intrinsics
+        let inImage = frame?.capturedImage
+        let phoneToWorld = (frame?.camera.transform)!
+        let K = frame?.camera.intrinsics
+        
         do {
             // Show source image
-            if let image = UIImage(pixelBuffer: image) {
+            if let image = UIImage(pixelBuffer: frame!.capturedImage) {
                 let src = Mat(uiImage: image)
                 let gray = Mat()
                 Imgproc.cvtColor(src: src, dst: gray, code: .COLOR_BGRA2GRAY)
@@ -53,19 +62,19 @@ class AprilTagDetector {
                 // Add camera intrinsics to matrix
                 let dist = MatOfDouble()
                 let intrinsics = Mat.eye(rows: 3, cols: 3, type: CvType.CV_64F)
-                try intrinsics.put(row: 0, col: 0, data: [Double(K[0,0])])
-                try intrinsics.put(row: 1, col: 1, data: [Double(K[1,1])])
-                try intrinsics.put(row: 0, col: 2, data: [Double(K[2,0])])
-                try intrinsics.put(row: 1, col: 2, data: [Double(K[2,1])])
+                try intrinsics.put(row: 0, col: 0, data: [Double(K![0,0])])
+                try intrinsics.put(row: 1, col: 1, data: [Double(K![1,1])])
+                try intrinsics.put(row: 0, col: 2, data: [Double(K![2,0])])
+                try intrinsics.put(row: 1, col: 2, data: [Double(K![2,1])])
                 
-                // TODO: Add ID to April tag AR
-                var id = 0
+                // Get April tag's ID (the one we're using is 305)
+                let id = 0
                 self.detector.detectMarkers(image: gray, corners: corners, ids: ids)
                 for row in 0..<ids.rows() {
                     for col in 0..<ids.cols() {
                         // Make this store id flatly
                         let id = ids.get(row: row, col: col)[0]
-                        print("ids", ids.get(row: row, col: col))
+                        print("id:", id)
                     }
                 }
 
@@ -125,6 +134,7 @@ class AprilTagDetector {
                     let tagToPhone = imageToPhone * tagToImage
                     // Position + orientation
                     let tagToWorld = phoneToWorld * tagToPhone
+                    let arr = (0..<3).flatMap { x in (0..<3).map { y in tagToWorld[x][y] } }
                     
                     // Show cyan square over April tag
                     let tagNode: SCNNode
@@ -155,6 +165,15 @@ class AprilTagDetector {
                         tagNode.addChildNode(zAxis)
                         Motion.shared.arView?.scene.rootNode.addChildNode(tagNode)
                     }
+                    if(frame != nil) {
+                        let tagCenterPose = arr
+                        let timestamp: Double = getUnixTimestamp(moment: frame!.timestamp)
+
+                        var measurement = AprilTagTimestamp()
+                        measurement.timestamp = timestamp
+                        measurement.tagCenterPose = tagCenterPose
+                        series.mappingPhase.measurements.append(measurement)
+                    }
                 }
             }
         } catch {
@@ -163,3 +182,20 @@ class AprilTagDetector {
         }
     }
 }
+
+//class AprilTag: Sensor {
+//    var sensorName: String = "april_tag"
+//    public var series = AprilTagData()
+//
+//    func collectData(motion: CMDeviceMotion?, frame: ARFrame?) {
+//        if(frame != nil) {
+//            let tagCenterPose = arr
+//            let timestamp: Double = getUnixTimestamp(moment: frame!.timestamp)
+//
+//            var measurement = AprilTagTimestamp()
+//            measurement.timestamp = timestamp
+//            measurement.tagCenterPose = tagCenterPose
+//            series.mappingPhase.measurements.append(measurement)
+//        }
+//    }
+//}
