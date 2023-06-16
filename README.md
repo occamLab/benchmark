@@ -1,11 +1,16 @@
 # Benchmark
 Tools for benchmarking alternatives to cloud anchors
 
-# Install
+# Install Protobuf
 We use protobuf for serializing data. You can install swift-protobuf (https://github.com/apple/swift-protobuf#alternatively-install-via-homebrew) from brew: 
 ```
 brew install swift-protobuf
 ```
+
+# Install OpenCV Swift
+We use a custom build of opencv. The reason for this is that there is a class called ```VideoWriter``` that conflicts with some of the built in default symbols from Apple. Since we don't actually use that swift module, we build an opencv version without that module. 
+
+The build script is contained in here: https://github.com/occamLab/benchmark/blob/main/.github/workflows/opencv-build.yaml. Unzip the build artifact from https://github.com/occamLab/benchmark/releases/tag/1 and drag the folder ```opencv2.framework``` into ```ios_logger2``` from the root of the repo. 
 
 # Protobuf Instructions
 First you need to compile the protobuf files: 
