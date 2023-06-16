@@ -23,7 +23,7 @@ jobs:
           ref: refs/tags/4.7.0
           path: 'opencv'
           
-      - name: Build xcframework
+      - name: Build framework
         working-directory: opencv
         run: |
           pip3 install pathlib
@@ -31,13 +31,13 @@ jobs:
         
       - name: Zip artifact
         working-directory: opencv
-        run: zip -r opencv2.xcframework.zip build
+        run: zip -r opencv2.framework.zip build/opencv2.framework
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
-          name: opencv2.xcframework.zip
-          path: opencv/opencv2.xcframework.zip
+          name: opencv2.framework.zip
+          path: opencv/opencv2.framework.zip
           if-no-files-found: error
           
   release:
@@ -50,10 +50,10 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
-          name: opencv2.xcframework.zip
+          name: opencv2.framework.zip
 
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          files: opencv2.xcframework.zip
-          tag_name: 1.0
+          files: opencv2.framework.zip
+          tag_name: 1.1
