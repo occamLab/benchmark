@@ -13,7 +13,6 @@
 		613B110E2A378E75002CA4DD /* Secrets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 613B110D2A378E75002CA4DD /* Secrets.swift */; };
 		613B11132A379104002CA4DD /* google_cloud_anchor.proto in Sources */ = {isa = PBXBuildFile; fileRef = 613B11122A379104002CA4DD /* google_cloud_anchor.proto */; };
 		613B11152A37913D002CA4DD /* google_cloud_anchor.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 613B11142A37913D002CA4DD /* google_cloud_anchor.pb.swift */; };
-		613B11182A39F937002CA4DD /* OpenCV in Frameworks */ = {isa = PBXBuildFile; productRef = 613B11172A39F937002CA4DD /* OpenCV */; };
 		61500B182A2FBAB7001FE294 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61500B172A2FBAB7001FE294 /* ContentView.swift */; };
 		61500B1A2A2FBAB8001FE294 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 61500B192A2FBAB8001FE294 /* Assets.xcassets */; };
 		61500B1D2A2FBAB8001FE294 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 61500B1C2A2FBAB8001FE294 /* Preview Assets.xcassets */; };
@@ -60,6 +59,7 @@
 		61500BF92A37645E001FE294 /* video.proto in Sources */ = {isa = PBXBuildFile; fileRef = 61500BF82A37645E001FE294 /* video.proto */; };
 		61500BFB2A37650E001FE294 /* video.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61500BFA2A37650E001FE294 /* video.pb.swift */; };
 		61500BFE2A376C1C001FE294 /* ARCoreCloudAnchors in Frameworks */ = {isa = PBXBuildFile; productRef = 61500BFD2A376C1C001FE294 /* ARCoreCloudAnchors */; };
+		61C6D7E82A3C9EC100FF9349 /* opencv2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 61C6D7E72A3C9EC100FF9349 /* opencv2.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -126,6 +126,7 @@
 		61500BEF2A376100001FE294 /* point_cloud.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = point_cloud.pb.swift; sourceTree = "<group>"; };
 		61500BF82A37645E001FE294 /* video.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; path = video.proto; sourceTree = "<group>"; };
 		61500BFA2A37650E001FE294 /* video.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = video.pb.swift; sourceTree = "<group>"; };
+		61C6D7E72A3C9EC100FF9349 /* opencv2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = opencv2.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -135,7 +136,6 @@
 			files = (
 				61500B812A324F56001FE294 /* SWCompression in Frameworks */,
 				61500B702A32447A001FE294 /* FirebaseDatabase in Frameworks */,
-				613B11182A39F937002CA4DD /* OpenCV in Frameworks */,
 				61500B4B2A30C81F001FE294 /* SwiftProtobufPluginLibrary in Frameworks */,
 				61500B492A30C81F001FE294 /* SwiftProtobuf in Frameworks */,
 				61500B742A32447A001FE294 /* FirebaseFirestoreSwift in Frameworks */,
@@ -144,6 +144,7 @@
 				61500B762A32447A001FE294 /* FirebaseStorage in Frameworks */,
 				61500B6E2A32447A001FE294 /* FirebaseAuth in Frameworks */,
 				61500B722A32447A001FE294 /* FirebaseFirestore in Frameworks */,
+				61C6D7E82A3C9EC100FF9349 /* opencv2.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -176,6 +177,7 @@
 		61500B092A2FBAB7001FE294 = {
 			isa = PBXGroup;
 			children = (
+				61C6D7E72A3C9EC100FF9349 /* opencv2.framework */,
 				61500B142A2FBAB7001FE294 /* ios_logger2 */,
 				61500B252A2FBAB8001FE294 /* ios_logger2Tests */,
 				61500B2F2A2FBAB8001FE294 /* ios_logger2UITests */,
@@ -323,7 +325,6 @@
 				61500B752A32447A001FE294 /* FirebaseStorage */,
 				61500B802A324F56001FE294 /* SWCompression */,
 				61500BFD2A376C1C001FE294 /* ARCoreCloudAnchors */,
-				613B11172A39F937002CA4DD /* OpenCV */,
 			);
 			productName = ios_logger2;
 			productReference = 61500B122A2FBAB7001FE294 /* ios_logger2.app */;
@@ -402,7 +403,6 @@
 				61500B6C2A32447A001FE294 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				61500B7F2A324F56001FE294 /* XCRemoteSwiftPackageReference "SWCompression" */,
 				61500BFC2A376C1C001FE294 /* XCRemoteSwiftPackageReference "arcore-ios-sdk" */,
-				613B11162A39F937002CA4DD /* XCRemoteSwiftPackageReference "opencv-spm" */,
 			);
 			productRefGroup = 61500B132A2FBAB7001FE294 /* Products */;
 			projectDirPath = "";
@@ -643,6 +643,10 @@
 				DEVELOPMENT_ASSET_PATHS = "\"ios_logger2/Preview Content\"";
 				DEVELOPMENT_TEAM = 787TUDMR8Q;
 				ENABLE_PREVIEWS = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "ios-logger2-Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "";
@@ -676,6 +680,10 @@
 				DEVELOPMENT_ASSET_PATHS = "\"ios_logger2/Preview Content\"";
 				DEVELOPMENT_TEAM = 787TUDMR8Q;
 				ENABLE_PREVIEWS = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "ios-logger2-Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "";
@@ -817,14 +825,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		613B11162A39F937002CA4DD /* XCRemoteSwiftPackageReference "opencv-spm" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/yeatse/opencv-spm";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 4.0.0;
-			};
-		};
 		61500B472A30C81F001FE294 /* XCRemoteSwiftPackageReference "swift-protobuf" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/apple/swift-protobuf.git";
@@ -860,11 +860,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		613B11172A39F937002CA4DD /* OpenCV */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 613B11162A39F937002CA4DD /* XCRemoteSwiftPackageReference "opencv-spm" */;
-			productName = OpenCV;
-		};
 		61500B482A30C81F001FE294 /* SwiftProtobuf */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 61500B472A30C81F001FE294 /* XCRemoteSwiftPackageReference "swift-protobuf" */;
