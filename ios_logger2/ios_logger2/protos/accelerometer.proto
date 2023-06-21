@@ -19,12 +19,3 @@ message AccelerometerData {
     MappingPhase mappingPhase = 1;
     LocalizationPhase localizationPhase = 2;
 }
-
-
-message CanBeExtended {
-   
-}
-
-extend CanBeExtended ss {
-    
-}
