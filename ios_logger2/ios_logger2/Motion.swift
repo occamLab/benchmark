@@ -30,6 +30,7 @@ class Motion: NSObject, ARSessionDelegate {
     public var motionSensors = CMMotionManager()
     public var arView: ARSCNView?
     public var arConfiguration = ARWorldTrackingConfiguration()
+    public var motionUpdateQueue = OperationQueue()
     
     func setARView(_ arView: ARSCNView) {
         self.arView = arView
@@ -59,7 +60,9 @@ class Motion: NSObject, ARSessionDelegate {
         motionSensors.accelerometerUpdateInterval = imuUpdateFreqSeconds
         motionSensors.deviceMotionUpdateInterval = imuUpdateFreqSeconds
         // start collecting data
-        motionSensors.startDeviceMotionUpdates(to: OperationQueue(), withHandler: delegate_motion)
+        // NOTE: maxConcurrentOperationCount MUST be 1 because appending to a protobuf array is NOT thread safe
+        motionUpdateQueue.maxConcurrentOperationCount = 1
+        motionSensors.startDeviceMotionUpdates(to: motionUpdateQueue, withHandler: delegate_motion)
     }
     
     public func stopDataCollection() {
@@ -103,6 +106,7 @@ class Motion: NSObject, ARSessionDelegate {
             await sensor.additionalUpload()
             sensor.currentPhase = Phase.localizationPhase
             // some sensors such as video may need to hook on this action to reset state
+            sensor.switchToLocalization()
         }
         // reset our knowledge of our position
         initMotionSensors()

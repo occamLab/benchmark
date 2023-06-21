@@ -47,10 +47,22 @@ protocol ourMessages {
 }
 
 extension SensorProtocol {
+    
+    /* Prepends the phase (localization/mapping) and sensor name to the filename of the data to be uploaded */
+    func uploadDataWithPhase(data: Data, fileExtension: String, contentType: String) {
+        let phase_label: String = isMappingPhase() ? "mapping-" : "localization-"
+        UploadManager.shared.putData(data, contentType: contentType, fullPath: phase_label + sensorName + fileExtension)
+    }
+    
+    /* Prepends the sensor name to the filename of the data to be uploaded */
+    func uploadDataWithoutPhase(data: Data, fileExtension: String, contentType: String) {
+        UploadManager.shared.putData(data, contentType: contentType, fullPath:  sensorName + fileExtension)
+    }
+    
     /* Uses the UploadManager to queue uploads of the encoded protobuf messages to firebase storage*/
     func uploadProtobuf() {
-        let data: Data? = try? series.serializedData()
-        UploadManager.shared.putData(data!, contentType: "application/protobuf", fullPath: sensorName + ".proto")
+        let data: Data = try! series.serializedData()
+        uploadDataWithoutPhase(data: data, fileExtension: ".proto", contentType: "application/protobuf")
     }
     
     /* Can be implemented by sensors such as video if needed */

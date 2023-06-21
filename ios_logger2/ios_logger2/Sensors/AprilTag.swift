@@ -29,6 +29,7 @@ class AprilTag: Sensor, SensorProtocol {
     private var isDetectingAprilTags = false
     var sensorName: String = "april_tag"
     public var series = AprilTagData()
+    
     /// The underlying OpenCV detector
     let detector: ArucoDetector
 

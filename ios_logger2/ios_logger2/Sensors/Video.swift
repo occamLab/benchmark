@@ -9,7 +9,7 @@ import ARKit
 import CoreMotion
 
 
-struct CurrentVideo {
+class CurrentVideo {
     let fileType: AVFileType = AVFileType.mp4
     let fileLocation: URL
     let encoder: AVAssetWriter
@@ -54,6 +54,7 @@ struct CurrentVideo {
 class Video: Sensor, SensorProtocol {
     var sensorName: String = "video"
     var series: VideoData = VideoData()
+    
     var currentVideo: CurrentVideo = CurrentVideo()
     private var initialTimestamp: Double? = nil
     
@@ -87,19 +88,18 @@ class Video: Sensor, SensorProtocol {
         }
         else {
         }
-
     }
     
     func additionalUpload() async {
         currentVideo.encoderInput.markAsFinished()
-        await currentVideo.encoder.finishWriting()
+        if(currentVideo.encoder.status == .writing) {
+            await currentVideo.encoder.finishWriting()
+        }
         print("[INFO]: Video encoder finished writing file to disk")
         
         let videoData: Data? = try? Data(contentsOf: currentVideo.fileLocation)
         if(videoData != nil) {
-            let phaseExtension =  (isMappingPhase() ? "-mapping" : "-localiztion")
-            let fileExtension = ".mp4"
-            UploadManager.shared.putData(videoData!, contentType: "application/protobuf", fullPath: sensorName + phaseExtension + fileExtension)
+            uploadDataWithPhase(data: videoData!, fileExtension: ".mp4", contentType: "video/mp4")
         }
         else {
             print("[EROR]: Reading video file from disk")
