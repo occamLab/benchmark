@@ -22,5 +22,9 @@ message AccelerometerData {
 
 
 message CanBeExtended {
-   extensions 100 to 200;
+   
+}
+
+extend CanBeExtended ss {
+    
 }

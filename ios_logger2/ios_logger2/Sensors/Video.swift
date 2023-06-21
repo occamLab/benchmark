@@ -53,7 +53,11 @@ struct CurrentVideo {
  */
 class Video: Sensor, SensorProtocol {
     var sensorName: String = "video"
-    var series: VideoData = VideoData()
+    var series: VideoData = VideoData.with {
+       $0.mappingPhase = VideoData.MappingPhase()
+       $0.localizationPhase = VideoData.LocalizationPhase()
+   }
+    
     var currentVideo: CurrentVideo = CurrentVideo()
     private var initialTimestamp: Double? = nil
     
