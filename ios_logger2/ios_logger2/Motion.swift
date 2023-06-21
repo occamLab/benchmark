@@ -106,6 +106,7 @@ class Motion: NSObject, ARSessionDelegate {
             await sensor.additionalUpload()
             sensor.currentPhase = Phase.localizationPhase
             // some sensors such as video may need to hook on this action to reset state
+            sensor.switchToLocalization()
         }
         // reset our knowledge of our position
         initMotionSensors()

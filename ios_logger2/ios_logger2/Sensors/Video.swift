@@ -9,7 +9,7 @@ import ARKit
 import CoreMotion
 
 
-struct CurrentVideo {
+class CurrentVideo {
     let fileType: AVFileType = AVFileType.mp4
     let fileLocation: URL
     let encoder: AVAssetWriter
