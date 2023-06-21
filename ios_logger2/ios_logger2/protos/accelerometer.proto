@@ -19,3 +19,8 @@ message AccelerometerData {
     MappingPhase mappingPhase = 1;
     LocalizationPhase localizationPhase = 2;
 }
+
+
+message CanBeExtended {
+   extensions 100 to 200;
+}

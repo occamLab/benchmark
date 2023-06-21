@@ -87,19 +87,18 @@ class Video: Sensor, SensorProtocol {
         }
         else {
         }
-
     }
     
     func additionalUpload() async {
         currentVideo.encoderInput.markAsFinished()
-        await currentVideo.encoder.finishWriting()
+        if(currentVideo.encoder.status == .writing) {
+            await currentVideo.encoder.finishWriting()
+        }
         print("[INFO]: Video encoder finished writing file to disk")
         
         let videoData: Data? = try? Data(contentsOf: currentVideo.fileLocation)
         if(videoData != nil) {
-            let phaseExtension =  (isMappingPhase() ? "-mapping" : "-localiztion")
-            let fileExtension = ".mp4"
-            UploadManager.shared.putData(videoData!, contentType: "application/protobuf", fullPath: sensorName + phaseExtension + fileExtension)
+            uploadDataWithPhase(data: videoData!, fileExtension: ".mp4", contentType: "video/mp4")
         }
         else {
             print("[EROR]: Reading video file from disk")

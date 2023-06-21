@@ -15,7 +15,16 @@ class Accelerometer: Sensor, SensorProtocol {
     var sensorName: String = "accelerometer"
     var series: AccelerometerData = AccelerometerData()
     
+    
     func collectData(motion: CMDeviceMotion?, frame: ARFrame?) {
+        if(!series.hasMappingPhase) {
+            series.mappingPhase = AccelerometerData.MappingPhase()
+        }
+        if(!series.hasLocalizationPhase) {
+            series.localizationPhase = AccelerometerData.LocalizationPhase()
+        }
+        
+        
         if(motion != nil) {
             let timestamp: Double = getUnixTimestamp(moment: motion!.timestamp)
             let acceleration_x: Double = motion!.userAcceleration.x
