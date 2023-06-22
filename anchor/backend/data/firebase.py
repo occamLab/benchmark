@@ -5,7 +5,7 @@ from firebase_admin import initialize_app
 from uuid import uuid4
 
 
-cred = credentials.Certificate('credentials.JSON')
+cred = credentials.Certificate('stepnavigation-firebase-adminsdk-service-account.json')
 initialize_app(cred, {
     'databaseURL' : 'https:url.firebaseio.com/', 'storageBucket': 'gs://stepnavigation.appspot.com'
 })

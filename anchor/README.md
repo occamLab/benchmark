@@ -15,5 +15,5 @@ pip install -r requirements.txt
 # Credentials
 Download a firebase admin service account and place in this folder with the following name: 
 ```
-stepnavigation-firebase-adminsdk-service-acount.json
+stepnavigation-firebase-adminsdk-service-account.json
 ```

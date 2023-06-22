@@ -1,6 +1,6 @@
 ###################################### USER GITINORE ##################################################################################################
-stepnavigation-firebase-adminsdk-service-acount.json # firebase admin account
-anchor/stepnavigation-firebase-adminsdk-service-acount.json
+stepnavigation-firebase-adminsdk-service-account.json # firebase admin account
+anchor/stepnavigation-firebase-adminsdk-service-account.json
 GoogleService-Info.plist # firebase client account
 Secrets.swift # google cloud anchors api key under benchmark
 ios_logger2.xcodeproj/xcuserdata/* # annoying xcode diffs
