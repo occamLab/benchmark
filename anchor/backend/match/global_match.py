@@ -2,9 +2,8 @@ from pathlib import Path
 from pprint import pformat
 import argparse
 
-from hloc import extract_features, match_features
+from hloc import extract_features, match_features, match_dense
 from hloc import pairs_from_covisibility, pairs_from_retrieval
-from hloc import colmap_from_nvm, triangulation, localize_sfm
 
 
 parser = argparse.ArgumentParser()
@@ -24,11 +23,16 @@ loc_pairs = args.outputs / f'pairs-query-netvlad.txt'  # top-k retrieved by NetV
 
 # Setup the extraction/matching configurations
 retrieval_conf = extract_features.confs['netvlad']
+matcher_conf = match_dense.confs['loftr_aachen']
 
 # Run global descriptor extraction
-global_descriptors = extract_features.main(retrieval_conf, images, args.outputs)
+global_descriptors = extract_features.main(retrieval_conf, images, args.outputs, overwrite=True)
 
 # Retrieve image pairs
 pairs_from_retrieval.main(
     global_descriptors, loc_pairs, args.num_loc,
     query_prefix='query', db_model=None)
+
+# Run matches against retrieved image pairs
+features, loc_matches = match_dense.main(matcher_conf, loc_pairs, images, export_dir=args.outputs, overwrite=True)
+
