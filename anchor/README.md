@@ -1,6 +1,6 @@
 # Anchor Backend
 
-# Install 
+# Install
 
 Init the third_party submodule hloc with: 
 ```
@@ -13,3 +13,7 @@ pip install -r requirements.txt
 ```
 
 # Credentials
+Download a firebase admin service account and place in this folder with the following name: 
+```
+stepnavigation-firebase-adminsdk-service-acount.json
+```
