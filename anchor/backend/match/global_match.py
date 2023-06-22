@@ -26,7 +26,12 @@ def featurepoint_extraction(input_images: Path, output_path: Path, num_pair: int
     global_descriptors = extract_features.main(retrieval_conf, input_images, output_path, overwrite=True)
 
     # Retrieve image pairs
-    pairs_from_retrieval.main(global_descriptors, image_pairs, num_pair, query_prefix='localization-video', db_model=None)
+    pairs_from_retrieval.main(global_descriptors,
+                              image_pairs,
+                              num_pair,
+                              query_prefix='localization-video',
+                              db_prefix='mapping-video',
+                              db_model=None)
 
     # Run matches against retrieved image pairs
     features, loc_matches = match_dense.main(matcher_conf, image_pairs, input_images, export_dir=output_path, overwrite=True)
