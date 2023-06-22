@@ -12,6 +12,9 @@ class FirebaseDownloader:
     firebase_bucket_name: str = "stepnavigation.appspot.com"
     initialized: bool = False
 
+    # the root of where we download
+    root_download_dir: Path = Path(tempfile.gettempdir()) / "benchmark"
+
     def __init__(self):
         # initialize_app should be called only once globally
         if not FirebaseDownloader.initialized:
@@ -24,23 +27,24 @@ class FirebaseDownloader:
         blob = bucket.blob(remote_location)
         blob.download_to_filename(filename=local_location)
 
-    def extract_ios_logger_tar(self, firebaseDir: str, tarName: str) -> str:
-        tmp: Path = Path(tempfile.gettempdir()) / "benchmark"
-        tmp.mkdir(parents=True, exist_ok=True)
-        if (tmp / tarName).exists():
+    def extract_ios_logger_tar(self, firebaseDir: str, tarName: str) -> Path:
+        FirebaseDownloader.root_download_dir.mkdir(parents=True, exist_ok=True)
+        if (FirebaseDownloader.root_download_dir / tarName).exists():
             print(f'[INFO]: Skipping download tar {tarName} as it already exists')
         else:
-            self.download_file((Path(firebaseDir) / tarName).as_posix(), (tmp / tarName).as_posix())
+            self.download_file((Path(firebaseDir) / tarName).as_posix(), (FirebaseDownloader.root_download_dir / tarName).as_posix())
             print(f'[INFO]: Downloaded tar {tarName} as it has not been found locally')
 
         # unpack the tar itself and cleanup and previous extractions
-        extract_path: Path = tmp / Path(tarName).stem
+        extract_path: Path = FirebaseDownloader.root_download_dir / Path(tarName).stem
         shutil.rmtree(extract_path)
-        shutil.unpack_archive(tmp / tarName, extract_dir=extract_path)
+        shutil.unpack_archive(FirebaseDownloader.root_download_dir / tarName, extract_dir=extract_path)
 
         # extract the videos
         self.extract_ios_logger_video(extract_path / "mapping-video.mp4")
         self.extract_ios_logger_video(extract_path / "localization-video.mp4")
+
+        return extract_path / "extracted"
 
     def extract_ios_logger_video(self, video_path: Path):
         print(f'[INFO]: Extracting video {video_path} to frames')
