@@ -10,6 +10,7 @@ project.xcworkspace/ # annoying xcode diffs
 *.pb.swift # auto-generataed protobuf files
 *.xcuserstate # annoying xcode diffs
 opencv2.framework # opencv dependency build files for benchmark
+*.mp4
 ###################################### USER GITINORE ##################################################################################################
 
 ###################################### PYTHON GITIGNORE ###############################################################################################
