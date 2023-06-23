@@ -1,4 +1,5 @@
 from firebase_admin import credentials, storage, initialize_app
+import proto.intrinsics_pb2 as Intrinsics
 from pathlib import Path
 import cv2
 import shutil
@@ -43,6 +44,7 @@ class FirebaseDownloader:
         # extract the videos
         self.extract_ios_logger_video(extract_path / "mapping-video.mp4")
         self.extract_ios_logger_video(extract_path / "localization-video.mp4")
+        self.extract_protobuf(extract_path)
 
         return extract_path / "extracted"
 
@@ -58,6 +60,17 @@ class FirebaseDownloader:
             ret, frame = video.read()
             frame_num += 1
         video.release()
+    
+    # TODO: do we want all of them to be extracted from all frames? What form/data structure do we want intrinsics saved as?
+    # fx, 0, 0, 0, fy, 0, cx, cy, 1
+    def extract_protobuf(self, video_path: Path):
+        print(f'[INFO]: Extracting protobuf {video_path}')
+        intrinsics_path = video_path / "intrinsics.proto"
+        intrinsics_data = Intrinsics.IntrinsicsData()
+        with open(intrinsics_path, "rb") as fd:
+            intrinsics_data.ParseFromString(fd.read())
+        print(intrinsics_data)
+        
 
 # test the extractor here
 if __name__ == '__main__':
