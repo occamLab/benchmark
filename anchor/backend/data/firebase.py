@@ -37,7 +37,7 @@ class FirebaseDownloader:
 
         # unpack the tar itself and cleanup and previous extractions
         extract_path: Path = FirebaseDownloader.root_download_dir / Path(tarName).stem
-        shutil.rmtree(extract_path)
+        shutil.rmtree(extract_path, ignore_errors=True)
         shutil.unpack_archive(FirebaseDownloader.root_download_dir / tarName, extract_dir=extract_path)
 
         # extract the videos
