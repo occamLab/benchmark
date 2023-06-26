@@ -67,7 +67,7 @@ class FirebaseDownloader:
         intrinsics for each frame in the video's mapping phase.
         
         Args: 
-            video_path (str): the path to the video being extracted that we are
+            extract_path (str): the path to the video being extracted that we are
             getting the camera intrinsics from.
         
         Returns:
