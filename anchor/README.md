@@ -7,9 +7,9 @@ Init the third_party submodule hloc with:
 git submodule update --init --recursive
 ```
 
-To install the pip dependencies make sure that you are in a clean python-3.10 virtualenv and run:
+To install python deps make sure that you have conda (https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html) installed. The niantic/ace dep uses conda to manage their install so we are forced to use it as well. 
 ```
-pip install -r requirements.txt
+source ./install.sh
 ```
 
 To install the protobuf compiler on ubuntu with apt run:
