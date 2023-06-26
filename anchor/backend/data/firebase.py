@@ -42,8 +42,8 @@ class FirebaseDownloader:
         shutil.unpack_archive(FirebaseDownloader.root_download_dir / tarName, extract_dir=extract_path)
 
         # extract the videos
-        # self.extract_ios_logger_video(extract_path / "mapping-video.mp4")
-        # self.extract_ios_logger_video(extract_path / "localization-video.mp4")
+        self.extract_ios_logger_video(extract_path / "mapping-video.mp4")
+        self.extract_ios_logger_video(extract_path / "localization-video.mp4")
         self.extract_protobuf(extract_path)
 
         return extract_path / "extracted"
