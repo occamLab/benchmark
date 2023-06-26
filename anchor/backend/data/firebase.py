@@ -76,7 +76,7 @@ class FirebaseDownloader:
         """
         
         print(f'[INFO]: Reading protobuf {video_path}')
-        intrinsics_path = video_path / "intrinsics.proto"
+        intrinsics_path = extract_path / "intrinsics.proto"
         intrinsics_data = Intrinsics.IntrinsicsData()
         with open(intrinsics_path, "rb") as fd:
             intrinsics_data.ParseFromString(fd.read())
