@@ -4,8 +4,6 @@ from pathlib import Path
 import cv2
 import shutil
 import tempfile
-from google.protobuf.internal.encoder import _VarintBytes
-from google.protobuf.internal.decoder import _DecodeVarint32
 
 
 class FirebaseDownloader:
