@@ -61,7 +61,7 @@ class FirebaseDownloader:
             frame_num += 1
         video.release()
     
-    def extract_protobuf(self, video_path: Path):
+    def extract_protobuf(self, extract_path: Path):
         """
         Returns a list of dictionaries each containing a timestamp and the four
         intrinsics for each frame in the video's mapping phase.
