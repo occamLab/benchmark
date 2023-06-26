@@ -19,11 +19,16 @@ class Pose: Sensor, SensorProtocol {
     func collectData(motion: CMDeviceMotion?, frame: ARFrame?) {
         if(frame != nil) {
             let timestamp: Double = getUnixTimestamp(moment: frame!.timestamp)
-            let transform: [Float] = frame!.camera.transform.toRowMajor()
+            let transform = frame!.camera.transform
+            let translation: [Float] = transform.translationValues()
+            let quat_imag: [Float] = simd_quatf(transform).imagToArray()
+            let quat_real: Float = simd_quatf(transform).real
             
             var measurement = PoseTimestamp()
             measurement.timestamp = timestamp
-            measurement.cameraPose = transform
+            measurement.poseTranslation = translation
+            measurement.quatImag = quat_imag
+            measurement.quatReal = quat_real
             
             if case currentPhase = Phase.mappingPhase {
                 series.mappingPhase.measurements.append(measurement)
@@ -36,7 +41,13 @@ class Pose: Sensor, SensorProtocol {
 }
 
 extension simd_float4x4 {
-    public func toRowMajor()->[Float] {
-        return [self[0,0], self[0,1], self[0,2], self[0,3], self[1,0], self[1,1], self[1,2], self[1,3], self[2,0], self[2,1], self[2,2], self[2,3], self[3,0], self[3,1], self[3,2], self[3,3]]
+    public func translationValues()->[Float] {
+        return [self[3,0], self[3,1], self[3,2]]
+    }
+}
+
+extension simd_quatf {
+    public func imagToArray()->[Float] {
+        return [self.imag[0], self.imag[1], self.imag[2]]
     }
 }

@@ -1,4 +1,5 @@
 from firebase_admin import credentials, storage, initialize_app
+import proto.intrinsics_pb2 as Intrinsics
 from pathlib import Path
 import cv2
 import shutil
@@ -43,6 +44,7 @@ class FirebaseDownloader:
         # extract the videos
         self.extract_ios_logger_video(extract_path / "mapping-video.mp4")
         self.extract_ios_logger_video(extract_path / "localization-video.mp4")
+        self.extract_protobuf(extract_path)
 
         return extract_path / "extracted"
 
@@ -58,7 +60,36 @@ class FirebaseDownloader:
             ret, frame = video.read()
             frame_num += 1
         video.release()
-
+    
+    def extract_protobuf(self, extract_path: Path):
+        """
+        Returns a list of dictionaries each containing a timestamp and the four
+        intrinsics for each frame in the video's mapping phase.
+        
+        Args: 
+            extract_path (str): the path to the video being extracted that we are
+            getting the camera intrinsics from.
+        
+        Returns:
+            A list of dictionaries; each dictionary has attributes timestamp,
+            fx, fy, cx, and cy for a particular frame.
+        """
+        
+        print(f'[INFO]: Reading protobuf {extract_path}')
+        intrinsics_path = extract_path / "intrinsics.proto"
+        intrinsics_data = Intrinsics.IntrinsicsData()
+        with open(intrinsics_path, "rb") as fd:
+            intrinsics_data.ParseFromString(fd.read())
+            intrinsics_list = []
+            for value in intrinsics_data.mappingPhase.measurements:
+                k = value.cameraIntrinsics
+                fx, fy, cx, cy = k[0], k[4], k[6], k[7]
+                t = value.timestamp
+                intrinsics = {"timestamp": t, "fx": fx, "fy": fy, "cx": cx, "cy": cy}
+                intrinsics_list.append(intrinsics)
+            
+            return(intrinsics_list)
+        
 # test the extractor here
 if __name__ == '__main__':
     downloader_1 = FirebaseDownloader()
