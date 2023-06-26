@@ -1,3 +1,1 @@
 ../third_party/Hierarchical-Localization
-firebase-admin == 6.1.0
-opencv-python ~= 4.7
