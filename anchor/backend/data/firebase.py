@@ -75,7 +75,7 @@ class FirebaseDownloader:
             fx, fy, cx, and cy for a particular frame.
         """
         
-        print(f'[INFO]: Reading protobuf {video_path}')
+        print(f'[INFO]: Reading protobuf {extract_path}')
         intrinsics_path = extract_path / "intrinsics.proto"
         intrinsics_data = Intrinsics.IntrinsicsData()
         with open(intrinsics_path, "rb") as fd:
