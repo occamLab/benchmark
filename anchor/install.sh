@@ -9,6 +9,9 @@ conda create --name anchor python --no-default-packages
 conda env update -f ../third_party/ace/environment.yml --name anchor --prune
 conda activate anchor
 
+# install ace subdependency
+pip install -e ../third_party/ace/dsacstar
+
 # download hloc deps
 pip install -e ../third_party/Hierarchical-Localization
 
