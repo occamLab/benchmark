@@ -1,5 +1,6 @@
 from firebase_admin import credentials, storage, initialize_app
 import proto.intrinsics_pb2 as Intrinsics
+import proto.pose_pb2 as Pose
 from pathlib import Path
 import cv2
 import shutil
@@ -45,7 +46,8 @@ class FirebaseDownloader:
 
         self.extract_ios_logger_video(extract_path / "mapping-video.mp4")
         self.extract_ios_logger_video(extract_path / "localization-video.mp4")
-        self.extract_protobuf(extract_path)
+        self.extract_intrinsics(extract_path)
+        self.extract_pose(extract_path)
 
         return extract_path / "extracted"
 
@@ -63,37 +65,78 @@ class FirebaseDownloader:
         video.release()
     
 
-    def extract_protobuf(self, extract_path: Path):
+    def extract_intrinsics(self, extract_path: Path):
         """
         Returns a list of dictionaries each containing a timestamp and the four
         intrinsics for each frame in the video's mapping phase.
         
         Args: 
-            extract_path (str): the path to the video being extracted that we are
-            getting the camera intrinsics from.
+            extract_path (str): the path to the folder containing the video 
+            we are extracting and getting the intrinsics data from.
         
         Returns:
             A list of dictionaries; each dictionary has attributes timestamp,
             fx, fy, cx, and cy for a particular frame.
         """
         
-        print(f'[INFO]: Reading protobuf {extract_path}')
+        print(f'[INFO]: Reading intrinsics protobuf {extract_path}')
         intrinsics_path = extract_path / "intrinsics.proto"
         intrinsics_data = Intrinsics.IntrinsicsData()
         with open(intrinsics_path, "rb") as fd:
             intrinsics_data.ParseFromString(fd.read())
             intrinsics_list = []
             for value in intrinsics_data.mappingPhase.measurements:
+                t = value.timestamp
                 k = value.cameraIntrinsics
                 fx, fy, cx, cy = k[0], k[4], k[6], k[7]
-                t = value.timestamp
                 intrinsics = {"timestamp": t, "fx": fx, "fy": fy, "cx": cx, "cy": cy}
                 intrinsics_list.append(intrinsics)
             
             return(intrinsics_list)
         
+    def extract_pose(self, extract_path: Path):
+        """
+        Returns a list of dictionaries each containing a timestamp, 
+        translation, rotation matrix, and the real and imaginary parts of the 
+        quaternion for each frame in the video's mapping phase.
+        
+        Args: 
+            extract_path (str): the path to the folder containing the video 
+            we are extracting and getting the pose data from.
+        
+        Returns:
+            A list of dictionaries; each dictionary has the form: 
+            {
+                timestamp (float): timestamp from ARFrame
+                translation ([float]): the translation values of [x, y, z] in 
+                    that order
+                rotationMatrix ([float]): 4x4 rotation matrix of the frame 
+                    flattened into a single list by row
+                quatImag ([float]): list of 3 imaginary values of the 
+                    quaternion
+                quatReal (float): real part of the quaternion
+            }
+        """
+        
+        print(f'[INFO]: Reading pose protobuf {extract_path}')
+        pose_path = extract_path / "pose.proto"
+        pose_data = Pose.PoseData()
+        with open(pose_path, "rb") as fd:
+            pose_data.ParseFromString(fd.read())
+            pose_list = []
+            for value in pose_data.mappingPhase.measurements:
+                t = value.timestamp
+                translation = value.poseTranslation
+                rotationMatrix = value.rotMatrix
+                quatImag = value.quatImag
+                quatReal = value.quatReal
+                pose = {"timestamp": t, "translation": translation, "rotationMatrix": rotationMatrix, "quatImag": quatImag, "quatReal": quatReal}
+                pose_list.append(pose)
+            
+            return pose_list
+        
 # test the extractor here
 if __name__ == '__main__':
     downloader_1 = FirebaseDownloader()
-    downloader_1.extract_ios_logger_tar("iosLoggerDemo/DQP1QbWk6WVZOFN6OpZiQXsfpsB3",
-                                        "27FB2D9E-5898-4DC9-97AB-7D08F231E649.tar")
+    downloader_1.extract_ios_logger_tar("iosLoggerDemo/Ljur5BYFXdhsGnAlEsmjqyNG5fJ2",
+                                        "EE27F9BE-63AC-4343-B149-1816EC6EF2C7.tar")
