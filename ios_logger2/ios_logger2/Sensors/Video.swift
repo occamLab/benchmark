@@ -33,6 +33,8 @@ class CurrentVideo {
         encoderInput = AVAssetWriterInput(mediaType: AVMediaType.video, outputSettings: outputSettings)
         bufferInput = AVAssetWriterInputPixelBufferAdaptor(assetWriterInput: encoderInput, sourcePixelBufferAttributes: nil)
         bufferInput.assetWriterInput.expectsMediaDataInRealTime = true
+        // see https://stackoverflow.com/a/43337235 on why this is important
+        bufferInput.assetWriterInput.mediaTimeScale = 600000000 // something really high to avoid rounding errors
         
         if(encoder.canAdd(encoderInput)) {
             encoder.add(encoderInput)
