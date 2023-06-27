@@ -3,8 +3,9 @@ syntax = "proto3";
 message PoseTimestamp {
     double timestamp = 1;
     repeated float poseTranslation = 2;
-    repeated float quatImag = 3;
-    float quatReal = 4;
+    repeated float rotMatrix = 3;
+    repeated float quatImag = 4;
+    float quatReal = 5;
 }
 
 message PoseData {
