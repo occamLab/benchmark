@@ -1,11 +1,10 @@
 from firebase_admin import credentials, storage, initialize_app
-
 import anchor.backend.data.extracted
+import anchor.backend.data.proto.pose_pb2 as Pose
 import anchor.backend.data.proto.intrinsics_pb2 as Intrinsics
 import anchor.backend.data.proto.video_pb2 as video_pb2
-import anchor.backend.data.proto.pose_pb2 as Pose
+
 from pathlib import Path
-import cv2
 import shutil
 import tempfile
 import av
@@ -61,6 +60,7 @@ class FirebaseDownloader:
 
         self.extract_ios_logger_video(extract_path / "mapping-video.mp4", True)
         self.extract_ios_logger_video(extract_path / "localization-video.mp4", False)
+
 
         self.extract_intrinsics(extract_path, True)
         self.extract_intrinsics(extract_path, False)
@@ -120,10 +120,6 @@ class FirebaseDownloader:
 
     def extract_pose(self, extract_path: Path, mapping_phase: bool):
         """
-        Returns a list of dictionaries each containing a timestamp, 
-        translation, rotation matrix, and the real and imaginary parts of the 
-        quaternion for each frame in the video's mapping phase.
-        
         Args: 
             extract_path (str): the path to the folder containing the video 
             we are extracting and getting the pose data from.
