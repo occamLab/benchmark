@@ -42,6 +42,7 @@ class FirebaseDownloader:
         shutil.unpack_archive(FirebaseDownloader.root_download_dir / tarName, extract_dir=extract_path)
 
         # extract the videos
+
         self.extract_ios_logger_video(extract_path / "mapping-video.mp4")
         self.extract_ios_logger_video(extract_path / "localization-video.mp4")
         self.extract_protobuf(extract_path)
@@ -61,6 +62,7 @@ class FirebaseDownloader:
             frame_num += 1
         video.release()
     
+
     def extract_protobuf(self, extract_path: Path):
         """
         Returns a list of dictionaries each containing a timestamp and the four
