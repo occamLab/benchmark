@@ -12,8 +12,8 @@ conda activate anchor
 # install ace subdependency
 pip install -e ../third_party/ace/dsacstar
 
-# download hloc deps
-pip install -e ../third_party/Hierarchical-Localization
+# install pyav video library https://pyav.org/docs/stable/
+conda install av -c conda-forge
 
 # download our deps
 pip install firebase-admin==6.1.0
