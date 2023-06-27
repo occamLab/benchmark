@@ -1,9 +1,12 @@
 from firebase_admin import credentials, storage, initialize_app
-import proto.intrinsics_pb2 as Intrinsics
+import anchor.backend.data.proto.intrinsics_pb2 as Intrinsics
+import anchor.backend.data.proto.video_pb2 as video_pb2
+
 from pathlib import Path
 import cv2
 import shutil
 import tempfile
+import av
 
 
 class FirebaseDownloader:
@@ -43,25 +46,36 @@ class FirebaseDownloader:
 
         # extract the videos
 
-        self.extract_ios_logger_video(extract_path / "mapping-video.mp4")
-        self.extract_ios_logger_video(extract_path / "localization-video.mp4")
+        self.extract_ios_logger_video(extract_path / "mapping-video.mp4", True)
+        self.extract_ios_logger_video(extract_path / "localization-video.mp4", False)
         self.extract_protobuf(extract_path)
 
         return extract_path / "extracted"
 
-    def extract_ios_logger_video(self, video_path: Path):
+    def extract_ios_logger_video(self, video_path: Path, mapping_phase: bool):
         print(f'[INFO]: Extracting video {video_path} to frames')
-        video = cv2.VideoCapture(video_path.as_posix())
-        ret, frame = video.read()
-        frame_num: int = 0
-        while ret:
-            frame_path: Path = video_path.parent / "extracted" / video_path.stem / f'{frame_num}.jpg'
+        metadata_path = video_path.parent / "video.proto"
+        video_metadata = video_pb2.VideoData()
+
+        with open(metadata_path, "rb") as fd:
+            video_metadata.ParseFromString(fd.read())
+
+        if mapping_phase:
+            video_start = video_metadata.mappingPhase.videoAttributes.videoStartUnixTimestamp
+        else:
+            video_start = video_metadata.localizationPhase.videoAttributes.videoStartUnixTimestamp
+
+        container = av.open(video_path.as_posix())
+
+
+        for frame in container.decode():
+
+            image_timestamp = video_start + float(frame.pts * frame.time_base)
+            frame_path: Path = video_path.parent / "extracted" / video_path.stem / f'{frame.index}.jpg'
             frame_path.parent.mkdir(parents=True, exist_ok=True)
-            cv2.imwrite(frame_path.as_posix(), frame)
-            ret, frame = video.read()
-            frame_num += 1
-        video.release()
-    
+            frame.to_image().save(frame_path.as_posix())
+            print(image_timestamp)
+
 
     def extract_protobuf(self, extract_path: Path):
         """
@@ -83,17 +97,18 @@ class FirebaseDownloader:
         with open(intrinsics_path, "rb") as fd:
             intrinsics_data.ParseFromString(fd.read())
             intrinsics_list = []
-            for value in intrinsics_data.mappingPhase.measurements:
+            for value in intrinsics_data.localizationPhase.measurements:
                 k = value.cameraIntrinsics
                 fx, fy, cx, cy = k[0], k[4], k[6], k[7]
                 t = value.timestamp
                 intrinsics = {"timestamp": t, "fx": fx, "fy": fy, "cx": cx, "cy": cy}
                 intrinsics_list.append(intrinsics)
-            
+                print("timestamp ", t)
+            print(len(intrinsics_list))
             return(intrinsics_list)
         
 # test the extractor here
 if __name__ == '__main__':
     downloader_1 = FirebaseDownloader()
-    downloader_1.extract_ios_logger_tar("iosLoggerDemo/DQP1QbWk6WVZOFN6OpZiQXsfpsB3",
-                                        "27FB2D9E-5898-4DC9-97AB-7D08F231E649.tar")
+    downloader_1.extract_ios_logger_tar("iosLoggerDemo/Ljur5BYFXdhsGnAlEsmjqyNG5fJ2",
+                                        "047F9850-20BB-4AC0-9650-C2558C9EFC03.tar")
