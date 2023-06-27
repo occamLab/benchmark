@@ -15,7 +15,6 @@ class CurrentVideo {
     let encoder: AVAssetWriter
     let encoderInput: AVAssetWriterInput
     let bufferInput: AVAssetWriterInputPixelBufferAdaptor
-    let frameRate: Int32 = 60
     
     init() {
         fileLocation = NSURL.fileURL(withPathComponents: [NSTemporaryDirectory(), NSUUID().uuidString])!
@@ -34,7 +33,9 @@ class CurrentVideo {
         bufferInput = AVAssetWriterInputPixelBufferAdaptor(assetWriterInput: encoderInput, sourcePixelBufferAttributes: nil)
         bufferInput.assetWriterInput.expectsMediaDataInRealTime = true
         // see https://stackoverflow.com/a/43337235 on why this is important
-        bufferInput.assetWriterInput.mediaTimeScale = 600000000 // something really high to avoid rounding errors
+        // we want to be able to extract the timestep from the frame themselves later by looking at the PTS (presentation time stamp) of every video frame
+        // this is because some frames might be dropped by the video encoder that is outside of our control
+        bufferInput.assetWriterInput.mediaTimeScale = Int32(1e9) // something really high to avoid rounding errors
         
         if(encoder.canAdd(encoderInput)) {
             encoder.add(encoderInput)
@@ -62,6 +63,7 @@ class Video: Sensor, SensorProtocol {
     
     
     func collectData(motion: CMDeviceMotion?, frame: ARFrame?) {
+
         if(frame != nil) {
             initialTimestamp = initialTimestamp ?? frame!.timestamp // set the first frame time as reference if needed
             // save the absolute time when the video started into metadata attributes if needed
@@ -77,7 +79,8 @@ class Video: Sensor, SensorProtocol {
             if(currentVideo.encoderInput.isReadyForMoreMediaData) {
                 // the bufferTimestamp should conform to value/timescale = seconds since atSourceTime (CMTime.zero)
                 let imageBuffer: CVPixelBuffer = frame!.capturedImage
-                let bufferTimestamp: CMTime = CMTimeMake(value: Int64(timeSinceStart * Double(currentVideo.frameRate) * 1000.0), timescale: currentVideo.frameRate * 1000)
+                // something large here as the timescale to avoid rounding errors on the timestamp when it gets downcast to an int
+                let bufferTimestamp: CMTime = CMTimeMake(value: Int64(timeSinceStart * 2e9), timescale: Int32(2e9))
                 if(!currentVideo.bufferInput.append(imageBuffer, withPresentationTime: bufferTimestamp)) {
                    // print("[WARN]: Failed to add ARFrame to video buffer")
                 }
