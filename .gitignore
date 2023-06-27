@@ -1,15 +1,20 @@
 ###################################### USER GITINORE ##################################################################################################
-stepnavigation-firebase-adminsdk-service-account.json # firebase admin account
-anchor/stepnavigation-firebase-adminsdk-service-account.json
-GoogleService-Info.plist # firebase client account
-Secrets.swift # google cloud anchors api key under benchmark
-ios_logger2.xcodeproj/xcuserdata/* # annoying xcode diffs
-ios_logger2/ios_logger2.xcodeproj/project.xcworkspace/xcuserdata # annoying xcode diffs
-xcuserdata/ # annoying xcode diffs
-project.xcworkspace/ # annoying xcode diffs
-*.pb.swift # auto-generataed protobuf files
-*.xcuserstate # annoying xcode diffs
-opencv2.framework # opencv dependency build files for benchmark
+stepnavigation-firebase-adminsdk-service-account.json 
+GoogleService-Info.plist
+Secrets.swift 
+Secrets/
+ios_logger2.xcodeproj/xcuserdata/* 
+ios_logger2/ios_logger2.xcodeproj/project.xcworkspace/xcuserdata 
+xcuserdata/ 
+project.xcworkspace/ 
+*.pb.swift 
+*.xcuserstate 
+WorkspaceSettings.xcsettings
+project.xcworkspace/xcuserdata/
+xcuserdata/
+xcdebugger
+opencv2.framework/
+codegen/
 *.mp4
 ###################################### USER GITINORE ##################################################################################################
 
