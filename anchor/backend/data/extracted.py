@@ -8,6 +8,7 @@ import json
 import json
 >>>>>>> af77226 (frame matching working)
 
+
 class Extracted:
 
     def __init__(self):
@@ -71,7 +72,8 @@ class Extracted:
         sensor_idx = 0
         match_count = 0
 
-        while frame_idx < len(self.sensors_extracted[phase]["video"]) and sensor_idx < len(self.sensors_extracted[phase][match_against]):
+        while frame_idx < len(self.sensors_extracted[phase]["video"]) and sensor_idx < len(
+                self.sensors_extracted[phase][match_against]):
             frame_timestamp = self.sensors_extracted[phase]["video"][frame_idx]["timestamp"]
             sensor_timestamp = self.sensors_extracted[phase][match_against][sensor_idx]["timestamp"]
 
@@ -87,8 +89,10 @@ class Extracted:
             else:
                 frame_idx += 1
 
-        print(f'[INFO]: Matched {match_count} video frames out of {len(self.sensors_extracted[phase]["video"])} total frames in {phase} with {match_against}')
-        assert match_count == len(self.sensors_extracted[phase]["video"]), "failed to match all video frames to sensor data"
+        print(
+            f'[INFO]: Matched {match_count} video frames out of {len(self.sensors_extracted[phase]["video"])} total frames in {phase} with {match_against}')
+        assert match_count == len(
+            self.sensors_extracted[phase]["video"]), "failed to match all video frames to sensor data"
 
     def match_all_sensor(self):
         for phase in self.sensors_extracted:
