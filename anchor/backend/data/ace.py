@@ -40,9 +40,9 @@ def prepare_ace_data(extracted_data: Extracted):
             with open(dest_pose_path, "w") as pose_file:
                 pose_data = data["poses"]["rotationMatrix"]
                 pose_file.write(
-                    f'{pose_data[0]} {pose_data[1]} {pose_data[2]} {pose_data[3]}' +
-                    f'{pose_data[4]} {pose_data[5]} {pose_data[6]} {pose_data[7]}' +
-                    f'{pose_data[8]} {pose_data[9]} {pose_data[10]} {pose_data[11]}' +
+                    f'{pose_data[0]} {pose_data[1]} {pose_data[2]} {pose_data[3]}\n' +
+                    f'{pose_data[4]} {pose_data[5]} {pose_data[6]} {pose_data[7]}\n' +
+                    f'{pose_data[8]} {pose_data[9]} {pose_data[10]} {pose_data[11]}\n' +
                     f'{pose_data[12]} {pose_data[13]} {pose_data[14]} {pose_data[15]}'
                 )
 
