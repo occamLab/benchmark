@@ -24,9 +24,9 @@ class Extracted:
         return "mapping_phase" if mapping_phase else "localization_phase"
 
     # append a video timestamp to the extracted data
-    def append_video_timestamp(self, timestamp: int, frame_num: int, mapping_phase: bool):
+    def append_video_timestamp(self, timestamp: int, frame_path: Path, frame_num: int, mapping_phase: bool):
         phase = Extracted.get_phase_key(mapping_phase)
-        self.sensors_extracted[phase]["video"].append({"timestamp": timestamp, "frame_num": frame_num})
+        self.sensors_extracted[phase]["video"].append({"timestamp": timestamp, "frame_path": frame_path, "frame_num": frame_num})
 
     def append_intrinsics_data(self, timestamp: int, fx: float, fy: float, cx: float, cy: float, mapping_phase: bool):
         phase = Extracted.get_phase_key(mapping_phase)

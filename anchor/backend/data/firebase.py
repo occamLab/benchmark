@@ -97,7 +97,7 @@ class FirebaseDownloader:
             frame_path: Path = video_path.parent / "extracted" / video_path.stem / f'{frame.index}.jpg'
             frame_path.parent.mkdir(parents=True, exist_ok=True)
             frame.to_image().save(frame_path.as_posix())
-            self.extracted_data.append_video_timestamp(image_timestamp, frame.index, mapping_phase)
+            self.extracted_data.append_video_timestamp(image_timestamp, frame_path, frame.index, mapping_phase)
 
     def extract_intrinsics(self, extract_path: Path, mapping_phase: bool):
         """
