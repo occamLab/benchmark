@@ -3,4 +3,5 @@
 	url = https://github.com/cvg/Hierarchical-Localization
 [submodule "third_party/ace"]
 	path = third_party/ace
-	url = https://github.com/nianticlabs/ace
+	url = https://github.com/Mickmcginnis
+	branch = intrinsics_matrix
