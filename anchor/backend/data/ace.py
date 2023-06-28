@@ -39,6 +39,7 @@ def prepare_ace_data(extracted_data: Extracted):
             dest_pose_path.parent.mkdir(parents=True, exist_ok=True)
             with open(dest_pose_path, "w") as pose_file:
                 pose_data = data["poses"]["rotationMatrix"]
+                print(pose_data)
                 pose_file.write(
                     f'{pose_data[0]} {pose_data[1]} {pose_data[2]} {pose_data[3]}\n' +
                     f'{pose_data[4]} {pose_data[5]} {pose_data[6]} {pose_data[7]}\n' +
@@ -50,7 +51,7 @@ def prepare_ace_data(extracted_data: Extracted):
 
 # test the extractor here
 if __name__ == '__main__':
-    downloader = FirebaseDownloader("iosLoggerDemo/Ljur5BYFXdhsGnAlEsmjqyNG5fJ2",
-                                    "047F9850-20BB-4AC0-9650-C2558C9EFC03.tar")
+    downloader = FirebaseDownloader("iosLoggerDemo/DQP1QbWk6WVZOFN6OpZiQXsfpsB3",
+                                    "7FFA6010-BE0A-4EBA-BA5A-79014FECB76C.tar")
     downloader.extract_ios_logger_tar()
     prepare_ace_data(downloader.extracted_data)
