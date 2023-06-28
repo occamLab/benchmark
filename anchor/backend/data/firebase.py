@@ -1,11 +1,10 @@
 from firebase_admin import credentials, storage, initialize_app
-
 import anchor.backend.data.extracted
+import anchor.backend.data.proto.pose_pb2 as Pose
 import anchor.backend.data.proto.intrinsics_pb2 as Intrinsics
 import anchor.backend.data.proto.video_pb2 as video_pb2
-import anchor.backend.data.proto.pose_pb2 as Pose
+
 from pathlib import Path
-import cv2
 import shutil
 import tempfile
 import av
@@ -21,14 +20,21 @@ class FirebaseDownloader:
     # the root of where we download
     root_download_dir: Path = Path(tempfile.gettempdir()) / "benchmark"
 
-    def __init__(self):
+    def __init__(self, firebase_dir: str, tar_name: str):
         # initialize_app should be called only once globally
         if not FirebaseDownloader.initialized:
             cred = credentials.Certificate(FirebaseDownloader.service_account_path)
             initialize_app(cred)
             FirebaseDownloader.initialized = True
 
-        self.extracted_data = anchor.backend.data.extracted.Extracted()
+        self.firebase_dir = firebase_dir
+        self.tar_name = tar_name
+
+        self.local_tar_location = FirebaseDownloader.root_download_dir / self.tar_name
+        self.local_extraction_location = FirebaseDownloader.root_download_dir / Path(self.tar_name).stem
+
+        self.extracted_data = anchor.backend.data.extracted.Extracted(self.local_extraction_location)
+
 
     @staticmethod
     def proto_with_phase(given_proto: any, mapping_phase: bool):
@@ -43,36 +49,36 @@ class FirebaseDownloader:
         blob = bucket.blob(remote_location)
         blob.download_to_filename(filename=local_location)
 
-    def extract_ios_logger_tar(self, firebaseDir: str, tarName: str) -> Path:
+    def extract_ios_logger_tar(self) -> Path:
         FirebaseDownloader.root_download_dir.mkdir(parents=True, exist_ok=True)
-        if (FirebaseDownloader.root_download_dir / tarName).exists():
-            print(f'[INFO]: Skipping download tar {tarName} as it already exists')
+        if self.local_tar_location.exists():
+            print(f'[INFO]: Skipping download tar {self.tar_name} as it already exists')
         else:
-            self.download_file((Path(firebaseDir) / tarName).as_posix(),
-                               (FirebaseDownloader.root_download_dir / tarName).as_posix())
-            print(f'[INFO]: Downloaded tar {tarName} as it has not been found locally')
+            self.download_file((Path(self.firebase_dir) / self.tar_name).as_posix(),
+                               self.local_tar_location.as_posix())
+            print(f'[INFO]: Downloaded tar {self.tar_name} as it has not been found locally')
 
         # unpack the tar itself and cleanup and previous extractions
-        extract_path: Path = FirebaseDownloader.root_download_dir / Path(tarName).stem
-        shutil.rmtree(extract_path, ignore_errors=True)
-        shutil.unpack_archive(FirebaseDownloader.root_download_dir / tarName, extract_dir=extract_path)
+        shutil.rmtree(self.local_extraction_location, ignore_errors=True)
+        shutil.unpack_archive(self.local_tar_location, extract_dir=self.local_extraction_location)
 
         # extract the videos
 
-        self.extract_ios_logger_video(extract_path / "mapping-video.mp4", True)
-        self.extract_ios_logger_video(extract_path / "localization-video.mp4", False)
+        self.extract_ios_logger_video(self.local_extraction_location / "mapping-video.mp4", True)
+        self.extract_ios_logger_video(self.local_extraction_location / "localization-video.mp4", False)
 
-        self.extract_intrinsics(extract_path, True)
-        self.extract_intrinsics(extract_path, False)
 
-        self.extract_pose(extract_path, True)
-        self.extract_pose(extract_path, False)
+        self.extract_intrinsics(self.local_extraction_location, True)
+        self.extract_intrinsics(self.local_extraction_location, False)
+
+        self.extract_pose(self.local_extraction_location, True)
+        self.extract_pose(self.local_extraction_location, False)
 
         # print(self.extracted_data.sensors_extracted)
         self.extracted_data.match_all_sensor()
 
 
-        return extract_path / "extracted"
+        return self.local_extraction_location / "extracted"
 
     def extract_ios_logger_video(self, video_path: Path, mapping_phase: bool):
         print(f'[INFO]: Extracting video {video_path} to frames')
@@ -91,7 +97,7 @@ class FirebaseDownloader:
             frame_path: Path = video_path.parent / "extracted" / video_path.stem / f'{frame.index}.jpg'
             frame_path.parent.mkdir(parents=True, exist_ok=True)
             frame.to_image().save(frame_path.as_posix())
-            self.extracted_data.append_video_timestamp(image_timestamp, frame.index, mapping_phase)
+            self.extracted_data.append_video_timestamp(image_timestamp, frame_path, frame.index, mapping_phase)
 
     def extract_intrinsics(self, extract_path: Path, mapping_phase: bool):
         """
@@ -120,10 +126,6 @@ class FirebaseDownloader:
 
     def extract_pose(self, extract_path: Path, mapping_phase: bool):
         """
-        Returns a list of dictionaries each containing a timestamp, 
-        translation, rotation matrix, and the real and imaginary parts of the 
-        quaternion for each frame in the video's mapping phase.
-        
         Args: 
             extract_path (str): the path to the folder containing the video 
             we are extracting and getting the pose data from.
@@ -164,6 +166,5 @@ class FirebaseDownloader:
 
 # test the extractor here
 if __name__ == '__main__':
-    downloader_1 = FirebaseDownloader()
-    downloader_1.extract_ios_logger_tar("iosLoggerDemo/Ljur5BYFXdhsGnAlEsmjqyNG5fJ2",
-                                        "047F9850-20BB-4AC0-9650-C2558C9EFC03.tar")
+    downloader_1 = FirebaseDownloader("iosLoggerDemo/Ljur5BYFXdhsGnAlEsmjqyNG5fJ2", "047F9850-20BB-4AC0-9650-C2558C9EFC03.tar")
+    downloader_1.extract_ios_logger_tar()

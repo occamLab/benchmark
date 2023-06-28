@@ -1,9 +1,10 @@
-import json
+from pathlib import Path
+
 
 
 class Extracted:
 
-    def __init__(self):
+    def __init__(self, extract_root: Path):
         self.sensors_extracted = {
             "mapping_phase": {
                 "intrinsics": [],
@@ -16,17 +17,17 @@ class Extracted:
                 "video": [],
             }
         }
+        self.extract_root = extract_root
 
     @staticmethod
     def get_phase_key(mapping_phase: bool):
         return "mapping_phase" if mapping_phase else "localization_phase"
 
     # append a video timestamp to the extracted data
-    def append_video_timestamp(self, timestamp: int, frame_num: int, mapping_phase: bool):
+    def append_video_timestamp(self, timestamp: int, frame_path: Path, frame_num: int, mapping_phase: bool):
         phase = Extracted.get_phase_key(mapping_phase)
-        self.sensors_extracted[phase]["video"].append({"timestamp": timestamp, "frame_num": frame_num})
+        self.sensors_extracted[phase]["video"].append({"timestamp": timestamp, "frame_path": frame_path, "frame_num": frame_num})
 
-    # append a timestamp with intrinsics data
     def append_intrinsics_data(self, timestamp: int, fx: float, fy: float, cx: float, cy: float, mapping_phase: bool):
         phase = Extracted.get_phase_key(mapping_phase)
         intrinsics = {"timestamp": timestamp, "fx": fx, "fy": fy, "cx": cx, "cy": cy}
