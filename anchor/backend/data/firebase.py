@@ -1,4 +1,6 @@
 from firebase_admin import credentials, storage, initialize_app
+
+import anchor.backend.data.extracted
 import anchor.backend.data.proto.intrinsics_pb2 as Intrinsics
 import anchor.backend.data.proto.video_pb2 as video_pb2
 import anchor.backend.data.proto.pose_pb2 as Pose
@@ -26,6 +28,16 @@ class FirebaseDownloader:
             initialize_app(cred)
             FirebaseDownloader.initialized = True
 
+        self.extracted_data = anchor.backend.data.extracted.Extracted()
+
+    @staticmethod
+    def proto_with_phase(given_proto: any, mapping_phase: bool):
+        """
+            Gets the phase message from the proto object. We encode all of our protos
+            with the phase that the data was collected in.
+        """
+        return getattr(given_proto, "mappingPhase" if mapping_phase else "localizationPhase")
+
     def download_file(self, remote_location: str, local_location: str):
         bucket = storage.bucket(FirebaseDownloader.firebase_bucket_name)
         blob = bucket.blob(remote_location)
@@ -36,7 +48,8 @@ class FirebaseDownloader:
         if (FirebaseDownloader.root_download_dir / tarName).exists():
             print(f'[INFO]: Skipping download tar {tarName} as it already exists')
         else:
-            self.download_file((Path(firebaseDir) / tarName).as_posix(), (FirebaseDownloader.root_download_dir / tarName).as_posix())
+            self.download_file((Path(firebaseDir) / tarName).as_posix(),
+                               (FirebaseDownloader.root_download_dir / tarName).as_posix())
             print(f'[INFO]: Downloaded tar {tarName} as it has not been found locally')
 
         # unpack the tar itself and cleanup and previous extractions
@@ -48,9 +61,15 @@ class FirebaseDownloader:
 
         self.extract_ios_logger_video(extract_path / "mapping-video.mp4", True)
         self.extract_ios_logger_video(extract_path / "localization-video.mp4", False)
-        self.extract_protobuf(extract_path)
-        self.extract_intrinsics(extract_path)
-        self.extract_pose(extract_path)
+
+        self.extract_intrinsics(extract_path, True)
+        self.extract_intrinsics(extract_path, False)
+
+        self.extract_pose(extract_path, True)
+        self.extract_pose(extract_path, False)
+
+        print(self.extracted_data.sensors_extracted)
+
 
         return extract_path / "extracted"
 
@@ -62,24 +81,18 @@ class FirebaseDownloader:
         with open(metadata_path, "rb") as fd:
             video_metadata.ParseFromString(fd.read())
 
-        if mapping_phase:
-            video_start = video_metadata.mappingPhase.videoAttributes.videoStartUnixTimestamp
-        else:
-            video_start = video_metadata.localizationPhase.videoAttributes.videoStartUnixTimestamp
+        video_start = FirebaseDownloader.proto_with_phase(video_metadata, mapping_phase).videoAttributes.videoStartUnixTimestamp
 
         container = av.open(video_path.as_posix())
 
-
         for frame in container.decode():
-
             image_timestamp = video_start + float(frame.pts * frame.time_base)
             frame_path: Path = video_path.parent / "extracted" / video_path.stem / f'{frame.index}.jpg'
             frame_path.parent.mkdir(parents=True, exist_ok=True)
             frame.to_image().save(frame_path.as_posix())
-            print(image_timestamp)
+            self.extracted_data.append_video_timestamp(image_timestamp, mapping_phase)
 
-
-    def extract_intrinsics(self, extract_path: Path):
+    def extract_intrinsics(self, extract_path: Path, mapping_phase: bool):
         """
         Returns a list of dictionaries each containing a timestamp and the four
         intrinsics for each frame in the video's mapping phase.
@@ -87,30 +100,25 @@ class FirebaseDownloader:
         Args: 
             extract_path (str): the path to the folder containing the video 
             we are extracting and getting the intrinsics data from.
+            mapping_phase (bool): determines which phase we are in (mapping/localization)
         
-        Returns:
-            A list of dictionaries; each dictionary has attributes timestamp,
-            fx, fy, cx, and cy for a particular frame.
+        Returns: (void)
+            Appends data to the Extracted class
         """
-        
+
         print(f'[INFO]: Reading intrinsics protobuf {extract_path}')
         intrinsics_path = extract_path / "intrinsics.proto"
         intrinsics_data = Intrinsics.IntrinsicsData()
         with open(intrinsics_path, "rb") as fd:
             intrinsics_data.ParseFromString(fd.read())
-            intrinsics_list = []
 
             for value in intrinsics_data.mappingPhase.measurements:
                 t = value.timestamp
                 k = value.cameraIntrinsics
                 fx, fy, cx, cy = k[0], k[4], k[6], k[7]
-                intrinsics = {"timestamp": t, "fx": fx, "fy": fy, "cx": cx, "cy": cy}
-                intrinsics_list.append(intrinsics)
-                print("timestamp ", t)
-            print(len(intrinsics_list))
-            return(intrinsics_list)
-        
-    def extract_pose(self, extract_path: Path):
+                self.extracted_data.append_intrinsics_data(t, fx, fy, cx, cy, mapping_phase)
+
+    def extract_pose(self, extract_path: Path, mapping_phase: bool):
         """
         Returns a list of dictionaries each containing a timestamp, 
         translation, rotation matrix, and the real and imaginary parts of the 
@@ -119,8 +127,12 @@ class FirebaseDownloader:
         Args: 
             extract_path (str): the path to the folder containing the video 
             we are extracting and getting the pose data from.
+            mapping_phase (bool): determines which phase we are in (mapping/localization)
+
         
-        Returns:
+        Returns: (void)
+            Appends data to the Extracted class with the following form:
+
             A list of dictionaries; each dictionary has the form: 
             {
                 timestamp (float): timestamp from ARFrame
@@ -133,24 +145,23 @@ class FirebaseDownloader:
                 quatReal (float): real part of the quaternion
             }
         """
-        
+
         print(f'[INFO]: Reading pose protobuf {extract_path}')
         pose_path = extract_path / "pose.proto"
         pose_data = Pose.PoseData()
         with open(pose_path, "rb") as fd:
             pose_data.ParseFromString(fd.read())
-            pose_list = []
             for value in pose_data.mappingPhase.measurements:
                 t = value.timestamp
                 translation = value.poseTranslation
                 rotationMatrix = value.rotMatrix
                 quatImag = value.quatImag
                 quatReal = value.quatReal
-                pose = {"timestamp": t, "translation": translation, "rotationMatrix": rotationMatrix, "quatImag": quatImag, "quatReal": quatReal}
-                pose_list.append(pose)
-            
-            return pose_list
-        
+                pose = {"timestamp": t, "translation": translation, "rotationMatrix": rotationMatrix,
+                        "quatImag": quatImag, "quatReal": quatReal}
+                self.extracted_data.append_pose_data(pose, mapping_phase)
+
+
 # test the extractor here
 if __name__ == '__main__':
     downloader_1 = FirebaseDownloader()
