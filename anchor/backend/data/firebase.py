@@ -68,7 +68,8 @@ class FirebaseDownloader:
         self.extract_pose(extract_path, True)
         self.extract_pose(extract_path, False)
 
-        print(self.extracted_data.sensors_extracted)
+        # print(self.extracted_data.sensors_extracted)
+        self.extracted_data.match_all_sensor()
 
 
         return extract_path / "extracted"
@@ -90,7 +91,7 @@ class FirebaseDownloader:
             frame_path: Path = video_path.parent / "extracted" / video_path.stem / f'{frame.index}.jpg'
             frame_path.parent.mkdir(parents=True, exist_ok=True)
             frame.to_image().save(frame_path.as_posix())
-            self.extracted_data.append_video_timestamp(image_timestamp, mapping_phase)
+            self.extracted_data.append_video_timestamp(image_timestamp, frame.index, mapping_phase)
 
     def extract_intrinsics(self, extract_path: Path, mapping_phase: bool):
         """
@@ -111,8 +112,7 @@ class FirebaseDownloader:
         intrinsics_data = Intrinsics.IntrinsicsData()
         with open(intrinsics_path, "rb") as fd:
             intrinsics_data.ParseFromString(fd.read())
-
-            for value in intrinsics_data.mappingPhase.measurements:
+            for value in FirebaseDownloader.proto_with_phase(intrinsics_data, mapping_phase).measurements:
                 t = value.timestamp
                 k = value.cameraIntrinsics
                 fx, fy, cx, cy = k[0], k[4], k[6], k[7]
@@ -151,7 +151,7 @@ class FirebaseDownloader:
         pose_data = Pose.PoseData()
         with open(pose_path, "rb") as fd:
             pose_data.ParseFromString(fd.read())
-            for value in pose_data.mappingPhase.measurements:
+            for value in FirebaseDownloader.proto_with_phase(pose_data, mapping_phase).measurements:
                 t = value.timestamp
                 translation = value.poseTranslation
                 rotationMatrix = value.rotMatrix
