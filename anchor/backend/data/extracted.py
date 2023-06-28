@@ -1,17 +1,10 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-import json
-=======
->>>>>>> 2e83ea1 (move data object into external class)
+from pathlib import Path
 
-=======
-import json
->>>>>>> af77226 (frame matching working)
 
 
 class Extracted:
 
-    def __init__(self):
+    def __init__(self, extract_root: Path):
         self.sensors_extracted = {
             "mapping_phase": {
                 "intrinsics": [],
@@ -24,6 +17,7 @@ class Extracted:
                 "video": [],
             }
         }
+        self.extract_root = extract_root
 
     @staticmethod
     def get_phase_key(mapping_phase: bool):
