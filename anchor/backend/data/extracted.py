@@ -28,11 +28,6 @@ class Extracted:
         phase = Extracted.get_phase_key(mapping_phase)
         self.sensors_extracted[phase]["video"].append({"timestamp": timestamp, "frame_num": frame_num})
 
-    # append a timestamp with intrinsics data
-    def append_video_timestamp(self, timestamp: int, frame_num: int, mapping_phase: bool):
-        phase = Extracted.get_phase_key(mapping_phase)
-        self.sensors_extracted[phase]["video"].append({"timestamp": timestamp, "frame_num": frame_num})
-
     def append_intrinsics_data(self, timestamp: int, fx: float, fy: float, cx: float, cy: float, mapping_phase: bool):
         phase = Extracted.get_phase_key(mapping_phase)
         intrinsics = {"timestamp": timestamp, "fx": fx, "fy": fy, "cx": cx, "cy": cy}
