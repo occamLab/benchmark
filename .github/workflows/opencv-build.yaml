@@ -5,7 +5,7 @@ on:
 
 jobs:
   build:
-    runs-on: macos-12
+    runs-on: macos-13
 
     steps:
       - name: actions-setup-cmake
@@ -56,4 +56,4 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: opencv2.framework.zip
-          tag_name: 1.1
+          tag_name: 1.2
