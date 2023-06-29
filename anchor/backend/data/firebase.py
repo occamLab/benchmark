@@ -8,6 +8,7 @@ from pathlib import Path
 import shutil
 import tempfile
 import av
+import copy
 
 
 class FirebaseDownloader:
@@ -91,11 +92,15 @@ class FirebaseDownloader:
         video_start = FirebaseDownloader.proto_with_phase(video_metadata, mapping_phase).videoAttributes.videoStartUnixTimestamp
 
         container = av.open(video_path.as_posix())
+        container.streams.video[0].thread_type = "AUTO"
+
+        video_folder_path = Path = video_path.parent / "extracted" / video_path.stem
+        video_folder_path.mkdir(parents=True, exist_ok=True)
 
         for frame in container.decode():
+            print(frame)
             image_timestamp = video_start + float(frame.pts * frame.time_base)
-            frame_path: Path = video_path.parent / "extracted" / video_path.stem / f'{frame.index}.jpg'
-            frame_path.parent.mkdir(parents=True, exist_ok=True)
+            frame_path: Path = video_folder_path/ f'{frame.index}.jpg'
             frame.to_image().save(frame_path.as_posix())
             self.extracted_data.append_video_timestamp(image_timestamp, frame_path, frame.index, mapping_phase)
 
@@ -156,11 +161,17 @@ class FirebaseDownloader:
             for value in FirebaseDownloader.proto_with_phase(pose_data, mapping_phase).measurements:
                 t = value.timestamp
                 translation = value.poseTranslation
-                rotationMatrix = value.rotMatrix
-                quatImag = value.quatImag
-                quatReal = value.quatReal
-                pose = {"timestamp": t, "translation": translation, "rotationMatrix": rotationMatrix,
-                        "quatImag": quatImag, "quatReal": quatReal}
+                rotation_matrix = value.rotMatrix
+                quat_imag = value.quatImag
+                quat_real = value.quatReal
+                pose = {
+                    "timestamp": t,
+                    "translation": translation,
+                    "rotation_matrix": rotation_matrix,
+                    "quat_imag": quat_imag,
+                    "quat_real": quat_real
+                }
+                print(pose)
                 self.extracted_data.append_pose_data(pose, mapping_phase)
 
 
