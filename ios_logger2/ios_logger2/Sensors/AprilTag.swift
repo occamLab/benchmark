@@ -14,7 +14,7 @@ import CoreMotion
 extension UIImage {
     public convenience init?(pixelBuffer: CVPixelBuffer) {
         var cgImage: CGImage?
-        Motion.shared.arView?.debugOptions = [.showWorldOrigin]
+        Motion.shared.arView.debugOptions = [.showWorldOrigin]
         VTCreateCGImageFromCVPixelBuffer(pixelBuffer, options: nil, imageOut: &cgImage)
 
         guard let cgImage = cgImage else {
@@ -141,7 +141,7 @@ class AprilTag: Sensor, SensorProtocol {
                         // Show cyan square over April tag
                         let tagNode: SCNNode
                         // Update existing April tag's position
-                        if let existingTagNode = Motion.shared.arView?.scene.rootNode.childNode(withName: "Tag_\(String(id))", recursively: false)  {
+                        if let existingTagNode = Motion.shared.arView.scene.rootNode.childNode(withName: "Tag_\(String(id))", recursively: false)  {
                             tagNode = existingTagNode
                             tagNode.simdTransform = tagToWorld
                             // Initialize April tag position + cyan box
@@ -165,7 +165,7 @@ class AprilTag: Sensor, SensorProtocol {
                             tagNode.addChildNode(xAxis)
                             tagNode.addChildNode(yAxis)
                             tagNode.addChildNode(zAxis)
-                            Motion.shared.arView?.scene.rootNode.addChildNode(tagNode)
+                            Motion.shared.arView.scene.rootNode.addChildNode(tagNode)
                         }
                         let tagCenterPose = arr
                         let timestamp: Double = self.getUnixTimestamp(moment: frame.timestamp)
