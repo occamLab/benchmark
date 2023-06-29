@@ -11,32 +11,29 @@ import ARKit
 import FirebaseStorage
 import SwiftUI
 
+/*
+ * Lifts the arView out of Motion and wraps it into an UIViewRepresentable so that we can render it on screen
+ */
 struct ARViewRepresentable: UIViewRepresentable {
     let arDelegate: Motion
     
     func makeUIView(context: Context) -> some UIView {
-        let arView = ARSCNView(frame: .zero)
-        arDelegate.setARView(arView)
-        return arView
+        return arDelegate.arView
     }
-    
     func updateUIView(_ uiView: UIViewType, context: Context) {
-        
     }
 }
 
+
 class Motion: NSObject, ARSessionDelegate {
+    
     public static var shared = Motion()
+    public static var arConfiguration = ARWorldTrackingConfiguration()
     public var motionSensors = CMMotionManager()
-    public var arView: ARSCNView?
-    public var arConfiguration = ARWorldTrackingConfiguration()
+    public var arView: ARSCNView = ARSCNView(frame: .zero)
     public var motionUpdateQueue = OperationQueue()
     
-    func setARView(_ arView: ARSCNView) {
-        self.arView = arView
-        initArSession()
-    }
-    
+
     // all of our loggers go here
     private let sensors: [any SensorProtocol & Sensor] = [
         Accelerometer(),
@@ -68,16 +65,17 @@ class Motion: NSObject, ARSessionDelegate {
     public func stopDataCollection() {
         // stop collecting data
         motionSensors.stopDeviceMotionUpdates()
-        arView?.session.pause()
+        arView.session.pause()
 
     }
     
     private func initArSession() {
-        arView?.session.delegate = self
-        arView?.debugOptions = [.showWorldOrigin]
-        arConfiguration.worldAlignment = ARConfiguration.WorldAlignment.gravity
-        arConfiguration.isAutoFocusEnabled = true
-        arView?.session.run(arConfiguration, options: [ARSession.RunOptions.resetTracking, ARSession.RunOptions.resetSceneReconstruction])
+        arView.session.delegate = self
+        arView.debugOptions = [.showWorldOrigin]
+        Motion.arConfiguration.worldAlignment = ARConfiguration.WorldAlignment.gravity
+        Motion.arConfiguration.isAutoFocusEnabled = true
+        Motion.arConfiguration.videoFormat = ARWorldTrackingConfiguration.recommendedVideoFormatForHighResolutionFrameCapturing!
+        arView.session.run(Motion.arConfiguration, options: [ARSession.RunOptions.resetTracking, ARSession.RunOptions.resetSceneReconstruction])
     }
     
     
