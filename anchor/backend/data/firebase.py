@@ -8,6 +8,7 @@ from pathlib import Path
 import shutil
 import tempfile
 import av
+import copy
 
 
 class FirebaseDownloader:
@@ -156,11 +157,21 @@ class FirebaseDownloader:
             for value in FirebaseDownloader.proto_with_phase(pose_data, mapping_phase).measurements:
                 t = value.timestamp
                 translation = value.poseTranslation
-                rotationMatrix = value.rotMatrix
-                quatImag = value.quatImag
-                quatReal = value.quatReal
-                pose = {"timestamp": t, "translation": translation, "rotationMatrix": rotationMatrix,
-                        "quatImag": quatImag, "quatReal": quatReal}
+                rotation_matrix_no_translation = value.rotMatrix
+                rotation_matrix_with_translation = copy.deepcopy(rotation_matrix_with_translation)
+                rotation_matrix_with_translation[3] = translation[0]
+                rotation_matrix_with_translation[7] = translation[1]
+                rotation_matrix_with_translation[11] = translation[2]
+                quat_imag = value.quatImag
+                quat_real = value.quatReal
+                pose = {
+                    "timestamp": t,
+                    "translation": translation,
+                    "rotation_matrix_no_translation": rotation_matrix_no_translation,
+                    "rotation_matrix_with_translation": rotation_matrix_with_translation,
+                    "quat_imag": quat_imag,
+                    "quat_real": quat_real
+                }
                 self.extracted_data.append_pose_data(pose, mapping_phase)
 
 
