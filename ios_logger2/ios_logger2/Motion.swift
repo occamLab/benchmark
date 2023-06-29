@@ -29,12 +29,11 @@ class Motion: NSObject, ARSessionDelegate {
     public static var shared = Motion()
     public var motionSensors = CMMotionManager()
     public var arView: ARSCNView?
-    public var arConfiguration = ARWorldTrackingConfiguration()
+    public static var arConfiguration = ARWorldTrackingConfiguration()
     public var motionUpdateQueue = OperationQueue()
     
     func setARView(_ arView: ARSCNView) {
         self.arView = arView
-        initArSession()
     }
     
     // all of our loggers go here
@@ -75,9 +74,10 @@ class Motion: NSObject, ARSessionDelegate {
     private func initArSession() {
         arView?.session.delegate = self
         arView?.debugOptions = [.showWorldOrigin]
-        arConfiguration.worldAlignment = ARConfiguration.WorldAlignment.gravity
-        arConfiguration.isAutoFocusEnabled = true
-        arView?.session.run(arConfiguration, options: [ARSession.RunOptions.resetTracking, ARSession.RunOptions.resetSceneReconstruction])
+        Motion.arConfiguration.worldAlignment = ARConfiguration.WorldAlignment.gravity
+        Motion.arConfiguration.isAutoFocusEnabled = true
+        Motion.arConfiguration.videoFormat = ARWorldTrackingConfiguration.recommendedVideoFormatForHighResolutionFrameCapturing!
+        arView?.session.run(Motion.arConfiguration, options: [ARSession.RunOptions.resetTracking, ARSession.RunOptions.resetSceneReconstruction])
     }
     
     

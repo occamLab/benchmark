@@ -22,8 +22,8 @@ class CurrentVideo {
         
         let outputSettings: [String: Any] = [
             AVVideoCodecKey: AVVideoCodecType.hevc,
-            AVVideoWidthKey:  1920, // CVPixelBufferGetWidthOfPlane(pixelBuffer,0),
-            AVVideoHeightKey: 1080, // CVPixelBufferGetHeightOfPlane(pixelBuffer, 0)],
+            AVVideoWidthKey:  Motion.arConfiguration.videoFormat.imageResolution.width,
+            AVVideoHeightKey: Motion.arConfiguration.videoFormat.imageResolution.height,
             AVVideoCompressionPropertiesKey: [
                 AVVideoAverageBitRateKey: 1024 * 100, // 100 Kib/seconds,
                 AVVideoQualityKey: 0.7, // between 0 and 1.0, some people say it does not do anything, some people say it does...
@@ -63,37 +63,33 @@ class Video: Sensor, SensorProtocol {
     
     
     func collectData(motion: CMDeviceMotion?, frame: ARFrame?) {
-
-        if(frame != nil) {
-            initialTimestamp = initialTimestamp ?? frame!.timestamp // set the first frame time as reference if needed
-            // save the absolute time when the video started into metadata attributes if needed
-            if case currentPhase = Phase.mappingPhase {
-                series.mappingPhase.videoAttributes.videoStartUnixTimestamp = getUnixTimestamp(moment: (initialTimestamp ?? frame!.timestamp))
-            }
-            else {
-                series.localizationPhase.videoAttributes.videoStartUnixTimestamp = getUnixTimestamp(moment: (initialTimestamp ?? frame!.timestamp))
-            }
-            
-            let timeSinceStart = frame!.timestamp - initialTimestamp! // absolute time since first frame
-            
-            if(currentVideo.encoderInput.isReadyForMoreMediaData) {
-                // the bufferTimestamp should conform to value/timescale = seconds since atSourceTime (CMTime.zero)
-                let imageBuffer: CVPixelBuffer = frame!.capturedImage
-                // something large here as the timescale to avoid rounding errors on the timestamp when it gets downcast to an int
-                let bufferTimestamp: CMTime = CMTimeMake(value: Int64(timeSinceStart * 2e9), timescale: Int32(2e9))
-                if(!currentVideo.bufferInput.append(imageBuffer, withPresentationTime: bufferTimestamp)) {
-                   // print("[WARN]: Failed to add ARFrame to video buffer")
-                }
-                else {
-                   // print("[INFO]: Appended ARFrame to video buffer")
-                }
-            }
-            else {
-            }
+        guard let frame = frame else {return}
+    
+        initialTimestamp = initialTimestamp ?? frame.timestamp // set the first frame time as reference if needed
+        // save the absolute time when the video started into metadata attributes if needed
+        if case currentPhase = Phase.mappingPhase {
+            series.mappingPhase.videoAttributes.videoStartUnixTimestamp = getUnixTimestamp(moment: (initialTimestamp ?? frame.timestamp))
         }
         else {
+            series.localizationPhase.videoAttributes.videoStartUnixTimestamp = getUnixTimestamp(moment: (initialTimestamp ?? frame.timestamp))
+        }
+        
+        let timeSinceStart = frame.timestamp - initialTimestamp! // absolute time since first frame
+        
+        if(currentVideo.encoderInput.isReadyForMoreMediaData) {
+            // the bufferTimestamp should conform to value/timescale = seconds since atSourceTime (CMTime.zero)
+            let imageBuffer: CVPixelBuffer = frame.capturedImage
+            // something large here as the timescale to avoid rounding errors on the timestamp when it gets downcast to an int
+            let bufferTimestamp: CMTime = CMTimeMake(value: Int64(timeSinceStart * 2e9), timescale: Int32(2e9))
+            if(!currentVideo.bufferInput.append(imageBuffer, withPresentationTime: bufferTimestamp)) {
+               // print("[WARN]: Failed to add ARFrame to video buffer")
+            }
+            else {
+               // print("[INFO]: Appended ARFrame to video buffer")
+            }
         }
     }
+    
     
     func additionalUpload() async {
         currentVideo.encoderInput.markAsFinished()
