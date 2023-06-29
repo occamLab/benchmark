@@ -171,6 +171,7 @@ class FirebaseDownloader:
                     "quat_imag": quat_imag,
                     "quat_real": quat_real
                 }
+                print(pose)
                 self.extracted_data.append_pose_data(pose, mapping_phase)
 
 
