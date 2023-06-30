@@ -138,6 +138,13 @@ class AprilTag: Sensor, SensorProtocol {
                         let tagToWorld = phoneToWorld * tagToPhone
                         let arr = (0..<3).flatMap { x in (0..<3).map { y in tagToWorld[x][y] } }
                         
+                        // Use lidar to align with planar geometry
+                        guard let tagToWorld = self.raycastTag(tagPoseWorld: tagToWorld, cameraPoseWorld: phoneToWorld, arSession: Motion.shared.arView.session) else {
+                            self.isDetectingAprilTags = false
+                            print("failed")
+                            return
+                        }
+                        
                         // Show cyan square over April tag
                         let tagNode: SCNNode
                         // Update existing April tag's position
@@ -181,6 +188,26 @@ class AprilTag: Sensor, SensorProtocol {
                 print("catch")
             }
             self.isDetectingAprilTags = false
+        }
+    }
+    
+    /// Raycasts from camera to tag and places tag on the nearest mesh if the device supports LiDAR
+    /// originally implemented in https://github.com/occamLab/InvisibleMap/blob/bfa5e7c1a51328702a8a117a74fa87ed3488174f/InvisibleMapCreator2/Views/ARView.swift#L180
+    func raycastTag(tagPoseWorld: simd_float4x4, cameraPoseWorld: simd_float4x4, arSession: ARSession) -> simd_float4x4? {
+        let tagPosWorldTranslation = simd_float3(tagPoseWorld.columns.3.x, tagPoseWorld.columns.3.y, tagPoseWorld.columns.3.z)
+        let cameraPosTranslation = simd_float3(cameraPoseWorld.columns.3.x, cameraPoseWorld.columns.3.y, cameraPoseWorld.columns.3.z)
+        
+        let raycastQuery = ARRaycastQuery(origin: cameraPosTranslation, direction: tagPosWorldTranslation - cameraPosTranslation, allowing: .existingPlaneGeometry, alignment: .any)
+        let raycastResult = arSession.raycast(raycastQuery)
+        
+        if raycastResult.count == 0 {
+            print("[WARNING]: Failing to find raycast april tag")
+            return nil
+        } else {
+            let meshTransform = raycastResult[0].worldTransform
+            let raycastTagTransform: simd_float4x4 = simd_float4x4(diagonal:simd_float4(1, -1, -1, 1)) * cameraPoseWorld.inverse * meshTransform
+            
+            return raycastTagTransform
         }
     }
     
