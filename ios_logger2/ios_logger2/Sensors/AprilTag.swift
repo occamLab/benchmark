@@ -135,7 +135,6 @@ class AprilTag: Sensor, SensorProtocol {
                         let tagToPhone = imageToPhone * tagToImage
                         // Position + orientation
                         let tagToWorld = phoneToWorld * tagToPhone
-                        let arr = (0..<3).flatMap { x in (0..<3).map { y in tagToWorld[x][y] } }
                         
                         // Use lidar to align with planar geometry
                         guard let tagToWorld = self.raycastTag(tagPoseWorld: tagToWorld, cameraPoseWorld: phoneToWorld, arSession: Motion.shared.arView.session) else {
@@ -172,13 +171,7 @@ class AprilTag: Sensor, SensorProtocol {
                             tagNode.addChildNode(zAxis)
                             Motion.shared.arView.scene.rootNode.addChildNode(tagNode)
                         }
-                        let tagCenterPose = arr
-                        let timestamp: Double = self.getUnixTimestamp(moment: frame.timestamp)
-                        
-                        var measurement = AprilTagTimestamp()
-                        measurement.timestamp = timestamp
-                        measurement.tagCenterPose = tagCenterPose
-                        self.series.mappingPhase.measurements.append(measurement)
+                        self.saveAprilTag(frame: frame, worldAprilTag: tagToWorld)
                     }
                 }
             } catch {
@@ -188,6 +181,14 @@ class AprilTag: Sensor, SensorProtocol {
             self.isDetectingAprilTags = false
         }
     }
+    
+    func saveAprilTag(frame: ARFrame, worldAprilTag: simd_float4x4) {
+        var measurement = AprilTagTimestamp()
+        measurement.timestamp = self.getUnixTimestamp(moment: frame.timestamp)
+        measurement.tagCenterPose = worldAprilTag.rotationMatrix()
+        self.series.mappingPhase.measurements.append(measurement)
+    }
+    
     
     /// Raycasts from camera to tag and places tag on the nearest mesh if the device supports LiDAR
     /// originally implemented in https://github.com/occamLab/InvisibleMap/blob/bfa5e7c1a51328702a8a117a74fa87ed3488174f/InvisibleMapCreator2/Views/ARView.swift#L180
