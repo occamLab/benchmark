@@ -16,7 +16,7 @@ class MotionManager: ObservableObject {
     init() {
         // note that UI updates must happen on the main thread which is why DispatchQueue.main.sync is used
         Task {
-            try! await Task.sleep(for: .seconds(10)) // allow time for mapping phase
+            try! await Task.sleep(for: .seconds(20)) // allow time for mapping phase
             DispatchQueue.main.sync {
                 self.phaseText = "Transitioning between phases!!"
             }
@@ -24,7 +24,7 @@ class MotionManager: ObservableObject {
             DispatchQueue.main.sync {
                 self.phaseText = "Currently in localization phase!!"
             }
-            try! await Task.sleep(for: .seconds(10)) // allow time for localization phase
+            try! await Task.sleep(for: .seconds(20)) // allow time for localization phase
             DispatchQueue.main.sync {
                 self.phaseText = "Finished localization phase!!"
                 self.isPresentingUploadConfirmation = true

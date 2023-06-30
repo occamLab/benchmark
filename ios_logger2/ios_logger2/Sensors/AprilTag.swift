@@ -14,7 +14,6 @@ import CoreMotion
 extension UIImage {
     public convenience init?(pixelBuffer: CVPixelBuffer) {
         var cgImage: CGImage?
-        Motion.shared.arView.debugOptions = [.showWorldOrigin]
         VTCreateCGImageFromCVPixelBuffer(pixelBuffer, options: nil, imageOut: &cgImage)
 
         guard let cgImage = cgImage else {
@@ -141,7 +140,6 @@ class AprilTag: Sensor, SensorProtocol {
                         // Use lidar to align with planar geometry
                         guard let tagToWorld = self.raycastTag(tagPoseWorld: tagToWorld, cameraPoseWorld: phoneToWorld, arSession: Motion.shared.arView.session) else {
                             self.isDetectingAprilTags = false
-                            print("failed")
                             return
                         }
                         
@@ -204,8 +202,11 @@ class AprilTag: Sensor, SensorProtocol {
             print("[WARNING]: Failing to find raycast april tag")
             return nil
         } else {
+            // for some reason the raycast result re-order the axis so we move the z-axis back to be out of the april tag for visualization purposes only basically
             let meshTransform = raycastResult[0].worldTransform
-            let raycastTagTransform: simd_float4x4 = simd_float4x4(diagonal:simd_float4(1, -1, -1, 1)) * cameraPoseWorld.inverse * meshTransform
+            let raycastTagTransform: simd_float4x4 = meshTransform * float4x4(simd_quatf(angle: -.pi / 2, axis: SIMD3<Float>(1, 0, 0)))
+            
+            print("[INFO]: Raycasted april tag result: ", raycastTagTransform)
             
             return raycastTagTransform
         }
