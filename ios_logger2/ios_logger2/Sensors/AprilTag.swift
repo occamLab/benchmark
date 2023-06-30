@@ -135,7 +135,6 @@ class AprilTag: Sensor, SensorProtocol {
                         let tagToPhone = imageToPhone * tagToImage
                         // Position + orientation
                         let tagToWorld = phoneToWorld * tagToPhone
-                        let arr = (0..<3).flatMap { x in (0..<3).map { y in tagToWorld[x][y] } }
                         
                         // Use lidar to align with planar geometry
                         guard let tagToWorld = self.raycastTag(tagPoseWorld: tagToWorld, cameraPoseWorld: phoneToWorld, arSession: Motion.shared.arView.session) else {
