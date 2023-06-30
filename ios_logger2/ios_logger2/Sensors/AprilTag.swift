@@ -186,7 +186,12 @@ class AprilTag: Sensor, SensorProtocol {
         var measurement = AprilTagTimestamp()
         measurement.timestamp = self.getUnixTimestamp(moment: frame.timestamp)
         measurement.tagCenterPose = worldAprilTag.rotationMatrix()
-        self.series.mappingPhase.measurements.append(measurement)
+        if case currentPhase = Phase.mappingPhase {
+            series.mappingPhase.measurements.append(measurement)
+        }
+        else {
+            series.localizationPhase.measurements.append(measurement)
+        }
     }
     
     
