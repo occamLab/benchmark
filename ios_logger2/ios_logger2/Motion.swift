@@ -44,7 +44,7 @@ class Motion: NSObject, ARSessionDelegate {
         PointCloud(),
         Pose(),
         Intrinsics(),
-        GoogleCloudAnchor(),
+       // GoogleCloudAnchor(),
         AprilTag()
     ]
     
@@ -70,12 +70,18 @@ class Motion: NSObject, ARSessionDelegate {
     }
     
     private func initArSession() {
+        while let n = arView.scene.rootNode.childNodes.first { n.removeFromParentNode() }
         arView.session.delegate = self
         arView.debugOptions = [.showWorldOrigin]
         Motion.arConfiguration.worldAlignment = ARConfiguration.WorldAlignment.gravity
         Motion.arConfiguration.isAutoFocusEnabled = true
         Motion.arConfiguration.videoFormat = ARWorldTrackingConfiguration.recommendedVideoFormatForHighResolutionFrameCapturing!
-        arView.session.run(Motion.arConfiguration, options: [ARSession.RunOptions.resetTracking, ARSession.RunOptions.resetSceneReconstruction])
+        Motion.arConfiguration.planeDetection = [.horizontal, .vertical]
+        arView.session.run(Motion.arConfiguration, options: [
+            ARSession.RunOptions.resetTracking,
+            ARSession.RunOptions.resetSceneReconstruction,
+            ARSession.RunOptions.removeExistingAnchors,
+        ])
     }
     
     
