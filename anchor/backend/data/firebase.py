@@ -3,6 +3,8 @@ import anchor.backend.data.extracted
 import anchor.backend.data.proto.pose_pb2 as Pose
 import anchor.backend.data.proto.intrinsics_pb2 as Intrinsics
 import anchor.backend.data.proto.video_pb2 as video_pb2
+import anchor.backend.data.proto.april_tag_pb2 as AprilTag
+
 
 from pathlib import Path
 import shutil
@@ -173,6 +175,34 @@ class FirebaseDownloader:
                 }
                 print(pose)
                 self.extracted_data.append_pose_data(pose, mapping_phase)
+
+    def extract_april_tags(self, extract_path: Path, mapping_phase: bool):
+        """
+        Args:
+            extract_path (str): the path to the folder containing the video
+            we are extracting and getting the pose data from.
+            mapping_phase (bool): determines which phase we are in (mapping/localization)
+
+
+        Returns: (void)
+            Appends data to the Extracted class with the following form:
+            A list of dictionaries; each dictionary has the form:
+            {
+                timestamp (float): timestamp of detected April Tag
+                rotationMatrix ([float]): 4x4 rotation/translation matrix of the frame
+                    flattened into a single list by row
+            }
+        """
+        print(f'[INFO]: Reading pose protobuf {extract_path}')
+        april_path = extract_path / "april_tag.proto"
+        april_data = AprilTag.AprilTagData()
+        with open(april_path, "rb") as fd:
+            april_data.ParseFromString(fd.read())
+            for value in FirebaseDownloader.proto_with_phase(april_data, mapping_phase).measurements:
+                self.extracted_data.append_april_tag(value.timestamp, value.tagCenterPose, mapping_phase)
+
+        pass
+
 
 
 # test the extractor here

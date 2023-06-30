@@ -9,11 +9,13 @@ class Extracted:
             "mapping_phase": {
                 "intrinsics": [],
                 "poses": [],
+                "april_tags": [],
                 "video": [],
             },
             "localization_phase": {
                 "intrinsics": [],
                 "poses": [],
+                "april_tags": [],
                 "video": [],
             }
         }
@@ -37,6 +39,12 @@ class Extracted:
     def append_pose_data(self, pose_object: any, mapping_phase: bool):
         phase = Extracted.get_phase_key(mapping_phase)
         self.sensors_extracted[phase]["poses"].append(pose_object)
+
+    # append april tag detection
+    def append_april_tag(self, timestamp: float, rotation_matrix: [float], mapping_phase: bool):
+        phase = Extracted.get_phase_key(mapping_phase)
+        april_tag_object = {"timestamp": timestamp, "rotation_matrix": rotation_matrix}
+        self.sensors_extracted[phase]["april_tags"].append(april_tag_object)
 
     def match_given_sensor(self, phase: str, match_against: str):
         """
@@ -88,3 +96,8 @@ class Extracted:
             for sensor in self.sensors_extracted[phase]:
                 if sensor != "video":
                     self.match_given_sensor(phase, sensor)
+
+
+    def transform_poses_in_global_frame(self):
+        for phase in self.sensors_extracted:
+            pass
