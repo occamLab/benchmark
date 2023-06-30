@@ -66,10 +66,8 @@ class FirebaseDownloader:
         shutil.unpack_archive(self.local_tar_location, extract_dir=self.local_extraction_location)
 
         # extract the videos
-
         self.extract_ios_logger_video(self.local_extraction_location / "mapping-video.mp4", True)
         self.extract_ios_logger_video(self.local_extraction_location / "localization-video.mp4", False)
-
 
         self.extract_intrinsics(self.local_extraction_location, True)
         self.extract_intrinsics(self.local_extraction_location, False)
@@ -77,7 +75,10 @@ class FirebaseDownloader:
         self.extract_pose(self.local_extraction_location, True)
         self.extract_pose(self.local_extraction_location, False)
 
-        # print(self.extracted_data.sensors_extracted)
+        self.extract_april_tags(self.local_extraction_location, True)
+        self.extract_april_tags(self.local_extraction_location, False)
+
+        self.extracted_data.transform_poses_in_global_frame()
         self.extracted_data.match_all_sensor()
 
 
@@ -173,7 +174,6 @@ class FirebaseDownloader:
                     "quat_imag": quat_imag,
                     "quat_real": quat_real
                 }
-                print(pose)
                 self.extracted_data.append_pose_data(pose, mapping_phase)
 
     def extract_april_tags(self, extract_path: Path, mapping_phase: bool):
@@ -200,8 +200,6 @@ class FirebaseDownloader:
             april_data.ParseFromString(fd.read())
             for value in FirebaseDownloader.proto_with_phase(april_data, mapping_phase).measurements:
                 self.extracted_data.append_april_tag(value.timestamp, value.tagCenterPose, mapping_phase)
-
-        pass
 
 
 

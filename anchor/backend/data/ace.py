@@ -52,7 +52,7 @@ def prepare_ace_data(extracted_data: Extracted):
 
 # test the extractor here
 if __name__ == '__main__':
-    downloader = FirebaseDownloader("iosLoggerDemo/Ljur5BYFXdhsGnAlEsmjqyNG5fJ2",
-                                    "2E49C166-E68C-47F2-A61B-17361AF5363C.tar")
+    downloader = FirebaseDownloader("iosLoggerDemo/vyjFKi2zgLQDsxI1koAOjD899Ba2",
+                                    "6B62493C-45C8-43F3-A540-41B5216429EC.tar")
     downloader.extract_ios_logger_tar()
     prepare_ace_data(downloader.extracted_data)

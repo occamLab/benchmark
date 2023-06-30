@@ -1,5 +1,5 @@
 from pathlib import Path
-
+import numpy as np
 
 
 class Extracted:
@@ -44,6 +44,7 @@ class Extracted:
     def append_april_tag(self, timestamp: float, rotation_matrix: [float], mapping_phase: bool):
         phase = Extracted.get_phase_key(mapping_phase)
         april_tag_object = {"timestamp": timestamp, "rotation_matrix": rotation_matrix}
+        print(april_tag_object)
         self.sensors_extracted[phase]["april_tags"].append(april_tag_object)
 
     def match_given_sensor(self, phase: str, match_against: str):
@@ -94,10 +95,22 @@ class Extracted:
     def match_all_sensor(self):
         for phase in self.sensors_extracted:
             for sensor in self.sensors_extracted[phase]:
-                if sensor != "video":
+                if sensor not in ["video", "april_tags"]:
                     self.match_given_sensor(phase, sensor)
-
 
     def transform_poses_in_global_frame(self):
         for phase in self.sensors_extracted:
-            pass
+            # average all of the april tags resolves to get a more accurate pose
+            true_april_tag_loc = np.zeros((4, 4))
+            for april_tag in self.sensors_extracted[phase]["april_tags"]:
+                april_tag_loc = np.reshape(april_tag["rotation_matrix"], (4, 4)).transpose()
+                true_april_tag_loc += april_tag_loc
+            true_april_tag_loc /= len(self.sensors_extracted[phase]["april_tags"])
+
+            # transform pose data relative to april tag location
+            for idx, pose in enumerate(self.sensors_extracted[phase]["poses"]):
+                pose_transform = np.reshape(pose["rotation_matrix"], (4, 4)).transpose()
+                relative_to_april = true_april_tag_loc * np.linalg.inv(pose_transform)
+                original_list_form = relative_to_april.transpose().flatten().tolist()
+                self.sensors_extracted[phase]["poses"][idx]["rotation_matrix"] = original_list_form
+
