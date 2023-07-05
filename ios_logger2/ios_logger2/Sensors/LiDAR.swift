@@ -13,7 +13,7 @@ class LiDAR : Sensor, SensorProtocol {
     var sensorName: String = "lidar"
     public var series = LidarData()
     
-    func collectData(motion: CMDeviceMotion?, frame: ARFrame?) {
+    func collectData(motion: CMDeviceMotion?, frame: ARFrame?, arView: ARSCNView) {
         if(frame != nil) {
             guard let sceneDepth = frame!.sceneDepth, let confidenceMap = sceneDepth.confidenceMap else {
                 return

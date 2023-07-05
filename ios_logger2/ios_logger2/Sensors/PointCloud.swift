@@ -16,7 +16,7 @@ class PointCloud: Sensor, SensorProtocol {
     var sensorName: String = "point_cloud"
     public var series = PointCloudData()
     
-    func collectData(motion: CMDeviceMotion?, frame: ARFrame?) {
+    func collectData(motion: CMDeviceMotion?, frame: ARFrame?, arView: ARSCNView) {
         if(frame != nil) {
             let timestamp: Double = getUnixTimestamp(moment: frame!.timestamp)
             if(frame!.rawFeaturePoints?.points.count != nil) {

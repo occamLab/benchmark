@@ -62,7 +62,7 @@ class Video: Sensor, SensorProtocol {
     private var initialTimestamp: Double? = nil
     
     
-    func collectData(motion: CMDeviceMotion?, frame: ARFrame?) {
+    func collectData(motion: CMDeviceMotion?, frame: ARFrame?, arView: ARSCNView) {
         guard let frame = frame else {return}
     
         initialTimestamp = initialTimestamp ?? frame.timestamp // set the first frame time as reference if needed

@@ -43,7 +43,7 @@ class AprilTag: Sensor, SensorProtocol {
     }
     
     // Starts up whenever last April tag finished being detected
-    public func getAprilTags(frame: ARFrame) {
+    public func getAprilTags(frame: ARFrame, arView: ARSCNView) {
         isDetectingAprilTags = true
         DispatchQueue.global(qos: .userInteractive).async {
             let phoneToWorld = frame.camera.transform
@@ -137,7 +137,7 @@ class AprilTag: Sensor, SensorProtocol {
                         let tagToWorld = phoneToWorld * tagToPhone
                         
                         // Use lidar to align with planar geometry
-                        guard let tagToWorld = self.raycastTag(tagPoseWorld: tagToWorld, cameraPoseWorld: phoneToWorld, arSession: Motion.shared.arView.session) else {
+                        guard let tagToWorld = self.raycastTag(tagPoseWorld: tagToWorld, cameraPoseWorld: phoneToWorld, arSession: arView.session) else {
                             self.isDetectingAprilTags = false
                             return
                         }
@@ -145,7 +145,7 @@ class AprilTag: Sensor, SensorProtocol {
                         // Show cyan square over April tag
                         let tagNode: SCNNode
                         // Update existing April tag's position
-                        if let existingTagNode = Motion.shared.arView.scene.rootNode.childNode(withName: "Tag_\(String(id))", recursively: false)  {
+                        if let existingTagNode = arView.scene.rootNode.childNode(withName: "Tag_\(String(id))", recursively: false)  {
                             tagNode = existingTagNode
                             tagNode.simdTransform = tagToWorld
                             // Initialize April tag position + cyan box
@@ -169,7 +169,7 @@ class AprilTag: Sensor, SensorProtocol {
                             tagNode.addChildNode(xAxis)
                             tagNode.addChildNode(yAxis)
                             tagNode.addChildNode(zAxis)
-                            Motion.shared.arView.scene.rootNode.addChildNode(tagNode)
+                            arView.scene.rootNode.addChildNode(tagNode)
                         }
                         self.saveAprilTag(frame: frame, worldAprilTag: tagToWorld)
                     }
@@ -220,10 +220,10 @@ class AprilTag: Sensor, SensorProtocol {
     
     /// Detect the markers in the specified image
     /// - Parameter image: the image taken from, e.g., an `ARFrame`
-    func collectData(motion: CMDeviceMotion?, frame: ARFrame?) {
+    func collectData(motion: CMDeviceMotion?, frame: ARFrame?, arView: ARSCNView) {
         if(frame != nil) {
             if !isDetectingAprilTags {
-                getAprilTags(frame: frame!)
+                getAprilTags(frame: frame!, arView: arView)
             }
         }
     }

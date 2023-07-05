@@ -30,7 +30,7 @@ protocol SensorProtocol {
      var series: AnyMessage {get set}
     
     /* Collect a snapshot of data */
-    func collectData(motion: CMDeviceMotion?, frame: ARFrame?) -> Void
+    func collectData(motion: CMDeviceMotion?, frame: ARFrame?, arView: ARSCNView) -> Void
     
     /* Any work that needs to be done before the data is uploaded */
     func additionalUpload() async -> Void

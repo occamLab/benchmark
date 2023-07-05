@@ -16,7 +16,7 @@ class Pose: Sensor, SensorProtocol {
     var sensorName: String = "pose"
     public var series = PoseData()
     
-    func collectData(motion: CMDeviceMotion?, frame: ARFrame?) {
+    func collectData(motion: CMDeviceMotion?, frame: ARFrame?, arView: ARSCNView) {
         if(frame != nil) {
             let timestamp: Double = getUnixTimestamp(moment: frame!.timestamp)
             let transform = frame!.camera.transform
