@@ -4,6 +4,7 @@ import anchor.backend.data.proto.pose_pb2 as Pose
 import anchor.backend.data.proto.intrinsics_pb2 as Intrinsics
 import anchor.backend.data.proto.video_pb2 as video_pb2
 import anchor.backend.data.proto.april_tag_pb2 as AprilTag
+from multiprocessing.pool import ThreadPool as Pool
 
 
 from pathlib import Path
@@ -100,12 +101,24 @@ class FirebaseDownloader:
         video_folder_path = Path = video_path.parent / "extracted" / video_path.stem
         video_folder_path.mkdir(parents=True, exist_ok=True)
 
+        all_frames = []
         for frame in container.decode():
-            print(frame)
             image_timestamp = video_start + float(frame.pts * frame.time_base)
             frame_path: Path = video_folder_path/ f'{frame.index}.jpg'
+            frame = frame
+            all_frames += [(image_timestamp, frame_path, frame)]
+            
+        def write_frame(frame_info): 
+            image_timestamp = frame_info[0]
+            frame_path = frame_info[1]
+            frame = frame_info[2]
             frame.to_image().save(frame_path.as_posix())
+            print(image_timestamp, frame_path, frame)
             self.extracted_data.append_video_timestamp(image_timestamp, frame_path, frame.index, mapping_phase)
+
+        with Pool(12) as pool:
+            pool.map(write_frame, all_frames)
+
 
     def extract_intrinsics(self, extract_path: Path, mapping_phase: bool):
         """
