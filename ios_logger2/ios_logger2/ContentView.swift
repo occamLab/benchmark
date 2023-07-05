@@ -8,7 +8,7 @@
 import SwiftUI
 
 class MotionManager: ObservableObject {
-    var motion: Motion?
+    @Published var motion: Motion?
     @Published var phaseText: String = "Currently in mapping phase!!"
     @Published var isPresentingUploadConfirmation: Bool = false
 
@@ -18,10 +18,14 @@ class MotionManager: ObservableObject {
         Task {
             // allow time for alignment of phone
             DispatchQueue.main.sync {
-                self.phaseText = "Align phone to starting position (10 seconds) !!"
+                self.phaseText = "Align phone to starting position (10 seconds)!!. HOLD VERTICALLY AGINST TABLE EDGE (camera staight on). For some reason the Arkit initial pose is absolute garbage is you hold the camera face down."
             }
             try! await Task.sleep(for: .seconds(10))
-            motion = Motion() // initialize
+            // start collecting data
+            DispatchQueue.main.sync {
+                motion = Motion() // initialize
+                self.phaseText = "Currently in mapping phase (20 seconds)"
+            }
             
             // allow time for mapping phase
             try! await Task.sleep(for: .seconds(20))
@@ -32,8 +36,7 @@ class MotionManager: ObservableObject {
             // allow time for alignment of phone
             await motion!.switchToLocalization()
             DispatchQueue.main.sync {
-                self.phaseText = "Align phone to starting position (10 seconds) !!"
-            }
+                self.phaseText = "Align phone to starting position (10 seconds)!!. HOLD VERTICALLY AGINST TABLE EDGE (camera staight on). For some reason the Arkit initial pose is absolute garbage is you hold the camera face down."            }
             try! await Task.sleep(for: .seconds(10))
             // reset our knowledge of our position
             motion!.initMotionSensors()
@@ -61,7 +64,7 @@ struct ContentView: View {
     
     var body: some View {
         ZStack {
-            if(!motionManager.isPresentingUploadConfirmation) {
+            if(!motionManager.isPresentingUploadConfirmation && motionManager.motion != nil) {
                 ARViewRepresentable(arDelegate: motionManager.motion!)
             }
             VStack {
