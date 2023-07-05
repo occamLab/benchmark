@@ -48,7 +48,7 @@ class Motion: NSObject, ARSessionDelegate {
     ]
     
     
-    private func initMotionSensors() {
+    public func initMotionSensors() {
         // Set the update frequencies for gyro, accelerometer, and motion
         let imuUpdateFreqMillis: Double = 10
         let imuUpdateFreqSeconds: Double = imuUpdateFreqMillis /  1000
@@ -68,7 +68,7 @@ class Motion: NSObject, ARSessionDelegate {
 
     }
     
-    private func initArSession() {
+    public func initArSession() {
         while let n = arView.scene.rootNode.childNodes.first { n.removeFromParentNode() }
         arView.session.delegate = self
         arView.debugOptions = [.showWorldOrigin]
@@ -111,9 +111,6 @@ class Motion: NSObject, ARSessionDelegate {
             // some sensors such as video may need to hook on this action to reset state
             sensor.switchToLocalization()
         }
-        // reset our knowledge of our position
-        initMotionSensors()
-        initArSession()
     }
     
     func finalExport() async {
