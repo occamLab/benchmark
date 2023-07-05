@@ -17,7 +17,7 @@ class Light: Sensor, SensorProtocol {
     var sensorName: String = "ambient_light"
     public var series = LightData()
     
-    func collectData(motion: CMDeviceMotion?, frame: ARFrame?) {
+    func collectData(motion: CMDeviceMotion?, frame: ARFrame?, arView: ARSCNView) {
         if(frame != nil) {
             let lightEstimate = frame!.lightEstimate
             let timestamp: Double = getUnixTimestamp(moment: frame!.timestamp)

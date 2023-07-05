@@ -8,7 +8,7 @@
 import SwiftUI
 
 class MotionManager: ObservableObject {
-    var motion = Motion.shared
+    var motion = Motion()
     @Published var phaseText: String = "Currently in mapping phase!!"
     @Published var isPresentingUploadConfirmation: Bool = false
 
@@ -20,7 +20,7 @@ class MotionManager: ObservableObject {
             DispatchQueue.main.sync {
                 self.phaseText = "Transitioning between phases!!"
             }
-            await Motion.shared.switchToLocalization()
+            await motion.switchToLocalization()
             DispatchQueue.main.sync {
                 self.phaseText = "Currently in localization phase!!"
             }

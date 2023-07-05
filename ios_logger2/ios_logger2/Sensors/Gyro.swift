@@ -17,7 +17,7 @@ class Gyro: Sensor, SensorProtocol {
     var sensorName: String = "gyroscope"
     public var series = GyroData()
     
-    func collectData(motion: CMDeviceMotion?, frame: ARFrame?) {
+    func collectData(motion: CMDeviceMotion?, frame: ARFrame?, arView: ARSCNView) {
         if(motion != nil) {
             let timestamp: Double = getUnixTimestamp(moment: motion!.timestamp)
             let rotation_rate_x: Double = motion!.rotationRate.x

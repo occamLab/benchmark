@@ -23,7 +23,7 @@ class GoogleCloudAnchor: Sensor, SensorProtocol {
          garSession?.setConfiguration(configuration, error: &error)
     }
     
-    func collectData(motion: CMDeviceMotion?, frame: ARFrame?) {
+    func collectData(motion: CMDeviceMotion?, frame: ARFrame?, arView: ARSCNView) {
         guard let frame = frame else {return}
         let _: GARFrame? = try? garSession?.update(frame)
     }

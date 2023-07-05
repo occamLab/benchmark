@@ -27,7 +27,6 @@ struct ARViewRepresentable: UIViewRepresentable {
 
 class Motion: NSObject, ARSessionDelegate {
     
-    public static var shared = Motion()
     public static var arConfiguration = ARWorldTrackingConfiguration()
     public var motionSensors = CMMotionManager()
     public var arView: ARSCNView = ARSCNView(frame: .zero)
@@ -88,14 +87,14 @@ class Motion: NSObject, ARSessionDelegate {
     // delegate ARFrame updates to video and other sensor loggers
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         for sensor in sensors {
-            sensor.collectData(motion: nil, frame: frame)
+            sensor.collectData(motion: nil, frame: frame, arView: arView)
         }
     }
     
     // delegate motion updates to accelerometer and other sensor loggers
     func delegate_motion(motion: CMDeviceMotion?, error: Error?) {
         for sensor in sensors {
-            sensor.collectData(motion: motion, frame: nil)
+            sensor.collectData(motion: motion, frame: nil, arView: arView)
         }
     }
     
@@ -132,7 +131,7 @@ class Motion: NSObject, ARSessionDelegate {
     }
     
     
-    private override init() {
+    override init() {
         super.init()
         initMotionSensors()
         initArSession()

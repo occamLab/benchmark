@@ -17,7 +17,7 @@ class Intrinsics: Sensor, SensorProtocol {
     var sensorName: String = "intrinsics"
     public var series = IntrinsicsData()
     
-    func collectData(motion: CMDeviceMotion?, frame: ARFrame?) {
+    func collectData(motion: CMDeviceMotion?, frame: ARFrame?, arView: ARSCNView) {
         if(frame != nil) {
             let timestamp: Double = getUnixTimestamp(moment: frame!.timestamp)
             let intrinsics: [Float] = frame!.camera.intrinsics.toRowMajor()
