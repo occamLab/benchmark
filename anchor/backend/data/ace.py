@@ -1,7 +1,10 @@
+from pathlib import Path
 from anchor.backend.data.extracted import Extracted
 from anchor.backend.data.firebase import FirebaseDownloader
 import shutil
 import random
+import sys
+import os
 
 
 def prepare_ace_data(extracted_data: Extracted):
@@ -47,9 +50,27 @@ def prepare_ace_data(extracted_data: Extracted):
                 )
 
 
-# test the extractor here
+# test the benchmark here
 if __name__ == '__main__':
-    downloader = FirebaseDownloader("iosLoggerDemo/vyjFKi2zgLQDsxI1koAOjD899Ba2",
-                                    "6B62493C-45C8-43F3-A540-41B5216429EC.tar")
+    if len(sys.argv) != 2:
+        print("[ERROR]: Usage: python -m anchor.backend.data.ace iosLoggerDemo/vyjFKi2zgLQDsxI1koAOjD899Ba2/6B62493C-45C8-43F3-A540-41B5216429EC.tar")
+
+    combined_path = sys.argv[1]
+    firebase_path: str = Path(combined_path).parent # ex: iosLoggerDemo/vyjFKi2zgLQDsxI1koAOjD899Ba2
+    tar_name: str = Path(combined_path).parts[-1] # ex: 6B62493C-45C8-43F3-A540-41B5216429EC.tar
+
+    print("[INFO]: Running e2e benchmark on tar with path: ", firebase_path, " and file name: ", tar_name)
+
+    downloader = FirebaseDownloader(firebase_path, tar_name)
     downloader.extract_ios_logger_tar()
     prepare_ace_data(downloader.extracted_data)
+
+    extracted_ace_folder = downloader.local_extraction_location / "ace"
+    model_output = extracted_ace_folder / "model.pt"
+
+    print("[INFO]: Running ace training on dataset path: ", extracted_ace_folder)
+    os.chdir("third_party/ace")
+    os.system(f'./train_ace.py {extracted_ace_folder.as_posix()} {model_output.as_posix()}')
+    print("[INFO]: Running ace evaluater on dataset path: ", extracted_ace_folder)
+    os.system(f'./test_ace.py {extracted_ace_folder.as_posix()} {model_output.as_posix()}')
+
