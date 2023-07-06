@@ -11,6 +11,8 @@ conda activate anchor
 
 # install ace subdependency
 pip install -e ../third_party/ace/dsacstar
+# create debug videos of training process in ace
+sudo apt install ffmpeg -y
 
 # install pyav video library https://pyav.org/docs/stable/
 conda install av -c conda-forge

@@ -67,10 +67,16 @@ if __name__ == '__main__':
 
     extracted_ace_folder = downloader.local_extraction_location / "ace"
     model_output = extracted_ace_folder / "model.pt"
+    render_target_path = extracted_ace_folder / "debug_visualizer"
+    render_target_path.mkdir(parents=True, exist_ok=True)
+    visualizer_enabled = True
+    render_flipped_portrait = False
+    
 
     print("[INFO]: Running ace training on dataset path: ", extracted_ace_folder)
     os.chdir("third_party/ace")
-    os.system(f'./train_ace.py {extracted_ace_folder.as_posix()} {model_output.as_posix()}')
+    os.system(f'./train_ace.py {extracted_ace_folder.as_posix()} {model_output.as_posix()} --render_visualization {"True" if visualizer_enabled else "False"} --render_flipped_portrait {"True" if render_flipped_portrait else "False"} --render_target_path "{render_target_path.as_posix()}"')
     print("[INFO]: Running ace evaluater on dataset path: ", extracted_ace_folder)
-    os.system(f'./test_ace.py {extracted_ace_folder.as_posix()} {model_output.as_posix()}')
-
+    os.system(f'./test_ace.py --render_visualization {"True" if visualizer_enabled else "False"} {extracted_ace_folder.as_posix()} {model_output.as_posix()} --render_target_path "{render_target_path.as_posix()}"')
+    if visualizer_enabled: 
+      os.system(f'/usr/bin/ffmpeg -framerate 30 -pattern_type glob -i "{render_target_path.as_posix()}/$scene/*.png" -c:v libx264 -pix_fmt yuv420p "{render_target_path.as_posix()}/$scene.mp4"')
