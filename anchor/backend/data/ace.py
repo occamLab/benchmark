@@ -79,4 +79,4 @@ if __name__ == '__main__':
     print("[INFO]: Running ace evaluater on dataset path: ", extracted_ace_folder)
     os.system(f'./test_ace.py --render_visualization {"True" if visualizer_enabled else "False"} {extracted_ace_folder.as_posix()} {model_output.as_posix()} --render_target_path "{render_target_path.as_posix()}"')
     if visualizer_enabled: 
-      os.system(f'/usr/bin/ffmpeg -framerate 30 -pattern_type glob -i "{render_target_path.as_posix()}/$scene/*.png" -c:v libx264 -pix_fmt yuv420p "{render_target_path.as_posix()}/$scene.mp4"')
+      os.system(f'/usr/bin/ffmpeg -framerate 30 -pattern_type glob -i "{render_target_path.as_posix()}/**/*.png" -c:v libx264 -pix_fmt yuv420p "{render_target_path.as_posix()}/out.mp4"')
