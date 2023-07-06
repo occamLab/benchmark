@@ -22,12 +22,12 @@ def prepare_ace_data(extracted_data: Extracted):
             write_location.mkdir(parents=True, exist_ok=True)
 
             # copy the image itself
-            dest_img_path = write_location / "rgb" / (str(data["frame_num"]) + ".color.jpg")
+            dest_img_path = write_location / "rgb" / (f'{data["frame_num"]:05}' + ".color.jpg")
             dest_img_path.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(data["frame_path"], dest_img_path)
 
             # copy the intrinsics information
-            dest_intrinsics_path = write_location / "calibration" / (str(data["frame_num"]) + ".calibration.txt")
+            dest_intrinsics_path = write_location / "calibration" / (f'{data["frame_num"]:05}' + ".calibration.txt")
             dest_intrinsics_path.parent.mkdir(parents=True, exist_ok=True)
             with open(dest_intrinsics_path, "w") as intrinsics_file:
                 intrinsics_data = data["intrinsics"]
@@ -38,7 +38,7 @@ def prepare_ace_data(extracted_data: Extracted):
                 )
 
             # copy the pose information
-            dest_pose_path = write_location / "poses" / (str(data["frame_num"]) + ".pose.txt")
+            dest_pose_path = write_location / "poses" / (f'{data["frame_num"]:05}' + ".pose.txt")
             dest_pose_path.parent.mkdir(parents=True, exist_ok=True)
             with open(dest_pose_path, "w") as pose_file:
                 pose_data = data["poses"]["rotation_matrix"]
