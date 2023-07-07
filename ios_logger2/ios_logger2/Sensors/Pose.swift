@@ -19,11 +19,11 @@ class Pose: Sensor, SensorProtocol {
     func collectData(motion: CMDeviceMotion?, frame: ARFrame?, arView: ARSCNView) {
         if(frame != nil) {
             let timestamp: Double = getUnixTimestamp(moment: frame!.timestamp)
-            let frame = frame!.camera.transform
-            let translation: [Float] = frame.inCameraConventions().translationValues()
-            let rot_matrix: [Float] = frame.inCameraConventions().rotationMatrix()
-            let quat_imag: [Float] = simd_quatf(frame.inCameraConventions()).imagToArray()
-            let quat_real: Float = simd_quatf(frame.inCameraConventions()).real
+            let transform = frame!.camera.transform
+            let translation: [Float] = transform.inCameraConventions().translationValues()
+            let rot_matrix: [Float] = transform.inCameraConventions().rotationMatrix()
+            let quat_imag: [Float] = simd_quatf(transform.inCameraConventions()).imagToArray()
+            let quat_real: Float = simd_quatf(transform.inCameraConventions()).real
             
             var measurement = PoseTimestamp()
             measurement.timestamp = timestamp
