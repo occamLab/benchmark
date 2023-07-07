@@ -20,10 +20,10 @@ class Pose: Sensor, SensorProtocol {
         if(frame != nil) {
             let timestamp: Double = getUnixTimestamp(moment: frame!.timestamp)
             let transform = frame!.camera.transform
-            let translation: [Float] = transform.translationValues()
-            let rot_matrix: [Float] = transform.rotationMatrix()
-            let quat_imag: [Float] = simd_quatf(transform).imagToArray()
-            let quat_real: Float = simd_quatf(transform).real
+            let translation: [Float] = transform.inCameraConventions().translationValues()
+            let rot_matrix: [Float] = transform.inCameraConventions().rotationMatrix()
+            let quat_imag: [Float] = simd_quatf(transform.inCameraConventions()).imagToArray()
+            let quat_real: Float = simd_quatf(transform.inCameraConventions()).real
             
             var measurement = PoseTimestamp()
             measurement.timestamp = timestamp
@@ -49,6 +49,20 @@ extension simd_float4x4 {
     public func rotationMatrix()->[Float] {
         return [self[0,0], self[0,1], self[0,2], self[0,3], self[1,0], self[1,1], self[1,2], self[1,3], self[2,0], self[2,1], self[2,2], self[2,3], self[3,0], self[3,1], self[3,2], self[3,3]]
     }
+    
+    /* The standard convention for the camera axis is as follows:
+     *
+     *       "The local camera coordinate system of an image is defined in a way that the X axis points to the right,
+     *       the Y axis to the bottom, and the Z axis to the front as seen from the image."
+     *       https://colmap.github.io/format.html
+     *
+     * For some reason the ARFrames do not follow this convention, so we adjust the axis to the conventions with the following transform:
+     *
+     */
+    public func inCameraConventions()->simd_float4x4 {
+        return self * simd_float4x4(diagonal: simd_float4(1, -1, -1, 1))
+    }
+    
 }
 
 extension simd_quatf {
