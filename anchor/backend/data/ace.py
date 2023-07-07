@@ -22,12 +22,12 @@ def prepare_ace_data(extracted_data: Extracted):
             write_location.mkdir(parents=True, exist_ok=True)
 
             # copy the image itself
-            dest_img_path = write_location / "rgb" / (str(data["frame_num"]) + ".color.jpg")
+            dest_img_path = write_location / "rgb" / (f'{data["frame_num"]:05}' + ".color.jpg")
             dest_img_path.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(data["frame_path"], dest_img_path)
 
             # copy the intrinsics information
-            dest_intrinsics_path = write_location / "calibration" / (str(data["frame_num"]) + ".calibration.txt")
+            dest_intrinsics_path = write_location / "calibration" / (f'{data["frame_num"]:05}' + ".calibration.txt")
             dest_intrinsics_path.parent.mkdir(parents=True, exist_ok=True)
             with open(dest_intrinsics_path, "w") as intrinsics_file:
                 intrinsics_data = data["intrinsics"]
@@ -38,7 +38,7 @@ def prepare_ace_data(extracted_data: Extracted):
                 )
 
             # copy the pose information
-            dest_pose_path = write_location / "poses" / (str(data["frame_num"]) + ".pose.txt")
+            dest_pose_path = write_location / "poses" / (f'{data["frame_num"]:05}' + ".pose.txt")
             dest_pose_path.parent.mkdir(parents=True, exist_ok=True)
             with open(dest_pose_path, "w") as pose_file:
                 pose_data = data["poses"]["rotation_matrix"]
@@ -67,10 +67,16 @@ if __name__ == '__main__':
 
     extracted_ace_folder = downloader.local_extraction_location / "ace"
     model_output = extracted_ace_folder / "model.pt"
+    render_target_path = extracted_ace_folder / "debug_visualizer"
+    render_target_path.mkdir(parents=True, exist_ok=True)
+    visualizer_enabled = True
+    render_flipped_portrait = False
+    
 
     print("[INFO]: Running ace training on dataset path: ", extracted_ace_folder)
     os.chdir("third_party/ace")
-    os.system(f'./train_ace.py {extracted_ace_folder.as_posix()} {model_output.as_posix()}')
+    os.system(f'./train_ace.py {extracted_ace_folder.as_posix()} {model_output.as_posix()} --render_visualization {"True" if visualizer_enabled else "False"} --render_flipped_portrait {"True" if render_flipped_portrait else "False"} --render_target_path "{render_target_path.as_posix()}"')
     print("[INFO]: Running ace evaluater on dataset path: ", extracted_ace_folder)
-    os.system(f'./test_ace.py {extracted_ace_folder.as_posix()} {model_output.as_posix()}')
-
+    os.system(f'./test_ace.py --render_visualization {"True" if visualizer_enabled else "False"} {extracted_ace_folder.as_posix()} {model_output.as_posix()} --render_target_path "{render_target_path.as_posix()}"')
+    if visualizer_enabled: 
+      os.system(f'/usr/bin/ffmpeg -framerate 30 -pattern_type glob -i "{render_target_path.as_posix()}/**/*.png" -c:v libx264 -pix_fmt yuv420p "{render_target_path.as_posix()}/out.mp4"')

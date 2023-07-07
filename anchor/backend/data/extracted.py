@@ -99,9 +99,25 @@ class Extracted:
                     self.match_given_sensor(phase, sensor)
 
     def transform_poses_in_global_frame(self):
+        """
+            We are not using april tags for now so this function is disabled
+        """
+        return
         for phase in self.sensors_extracted:
             # todo: perform some kind of averaging for the rotation angle of the april tag to get a more accurate measurement of its position
             true_april_tag_loc = np.reshape(self.sensors_extracted[phase]["april_tags"][0]["rotation_matrix"], (4, 4)).transpose()
+
+            # average the translations on the april tag to get a better reading
+            average_pose_translation = np.zeros([4, 1], dtype=float)
+            for april_tag in self.sensors_extracted[phase]["april_tags"]:
+                april_tag_loc = np.reshape(april_tag["rotation_matrix"], (4, 4)).transpose()
+                average_pose_translation = np.add(average_pose_translation, april_tag_loc[:, [3]])
+            average_pose_translation /= len(self.sensors_extracted[phase]["april_tags"])
+            print(average_pose_translation, true_april_tag_loc)
+            true_april_tag_loc[:, [3]] = average_pose_translation
+            print(true_april_tag_loc)
+
+           # exit(0)
 
             # transform pose data relative to april tag location
             for idx, pose in enumerate(self.sensors_extracted[phase]["poses"]):
