@@ -73,7 +73,7 @@ class AprilTag: Sensor, SensorProtocol {
                         for col in 0..<ids.cols() {
                             // Make this store id flatly
                             let id = ids.get(row: row, col: col)[0]
-                            print("id:", id)
+                            print("[INFO]: April tag ID: \(id)")
                         }
                     }
                     
@@ -113,10 +113,6 @@ class AprilTag: Sensor, SensorProtocol {
                         
                         // Calculate pose, output the rotation vector rvec and translation vector tvec
                         Calib3d.solvePnP(objectPoints: points3d, imagePoints: points2d, cameraMatrix: intrinsics, distCoeffs: dist, rvec: rvec, tvec: tvec, useExtrinsicGuess: false, flags: 7)
-                        
-                        // Print translation values for debugging
-                        print("tvec \(tvec.get(row: 0, col: 0)), \(tvec.get(row: 1, col: 0)), \(tvec.get(row: 2, col: 0))")
-                        print("rvec \(rvec.get(row:0, col: 0)), \(rvec.get(row: 1, col: 0)), \(rvec.get(row: 2, col: 0))")
                         
                         // Convert to simd_float3 so it's usable
                         let rvecSimd = simd_float3(x: Float(rvec.get(row: 0, col: 0)[0]),
