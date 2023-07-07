@@ -8,7 +8,6 @@
 import SwiftUI
 
 class MotionManager: ObservableObject {
-
     @Published var motion: Motion?
     @Published var phaseText: String = "Currently in mapping phase!!"
     @Published var isPresentingUploadConfirmation: Bool = false
@@ -20,13 +19,6 @@ class MotionManager: ObservableObject {
             // allow time for alignment of phone
             DispatchQueue.main.sync {
                 self.phaseText = "Align phone to starting position (10 seconds)!!. HOLD VERTICALLY AGINST TABLE EDGE (camera staight on). For some reason the Arkit initial pose is absolute garbage is you hold the camera face down."
-            }
-            try! await Task.sleep(for: .seconds(10))
-            // start collecting data
-            DispatchQueue.main.sync {
-                motion = Motion() // initialize
-            }
-                self.phaseText = "Align phone to starting position (10 seconds) !!"
             }
             try! await Task.sleep(for: .seconds(10))
             // start collecting data
@@ -58,7 +50,6 @@ class MotionManager: ObservableObject {
                 self.phaseText = "Currently in localization phase!!"
             }
             
-
             try! await Task.sleep(for: .seconds(20)) // allow time for localization phase
             DispatchQueue.main.sync {
                 self.phaseText = "Finished localization phase!!"
