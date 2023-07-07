@@ -12,6 +12,7 @@ import ARCoreGARSession
 import ARCoreCloudAnchors
 
 class GoogleCloudAnchor: Sensor, SensorProtocol {
+    
     var isResolvingAnchors = false
     var sensorName: String = "google_cloud_anchor"
     var series: GoogleCloudAnchorData = GoogleCloudAnchorData()
@@ -26,7 +27,7 @@ class GoogleCloudAnchor: Sensor, SensorProtocol {
          garSession?.setConfiguration(configuration, error: &error)
     }
     
-    func collectData(motion: CMDeviceMotion?, frame: ARFrame?) {
+    func collectData(motion: CMDeviceMotion?, frame: ARFrame?, arView: ARSCNView) {
         print("0")
         return
         guard let frame = frame else {
