@@ -27,6 +27,10 @@ class MotionManager: ObservableObject {
                 motion = Motion() // initialize
                 self.phaseText = "Currently in mapping phase (20 seconds)"
             }
+                self.phaseText = "Align phone to starting position (10 seconds) !!"
+            }
+            try! await Task.sleep(for: .seconds(10))
+            motion = Motion() // initialize
             
             // allow time for mapping phase
             try! await Task.sleep(for: .seconds(20))
@@ -50,7 +54,8 @@ class MotionManager: ObservableObject {
                 self.phaseText = "Currently in localization phase!!"
             }
             
-            try! await Task.sleep(for: .seconds(20))
+
+            try! await Task.sleep(for: .seconds(20)) // allow time for localization phase
             DispatchQueue.main.sync {
                 self.phaseText = "Finished localization phase!!"
                 self.isPresentingUploadConfirmation = true
