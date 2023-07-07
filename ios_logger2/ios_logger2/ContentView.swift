@@ -18,7 +18,7 @@ class MotionManager: ObservableObject {
         Task {
             // allow time for alignment of phone
             DispatchQueue.main.sync {
-                self.phaseText = "Align phone to starting position (10 seconds)!!. HOLD VERTICALLY AGINST TABLE EDGE (camera staight on). For some reason the Arkit initial pose is absolute garbage is you hold the camera face down."
+                self.phaseText = "Align phone to starting position (10 seconds)!!. HOLD VERTICALLY AGINST TABLE EDGE (camera staight on). For some reason the Arkit initial pose is absolute garbage if you hold the camera face down."
             }
             try! await Task.sleep(for: .seconds(10))
             // start collecting data
@@ -36,7 +36,7 @@ class MotionManager: ObservableObject {
             // allow time for alignment of phone
             await motion!.switchToLocalization()
             DispatchQueue.main.sync {
-                self.phaseText = "Align phone to starting position (10 seconds)!!. HOLD VERTICALLY AGINST TABLE EDGE (camera staight on). For some reason the Arkit initial pose is absolute garbage is you hold the camera face down."
+                self.phaseText = "Align phone to starting position (10 seconds)!!. HOLD VERTICALLY AGINST TABLE EDGE (camera staight on). For some reason the Arkit initial pose is absolute garbage if you hold the camera face down."
             }
 
             try! await Task.sleep(for: .seconds(10))
