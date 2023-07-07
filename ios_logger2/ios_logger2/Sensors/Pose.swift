@@ -20,10 +20,11 @@ class Pose: Sensor, SensorProtocol {
         if(frame != nil) {
             let timestamp: Double = getUnixTimestamp(moment: frame!.timestamp)
             let transform = frame!.camera.transform
-            let translation: [Float] = transform.translationValues()
-            let rot_matrix: [Float] = transform.rotationMatrix()
-            let quat_imag: [Float] = simd_quatf(transform).imagToArray()
-            let quat_real: Float = simd_quatf(transform).real
+            let cameraConventions = transform * simd_float4x4(diagonal: simd_float4(1, -1, -1, 1))
+            let translation: [Float] = cameraConventions.translationValues()
+            let rot_matrix: [Float] = cameraConventions.rotationMatrix()
+            let quat_imag: [Float] = simd_quatf(cameraConventions).imagToArray()
+            let quat_real: Float = simd_quatf(cameraConventions).real
             
             var measurement = PoseTimestamp()
             measurement.timestamp = timestamp
