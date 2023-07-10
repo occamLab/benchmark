@@ -15,6 +15,9 @@ class ErrorSummarizer:
         self.cm_2_degree_2 = 0      # 2 centimeter, 2 degree error
         self.cm_5_degree_5 = 0      # 5 centimeter, 5 degree error
         self.cm_10_degree_5 = 0     # 10 centimeter, 5 degree error
+
+        self.translation_errors = []
+        self.rotation_errors = []
     
     def observe_pose(self, measured_pose: [float], ground_truth_pose: [float]):
         #print(ground_truth_pose)
@@ -46,8 +49,17 @@ class ErrorSummarizer:
             self.cm_10_degree_5  += 1
         
         self.total_observations += 1
+        self.translation_errors += [translation_error]
+        self.rotation_errors += [rotation_error]
     
     def print_statistics(self):
+        self.translation_errors.sort()
+        self.rotation_errors.sort()
+
+        median_translation_error = self.translation_errors[len(self.translation_errors) // 2]
+        median_rotation_error = self.rotation_errors[len(self.rotation_errors) // 2]
+
+
         print("===================================================")
         print("Cloud Anchor Results.")
         print('Accuracy:')
@@ -55,8 +67,5 @@ class ErrorSummarizer:
         print(f'\t5cm/5deg: {(self.cm_5_degree_5 / self.total_observations) * 100:.1f}%')
         print(f'\t2cm/2deg: {(self.cm_2_degree_2 / self.total_observations) * 100:.1f}%')
         print(f'\t1cm/1deg: {(self.cm_1_degree_1 / self.total_observations) * 100:.1f}%')
-
-
-        #print(f'\t5cm/5deg: {pct5:.1f}%')
-        #print(f'\t2cm/2deg: {pct2:.1f}%')
-        #print(f'\t1cm/1deg: {pct1:.1f}%')
+        print(f'Median rotation error: {median_rotation_error} degrees')
+        print(f'Median translation error: {median_translation_error} cm')
