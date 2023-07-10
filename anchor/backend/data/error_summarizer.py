@@ -17,6 +17,9 @@ class ErrorSummarizer:
         self.cm_10_degree_5 = 0     # 10 centimeter, 5 degree error
     
     def observe_pose(self, measured_pose: [float], ground_truth_pose: [float]):
+        #print(ground_truth_pose)
+        #print(measured_pose)
+
         measured_pose = np.reshape(measured_pose, (4, 4)).transpose()
         ground_truth_pose = np.reshape(ground_truth_pose, (4, 4)).transpose()
 
@@ -27,8 +30,11 @@ class ErrorSummarizer:
         rotation_error =  np.linalg.norm(rotation_vector) * 180 / math.pi
         rotation_error = min(rotation_error, 180 - rotation_error)
         translation_error = float(np.linalg.norm(measured_pose[0:3, 3] - ground_truth_pose[0:3, 3]))
+        translation_error *= 100
         assert (rotation_error > 0 and rotation_error < 180)
         assert (translation_error > 0)
+
+        print(rotation_error, translation_error)
 
         if(rotation_error < 1 and translation_error < 1):
             self.cm_1_degree_1  += 1
@@ -46,6 +52,11 @@ class ErrorSummarizer:
         print("Cloud Anchor Results.")
         print('Accuracy:')
         print(f'\t10cm/5deg: {(self.cm_10_degree_5 / self.total_observations) * 100:.1f}%')
+        print(f'\t5cm/5deg: {(self.cm_5_degree_5 / self.total_observations) * 100:.1f}%')
+        print(f'\t2cm/2deg: {(self.cm_2_degree_2 / self.total_observations) * 100:.1f}%')
+        print(f'\t1cm/1deg: {(self.cm_1_degree_1 / self.total_observations) * 100:.1f}%')
+
+
         #print(f'\t5cm/5deg: {pct5:.1f}%')
         #print(f'\t2cm/2deg: {pct2:.1f}%')
         #print(f'\t1cm/1deg: {pct1:.1f}%')
