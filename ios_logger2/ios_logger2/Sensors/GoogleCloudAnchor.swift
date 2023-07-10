@@ -76,7 +76,6 @@ class GoogleCloudAnchor: Sensor, SensorProtocol {
         cloudAnchorMetadata.anchorRotMatrix = anchor_rot_matrix
         cloudAnchorMetadata.arkitTranslation = arkit_translation
         cloudAnchorMetadata.arkitRotMatrix = arkit_rot_matrix
-        print(cloudAnchor.transform.translationValues())
         series.localizationPhase.cloudAnchorResolve.append(cloudAnchorMetadata)
     }
     
