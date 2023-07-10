@@ -17,6 +17,7 @@ class Extracted:
                 "poses": [],
                 "april_tags": [],
                 "video": [],
+                "google_cloud_anchor": []
             }
         }
         self.extract_root = extract_root
@@ -46,6 +47,16 @@ class Extracted:
         april_tag_object = {"timestamp": timestamp, "rotation_matrix": rotation_matrix}
         print(april_tag_object)
         self.sensors_extracted[phase]["april_tags"].append(april_tag_object)
+    
+    # append a google cloud anchor detection
+    def append_google_cloud_anchor_localization(self, timestamp, anchor_rotation_matrix: [float], arkit_rotation_matrix: [float]):
+        phase = Extracted.get_phase_key(False)
+        cloud_anchor_detection = {
+            "timestamp": timestamp,
+            "arkit_rotation_matrix": arkit_rotation_matrix,
+            "anchor_rotation_matrix": anchor_rotation_matrix
+        }
+        self.sensors_extracted[phase]["google_cloud_anchor"].append(cloud_anchor_detection)
 
     def match_given_sensor(self, phase: str, match_against: str):
         """
@@ -95,7 +106,7 @@ class Extracted:
     def match_all_sensor(self):
         for phase in self.sensors_extracted:
             for sensor in self.sensors_extracted[phase]:
-                if sensor not in ["video", "april_tags"]:
+                if sensor not in ["video", "april_tags", "google_cloud_anchor"]:
                     self.match_given_sensor(phase, sensor)
 
     def transform_poses_in_global_frame(self):

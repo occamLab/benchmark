@@ -4,6 +4,7 @@ import anchor.backend.data.proto.pose_pb2 as Pose
 import anchor.backend.data.proto.intrinsics_pb2 as Intrinsics
 import anchor.backend.data.proto.video_pb2 as video_pb2
 import anchor.backend.data.proto.april_tag_pb2 as AprilTag
+import anchor.backend.data.proto.google_cloud_anchor_pb2 as GCloudAnchor
 from multiprocessing.pool import ThreadPool as Pool
 
 
@@ -79,6 +80,9 @@ class FirebaseDownloader:
         self.extract_april_tags(self.local_extraction_location, True)
         self.extract_april_tags(self.local_extraction_location, False)
 
+        self.extract_google_cloud_anchors(self.local_extraction_location, True)
+        self.extract_google_cloud_anchors(self.local_extraction_location, False)
+
         self.extracted_data.transform_poses_in_global_frame()
         self.extracted_data.match_all_sensor()
 
@@ -148,8 +152,7 @@ class FirebaseDownloader:
     def extract_pose(self, extract_path: Path, mapping_phase: bool):
         """
         Args: 
-            extract_path (str): the path to the folder containing the video 
-            we are extracting and getting the pose data from.
+            extract_path (str): the path to the folder containing the pose protobuf.
             mapping_phase (bool): determines which phase we are in (mapping/localization)
 
         
@@ -192,8 +195,7 @@ class FirebaseDownloader:
     def extract_april_tags(self, extract_path: Path, mapping_phase: bool):
         """
         Args:
-            extract_path (str): the path to the folder containing the video
-            we are extracting and getting the pose data from.
+            extract_path (str): the path to the folder containing the april tag protobuf
             mapping_phase (bool): determines which phase we are in (mapping/localization)
 
 
@@ -206,14 +208,42 @@ class FirebaseDownloader:
                     flattened into a single list by row
             }
         """
-        print(f'[INFO]: Reading pose protobuf {extract_path}')
+        print(f'[INFO]: Reading april tag protobuf {extract_path}')
         april_path = extract_path / "april_tag.proto"
         april_data = AprilTag.AprilTagData()
         with open(april_path, "rb") as fd:
             april_data.ParseFromString(fd.read())
             for value in FirebaseDownloader.proto_with_phase(april_data, mapping_phase).measurements:
                 self.extracted_data.append_april_tag(value.timestamp, value.tagCenterPose, mapping_phase)
+    
+    def extract_google_cloud_anchors(self, extract_path: Path, mapping_phase: bool):
+        """
+        Args:
+            extract_path (str): the path to the folder containing the google cloud protobuf.
+            mapping_phase (bool): determines which phase we are in (mapping/localization)
 
+        Returns: (void)
+            Appends data to the Extracted class with the following form:
+            A list of dictionaries; each dictionary has the form:
+            {
+                timestamp (float): timestamp of detected April Tag
+                arkit_rotation_matrix ([float]): 4x4 rotation/translation matrix of the frame
+                    flattened into a single list by row
+                anchor_rotation_matrix ([float]): 4x4 rotation/translation matrix of the anchor in the arkit frame
+                    flattened into a single list by row
+                
+            }
+        """
+        print(f'[INFO]: Reading google cloud anchor protobuf {extract_path}')
+        google_cloud_anchor_path = extract_path / "google_cloud_anchor.proto"
+        google_cloud_anchor_data = GCloudAnchor.GoogleCloudAnchorData()
+        with open(google_cloud_anchor_path, "rb") as fd:
+            google_cloud_anchor_data.ParseFromString(fd.read())
+            anchor_read_phase = FirebaseDownloader.proto_with_phase(google_cloud_anchor_data, mapping_phase)
+
+            if not mapping_phase:
+                for value in anchor_read_phase.cloudAnchorMetadata:
+                    self.extracted_data.append_google_cloud_anchor_localization(value.timestamp, value.anchorRotMatrix, value.arkitRotMatrix)            
 
 
 # test the extractor here

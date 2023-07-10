@@ -71,6 +71,8 @@ if __name__ == '__main__':
     render_target_path.mkdir(parents=True, exist_ok=True)
     visualizer_enabled = True
     render_flipped_portrait = False
+
+    exit(0)
     
 
     print("[INFO]: Running ace training on dataset path: ", extracted_ace_folder)
