@@ -81,7 +81,7 @@ class GoogleCloudAnchor: Sensor, SensorProtocol {
     
     func additionalUpload() async {
         if isMappingPhase() {
-            let newAnchor = ARAnchor(transform: simd_float4x4())
+            let newAnchor = ARAnchor(transform: simd_float4x4.init(diagonal: [1,1,1,1]))
             series.mappingPhase.cloudAnchorHost.anchorHostRotationMatrix = newAnchor.transform.rotationMatrix()
             
             // there does not appear to be an async/await version of hostCloudAnchor so we wrap the callback into a promise using the withCheckedContinuation Swift API
