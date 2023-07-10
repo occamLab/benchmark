@@ -12,11 +12,11 @@ import ARCoreGARSession
 import ARCoreCloudAnchors
 
 class GoogleCloudAnchor: Sensor, SensorProtocol {
-    var isResolvingAnchors = false
     var sensorName: String = "google_cloud_anchor"
     var series: GoogleCloudAnchorData = GoogleCloudAnchorData()
     var garSession: GARSession?
     var resolvedAnchorIdentifier: UUID?
+    var startedResolvingAnchors: Bool = false
 
      override init() {
          var error: NSError?
@@ -37,9 +37,9 @@ class GoogleCloudAnchor: Sensor, SensorProtocol {
         guard isLocalizationPhase() else {
             return
         }
-        // Make sure we are only trying to resolve one anchor at a time
-        guard self.isResolvingAnchors else {
-            self.isResolvingAnchors = true
+        // Starts resolving cloud anchor is not already started
+        if(!self.startedResolvingAnchors) {
+            self.startedResolvingAnchors = true
             do {
                 try garSession?.resolveCloudAnchor(series.mappingPhase.cloudAnchorHost.cloudAnchorName) { garAnchor, cloudState in
                     guard let garAnchor = garAnchor else {
@@ -48,14 +48,14 @@ class GoogleCloudAnchor: Sensor, SensorProtocol {
                     }
                     print("[INFO]: Resolved anchor \(garAnchor.identifier)")
                     self.resolvedAnchorIdentifier = garAnchor.identifier
-                    self.isResolvingAnchors = false
                 }
             } catch {
-                // print("error \(error.localizedDescription)")
+                print("error \(error.localizedDescription)")
             }
-            sendLocalizationData(frame: frame, cloudAnchors: garFrame)
-            return
         }
+        
+        // this won't do anything if there havn't been any cloud anchor resolve changes
+        sendLocalizationData(frame: frame, cloudAnchors: garFrame)
     }
     
     func sendLocalizationData(frame: ARFrame, cloudAnchors: GARFrame) {
@@ -76,12 +76,13 @@ class GoogleCloudAnchor: Sensor, SensorProtocol {
         cloudAnchorMetadata.anchorRotMatrix = anchor_rot_matrix
         cloudAnchorMetadata.arkitTranslation = arkit_translation
         cloudAnchorMetadata.arkitRotMatrix = arkit_rot_matrix
+        print(cloudAnchor.transform.translationValues())
         series.localizationPhase.cloudAnchorResolve.append(cloudAnchorMetadata)
     }
     
     func additionalUpload() async {
         if isMappingPhase() {
-            let newAnchor = ARAnchor(transform: simd_float4x4.init(diagonal: [1,1,1,1]))
+            let newAnchor = ARAnchor(transform: matrix_identity_float4x4)
             series.mappingPhase.cloudAnchorHost.anchorHostRotationMatrix = newAnchor.transform.rotationMatrix()
             
             // there does not appear to be an async/await version of hostCloudAnchor so we wrap the callback into a promise using the withCheckedContinuation Swift API
