@@ -41,7 +41,7 @@ class GoogleCloudAnchor: Sensor, SensorProtocol {
         guard self.isResolvingAnchors else {
             self.isResolvingAnchors = true
             do {
-                try garSession?.resolveCloudAnchor(series.mappingPhase.cloudAnchorMetadata.cloudAnchorName) { garAnchor, cloudState in
+                try garSession?.resolveCloudAnchor(series.mappingPhase.cloudAnchorHost.cloudAnchorName) { garAnchor, cloudState in
                     guard let garAnchor = garAnchor else {
                         print("[ERROR]: Unable to resolve anchor")
                         return
@@ -68,20 +68,21 @@ class GoogleCloudAnchor: Sensor, SensorProtocol {
         let arkit_transform = frame.camera.transform
         let arkit_translation: [Float] = arkit_transform.translationValues()
         let arkit_rot_matrix: [Float] = arkit_transform.rotationMatrix()
-        var cloudAnchorMetadata = CloudAnchorMetadata()
+        var cloudAnchorMetadata = CloudAnchorResolve()
         cloudAnchorMetadata.timestamp = timestamp
-        cloudAnchorMetadata.cloudAnchorName = series.mappingPhase.cloudAnchorMetadata.cloudAnchorName
+        cloudAnchorMetadata.cloudAnchorName = series.mappingPhase.cloudAnchorHost.cloudAnchorName
         cloudAnchorMetadata.resolvedCloudAnchorName = resolvedAnchorIdentifier!.uuidString
         cloudAnchorMetadata.anchorTranslation = anchor_translation
         cloudAnchorMetadata.anchorRotMatrix = anchor_rot_matrix
         cloudAnchorMetadata.arkitTranslation = arkit_translation
         cloudAnchorMetadata.arkitRotMatrix = arkit_rot_matrix
-        series.localizationPhase.cloudAnchorMetadata.append(cloudAnchorMetadata)
+        series.localizationPhase.cloudAnchorResolve.append(cloudAnchorMetadata)
     }
     
     func additionalUpload() async {
         if isMappingPhase() {
             let newAnchor = ARAnchor(transform: simd_float4x4())
+            series.mappingPhase.cloudAnchorHost.anchorHostRotationMatrix = newAnchor.transform.rotationMatrix()
             
             // there does not appear to be an async/await version of hostCloudAnchor so we wrap the callback into a promise using the withCheckedContinuation Swift API
             let anchorHostResult: (anchorName: String?, anchorState: GARCloudAnchorState)? = await withCheckedContinuation { continuation in
@@ -108,7 +109,7 @@ class GoogleCloudAnchor: Sensor, SensorProtocol {
                 return
             }
             print("[INFO]: Hosted cloud anchor with name", anchorName)
-            series.mappingPhase.cloudAnchorMetadata.cloudAnchorName = anchorName
+            series.mappingPhase.cloudAnchorHost.cloudAnchorName = anchorName
         }
     }
 }
