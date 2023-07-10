@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-message CloudAnchorMetadata {
+message CloudAnchorResolve {
     double timestamp = 1;
     string cloudAnchorName = 2;
     string resolvedCloudAnchorName = 3;
@@ -10,13 +10,18 @@ message CloudAnchorMetadata {
     repeated float arkitRotMatrix = 7;
 }
 
+message CloudAnchorHost {
+    string cloudAnchorName = 1;
+    repeated float anchorHostRotationMatrix = 2;
+}
+
 message GoogleCloudAnchorData {
     message MappingPhase {
-        CloudAnchorMetadata cloudAnchorMetadata = 1;
+        CloudAnchorHost cloudAnchorHost = 1;
     }
     message LocalizationPhase {
         // cloud anchor resolves should be saved here later
-        repeated CloudAnchorMetadata cloudAnchorMetadata = 1;
+        repeated CloudAnchorResolve cloudAnchorResolve = 1;
     }
     
     MappingPhase mappingPhase = 1;
