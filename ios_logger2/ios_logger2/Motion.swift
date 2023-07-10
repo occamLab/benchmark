@@ -31,6 +31,7 @@ class Motion: NSObject, ARSessionDelegate {
     public var motionSensors = CMMotionManager()
     public var arView: ARSCNView = ARSCNView(frame: .zero)
     public var motionUpdateQueue = OperationQueue()
+    public var disabledCollection: Bool = true
     
 
     // all of our loggers go here
@@ -86,15 +87,19 @@ class Motion: NSObject, ARSessionDelegate {
     
     // delegate ARFrame updates to video and other sensor loggers
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
-        for sensor in sensors {
-            sensor.collectData(motion: nil, frame: frame, arView: arView)
+        if(!disabledCollection) {
+            for sensor in sensors {
+                sensor.collectData(motion: nil, frame: frame, arView: arView)
+            }
         }
     }
     
     // delegate motion updates to accelerometer and other sensor loggers
     func delegate_motion(motion: CMDeviceMotion?, error: Error?) {
-        for sensor in sensors {
-            sensor.collectData(motion: motion, frame: nil, arView: arView)
+        if(!disabledCollection) {
+            for sensor in sensors {
+                sensor.collectData(motion: motion, frame: nil, arView: arView)
+            }
         }
     }
     
