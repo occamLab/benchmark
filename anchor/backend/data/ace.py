@@ -1,6 +1,7 @@
 from pathlib import Path
 from anchor.backend.data.extracted import Extracted
 from anchor.backend.data.firebase import FirebaseDownloader
+from anchor.backend.data.error_summarizer import ErrorSummarizer
 import shutil
 import random
 import sys
@@ -49,6 +50,12 @@ def prepare_ace_data(extracted_data: Extracted):
                     f'{pose_data[3]} {pose_data[7]} {pose_data[11]} {pose_data[15]}'
                 )
 
+def calculate_google_cloud_anchor_quality(extracted_data: Extracted):
+    error_summarizer = ErrorSummarizer()
+    ground_truth_location = extracted_data.sensors_extracted[Extracted.get_phase_key(True)]["google_cloud_anchor"]["anchor_host_rotation_matrix"]
+    for value in extracted_data.sensors_extracted[Extracted.get_phase_key(False)]["google_cloud_anchor"]:
+        error_summarizer.observe_pose(value["anchor_rotation_matrix"], ground_truth_location)
+    error_summarizer.print_statistics()
 
 # test the benchmark here
 if __name__ == '__main__':
@@ -65,13 +72,15 @@ if __name__ == '__main__':
     downloader.extract_ios_logger_tar()
     prepare_ace_data(downloader.extracted_data)
 
+    print("[INFO]: Summarizing google cloud anchor observations: ")
+    calculate_google_cloud_anchor_quality(downloader.extracted_data)
+
     extracted_ace_folder = downloader.local_extraction_location / "ace"
     model_output = extracted_ace_folder / "model.pt"
     render_target_path = extracted_ace_folder / "debug_visualizer"
     render_target_path.mkdir(parents=True, exist_ok=True)
     visualizer_enabled = True
-    render_flipped_portrait = False
-    
+    render_flipped_portrait = False    
 
     print("[INFO]: Running ace training on dataset path: ", extracted_ace_folder)
     os.chdir("third_party/ace")
