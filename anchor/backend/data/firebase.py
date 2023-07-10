@@ -231,7 +231,6 @@ class FirebaseDownloader:
                     flattened into a single list by row
                 anchor_rotation_matrix ([float]): 4x4 rotation/translation matrix of the anchor in the arkit frame
                     flattened into a single list by row
-                
             }
         """
         print(f'[INFO]: Reading google cloud anchor protobuf {extract_path}')
@@ -242,8 +241,10 @@ class FirebaseDownloader:
             anchor_read_phase = FirebaseDownloader.proto_with_phase(google_cloud_anchor_data, mapping_phase)
 
             if not mapping_phase:
-                for value in anchor_read_phase.cloudAnchorMetadata:
+                for value in anchor_read_phase.cloudAnchorResolve:
                     self.extracted_data.append_google_cloud_anchor_localization(value.timestamp, value.anchorRotMatrix, value.arkitRotMatrix)            
+            else:
+                    self.extracted_data.set_google_cloud_anchor_host(anchor_read_phase.cloudAnchorHost.anchorHostRotationMatrix)            
 
 
 # test the extractor here

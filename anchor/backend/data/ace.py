@@ -52,9 +52,10 @@ def prepare_ace_data(extracted_data: Extracted):
 
 def calculate_google_cloud_anchor_quality(extracted_data: Extracted):
     error_summarizer = ErrorSummarizer()
-    for value in extracted_data[Extracted.get_phase_key(False)]["google_cloud_anchor"]:
-        error_summarizer.observe_pose(value["anchor_rotation_matrix"], value["arkit_rotation_matrix"], )
-
+    ground_truth_location = extracted_data.sensors_extracted[Extracted.get_phase_key(True)]["google_cloud_anchor"]["anchor_host_rotation_matrix"]
+    for value in extracted_data.sensors_extracted[Extracted.get_phase_key(False)]["google_cloud_anchor"]:
+        error_summarizer.observe_pose(value["anchor_rotation_matrix"], ground_truth_location)
+    error_summarizer.print_statistics()
 
 # test the benchmark here
 if __name__ == '__main__':

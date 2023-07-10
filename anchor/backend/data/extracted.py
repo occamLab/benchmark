@@ -11,6 +11,7 @@ class Extracted:
                 "poses": [],
                 "april_tags": [],
                 "video": [],
+                "google_cloud_anchor": {}
             },
             "localization_phase": {
                 "intrinsics": [],
@@ -57,6 +58,14 @@ class Extracted:
             "anchor_rotation_matrix": anchor_rotation_matrix
         }
         self.sensors_extracted[phase]["google_cloud_anchor"].append(cloud_anchor_detection)
+    
+    # sets the metadata of the cloud anchor that we localized against
+    def set_google_cloud_anchor_host(self, anchor_host_rotation_matrix: [float]):
+        phase = Extracted.get_phase_key(True)
+        cloud_anchor_detection = {
+            "anchor_host_rotation_matrix": anchor_host_rotation_matrix
+        }
+        self.sensors_extracted[phase]["google_cloud_anchor"] = cloud_anchor_detection
 
     def match_given_sensor(self, phase: str, match_against: str):
         """
