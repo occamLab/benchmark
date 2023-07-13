@@ -2,10 +2,13 @@ from pathlib import Path
 from anchor.backend.data.extracted import Extracted
 from anchor.backend.data.firebase import FirebaseDownloader
 from anchor.backend.data.error_summarizer import ErrorSummarizer
+from anchor.third_party.ace.ace_network import Regressor
+from torch.utils.mobile_optimizer import optimize_for_mobile, MobileOptimizerType
 import shutil
 import random
 import sys
 import os
+import torch
 
 
 def prepare_ace_data(extracted_data: Extracted):
@@ -57,7 +60,23 @@ def calculate_google_cloud_anchor_quality(extracted_data: Extracted):
         error_summarizer.observe_pose(value["anchor_rotation_matrix"], ground_truth_location)
     error_summarizer.print_statistics()
 
-def convert_to_scriptable_model()
+""" 
+    Converts the ACE model for mobile usage
+"""
+def save_model_for_mobile(ace_encoder_pretrained: Path, trained_weights: Path):     
+    encoder_state_dict = torch.load(ace_encoder_pretrained, map_location="cpu")
+    head_network_dict = torch.load(trained_weights, map_location="cpu")
+
+    device = torch.device("cuda")
+    network = Regressor.create_from_split_state_dict(encoder_state_dict, head_network_dict)
+    network = network.to(device)
+    network.eval()
+
+    scripted_module = torch.jit.script(network)
+    # it looks it's not trivial to optimize for mobile gpu right because this issue: https://github.com/pytorch/pytorch/issues/69609
+    optimized_model = optimize_for_mobile(scripted_module, backend='CPU')
+    optimized_model.save(trained_weights.parent / "mobile.model.pt")
+    optimized_model._save_for_lite_interpreter((trained_weights.parent / "mobile.model.ptl").as_posix())
 
 # test the benchmark here
 if __name__ == '__main__':
@@ -81,6 +100,7 @@ if __name__ == '__main__':
     model_output = extracted_ace_folder / "model.pt"
     render_target_path = extracted_ace_folder / "debug_visualizer"
     render_target_path.mkdir(parents=True, exist_ok=True)
+    pretrained_model = Path(__file__).parent.parent.parent / "third_party" / "ace" / "ace_encoder_pretrained.pt"
     visualizer_enabled = False
     render_flipped_portrait = False 
     training_epochs = 1
@@ -88,6 +108,10 @@ if __name__ == '__main__':
     print("[INFO]: Running ace training on dataset path: ", extracted_ace_folder)
     os.chdir("anchor/third_party/ace")
     os.system(f'./train_ace.py {extracted_ace_folder.as_posix()} {model_output.as_posix()} --render_visualization {"True" if visualizer_enabled else "False"} --render_flipped_portrait {"True" if render_flipped_portrait else "False"} --render_target_path "{render_target_path.as_posix()}" --epochs {training_epochs}')
+
+    print("[INFO]: Converting ACE model for mobile use")
+    save_model_for_mobile(pretrained_model, model_output)
+
     print("[INFO]: Running ace evaluater on dataset path: ", extracted_ace_folder)
     os.system(f'./test_ace.py {extracted_ace_folder.as_posix()} {model_output.as_posix()} --render_visualization {"True" if visualizer_enabled else "False"}   --render_flipped_portrait {"True" if render_flipped_portrait else "False"} --render_target_path "{render_target_path.as_posix()}"')
     if visualizer_enabled: 
