@@ -21,6 +21,9 @@ sudo apt install ffmpeg -y
 # install pyav video library https://pyav.org/docs/stable/
 conda install av -c conda-forge
 
+# install fastapi
+conda install -c conda-forge fastapi[all]
+
 # download our deps
 pip install firebase-admin==6.1.0
 pip install opencv-python~=4.7
