@@ -117,7 +117,6 @@ class FirebaseDownloader:
             frame_path = frame_info[1]
             frame = frame_info[2]
             frame.to_image().save(frame_path.as_posix())
-            print(image_timestamp, frame_path, frame)
             self.extracted_data.append_video_timestamp(image_timestamp, frame_path, frame.index, mapping_phase)
 
         with Pool(36) as pool:

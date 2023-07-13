@@ -57,6 +57,8 @@ def calculate_google_cloud_anchor_quality(extracted_data: Extracted):
         error_summarizer.observe_pose(value["anchor_rotation_matrix"], ground_truth_location)
     error_summarizer.print_statistics()
 
+def convert_to_scriptable_model()
+
 # test the benchmark here
 if __name__ == '__main__':
     if len(sys.argv) != 2:
