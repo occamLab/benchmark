@@ -11,6 +11,7 @@
 		610664BD2A6195C3007D622B /* TorchModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = 610664BC2A6195C3007D622B /* TorchModule.mm */; };
 		610664CF2A61B942007D622B /* thread_rand.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 610664C52A61B942007D622B /* thread_rand.cpp */; };
 		610664D02A61B942007D622B /* dsacstar.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 610664CA2A61B942007D622B /* dsacstar.cpp */; };
+		610664DD2A61CB52007D622B /* PredictPose.swift in Sources */ = {isa = PBXBuildFile; fileRef = 610664DC2A61CB52007D622B /* PredictPose.swift */; };
 		612F51122A3B8F4700E32A6D /* AprilTag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 612F51112A3B8F4700E32A6D /* AprilTag.swift */; };
 		612F51142A3B8FE200E32A6D /* april_tag.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 612F51132A3B8FE200E32A6D /* april_tag.pb.swift */; };
 		613B110B2A3775EF002CA4DD /* GoogleCloudAnchor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 613B110A2A3775EF002CA4DD /* GoogleCloudAnchor.swift */; };
@@ -99,6 +100,7 @@
 		610664CB2A61B942007D622B /* stop_watch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stop_watch.h; sourceTree = "<group>"; };
 		610664CC2A61B942007D622B /* dsacstar_util_rgbd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dsacstar_util_rgbd.h; sourceTree = "<group>"; };
 		610664CD2A61B942007D622B /* dsacstar_util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dsacstar_util.h; sourceTree = "<group>"; };
+		610664DC2A61CB52007D622B /* PredictPose.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PredictPose.swift; sourceTree = "<group>"; };
 		612F51112A3B8F4700E32A6D /* AprilTag.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AprilTag.swift; sourceTree = "<group>"; };
 		612F51132A3B8FE200E32A6D /* april_tag.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = april_tag.pb.swift; sourceTree = "<group>"; };
 		613B110A2A3775EF002CA4DD /* GoogleCloudAnchor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleCloudAnchor.swift; sourceTree = "<group>"; };
@@ -194,6 +196,7 @@
 				610664BA2A6195BA007D622B /* TorchModule.h */,
 				610664BC2A6195C3007D622B /* TorchModule.mm */,
 				610664BB2A6195C2007D622B /* ios_logger2-Bridging-Header.h */,
+				610664DC2A61CB52007D622B /* PredictPose.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -559,6 +562,7 @@
 				61500B7E2A324F18001FE294 /* UploadManager.swift in Sources */,
 				610664CF2A61B942007D622B /* thread_rand.cpp in Sources */,
 				613B11132A379104002CA4DD /* google_cloud_anchor.proto in Sources */,
+				610664DD2A61CB52007D622B /* PredictPose.swift in Sources */,
 				61500BD42A375F06001FE294 /* Intrinsics.swift in Sources */,
 				61500B862A325629001FE294 /* InternetConnectionUtil.swift in Sources */,
 				61500BF02A376100001FE294 /* gyro.pb.swift in Sources */,
