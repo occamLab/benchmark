@@ -12,7 +12,6 @@ class MotionManager: ObservableObject {
     @Published var phaseText: String = "Currently in mapping phase!!"
     @Published var isPresentingUploadConfirmation: Bool = false
 
-    
     init() {
         // note that UI updates must happen on the main thread which is why DispatchQueue.main.sync is used
         Task {
