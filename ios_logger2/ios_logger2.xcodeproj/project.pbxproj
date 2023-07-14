@@ -172,6 +172,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		610664B72A6194BA007D622B /* Model */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
 		613B110C2A378E64002CA4DD /* Secrets */ = {
 			isa = PBXGroup;
 			children = (
@@ -208,6 +215,7 @@
 		61500B142A2FBAB7001FE294 /* ios_logger2 */ = {
 			isa = PBXGroup;
 			children = (
+				610664B72A6194BA007D622B /* Model */,
 				61500B822A3252B5001FE294 /* GoogleService-Info.plist */,
 				613B110C2A378E64002CA4DD /* Secrets */,
 				61500B5A2A30CC76001FE294 /* protos */,
