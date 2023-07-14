@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		610664AF2A6186FE007D622B /* Podfile in Resources */ = {isa = PBXBuildFile; fileRef = 610664AE2A6186FE007D622B /* Podfile */; };
 		610664BD2A6195C3007D622B /* TorchModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = 610664BC2A6195C3007D622B /* TorchModule.mm */; };
-		610664CE2A61B942007D622B /* setup.py in Resources */ = {isa = PBXBuildFile; fileRef = 610664C42A61B942007D622B /* setup.py */; };
 		610664CF2A61B942007D622B /* thread_rand.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 610664C52A61B942007D622B /* thread_rand.cpp */; };
 		610664D02A61B942007D622B /* dsacstar.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 610664CA2A61B942007D622B /* dsacstar.cpp */; };
 		612F51122A3B8F4700E32A6D /* AprilTag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 612F51112A3B8F4700E32A6D /* AprilTag.swift */; };
@@ -91,7 +90,6 @@
 		610664BA2A6195BA007D622B /* TorchModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TorchModule.h; sourceTree = "<group>"; };
 		610664BB2A6195C2007D622B /* ios_logger2-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ios_logger2-Bridging-Header.h"; sourceTree = "<group>"; };
 		610664BC2A6195C3007D622B /* TorchModule.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = TorchModule.mm; sourceTree = "<group>"; };
-		610664C42A61B942007D622B /* setup.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = setup.py; sourceTree = "<group>"; };
 		610664C52A61B942007D622B /* thread_rand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = thread_rand.cpp; sourceTree = "<group>"; };
 		610664C62A61B942007D622B /* dsacstar_loss.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dsacstar_loss.h; sourceTree = "<group>"; };
 		610664C72A61B942007D622B /* dsacstar_derivative.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dsacstar_derivative.h; sourceTree = "<group>"; };
@@ -209,7 +207,6 @@
 				610664CC2A61B942007D622B /* dsacstar_util_rgbd.h */,
 				610664CD2A61B942007D622B /* dsacstar_util.h */,
 				610664CA2A61B942007D622B /* dsacstar.cpp */,
-				610664C42A61B942007D622B /* setup.py */,
 				610664CB2A61B942007D622B /* stop_watch.h */,
 				610664C52A61B942007D622B /* thread_rand.cpp */,
 				610664C92A61B942007D622B /* thread_rand.h */,
@@ -498,7 +495,6 @@
 				61500B1D2A2FBAB8001FE294 /* Preview Assets.xcassets in Resources */,
 				61500B832A3252B5001FE294 /* GoogleService-Info.plist in Resources */,
 				610664AF2A6186FE007D622B /* Podfile in Resources */,
-				610664CE2A61B942007D622B /* setup.py in Resources */,
 				61500B1A2A2FBAB8001FE294 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
