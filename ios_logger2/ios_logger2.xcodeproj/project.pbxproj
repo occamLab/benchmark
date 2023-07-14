@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		610664AF2A6186FE007D622B /* Podfile in Resources */ = {isa = PBXBuildFile; fileRef = 610664AE2A6186FE007D622B /* Podfile */; };
+		610664BD2A6195C3007D622B /* TorchModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = 610664BC2A6195C3007D622B /* TorchModule.mm */; };
 		612F51122A3B8F4700E32A6D /* AprilTag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 612F51112A3B8F4700E32A6D /* AprilTag.swift */; };
 		612F51142A3B8FE200E32A6D /* april_tag.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 612F51132A3B8FE200E32A6D /* april_tag.pb.swift */; };
 		613B110B2A3775EF002CA4DD /* GoogleCloudAnchor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 613B110A2A3775EF002CA4DD /* GoogleCloudAnchor.swift */; };
@@ -84,6 +85,9 @@
 /* Begin PBXFileReference section */
 		58F405D9B9EF25B79F1E8CD3 /* libPods-ios_logger2.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ios_logger2.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		610664AE2A6186FE007D622B /* Podfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; };
+		610664BA2A6195BA007D622B /* TorchModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TorchModule.h; sourceTree = "<group>"; };
+		610664BB2A6195C2007D622B /* ios_logger2-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ios_logger2-Bridging-Header.h"; sourceTree = "<group>"; };
+		610664BC2A6195C3007D622B /* TorchModule.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = TorchModule.mm; sourceTree = "<group>"; };
 		612F51112A3B8F4700E32A6D /* AprilTag.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AprilTag.swift; sourceTree = "<group>"; };
 		612F51132A3B8FE200E32A6D /* april_tag.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = april_tag.pb.swift; sourceTree = "<group>"; };
 		613B110A2A3775EF002CA4DD /* GoogleCloudAnchor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleCloudAnchor.swift; sourceTree = "<group>"; };
@@ -175,6 +179,9 @@
 		610664B72A6194BA007D622B /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				610664BA2A6195BA007D622B /* TorchModule.h */,
+				610664BC2A6195C3007D622B /* TorchModule.mm */,
+				610664BB2A6195C2007D622B /* ios_logger2-Bridging-Header.h */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -414,6 +421,7 @@
 				TargetAttributes = {
 					61500B112A2FBAB7001FE294 = {
 						CreatedOnToolsVersion = 14.3.1;
+						LastSwiftMigration = 1430;
 					};
 					61500B212A2FBAB8001FE294 = {
 						CreatedOnToolsVersion = 14.3.1;
@@ -543,6 +551,7 @@
 				61500BE72A375FDB001FE294 /* pose.proto in Sources */,
 				61500B442A2FCC83001FE294 /* Motion.swift in Sources */,
 				61500BD52A375F06001FE294 /* Gyro.swift in Sources */,
+				610664BD2A6195C3007D622B /* TorchModule.mm in Sources */,
 				61500BF22A376100001FE294 /* accelerometer.pb.swift in Sources */,
 				61500BE02A375FDB001FE294 /* gyro.proto in Sources */,
 			);
@@ -617,7 +626,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_C_LANGUAGE_STANDARD = c11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -676,7 +685,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_C_LANGUAGE_STANDARD = c11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -704,6 +713,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"ios_logger2/Preview Content\"";
@@ -713,7 +724,15 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
+				GCC_C_LANGUAGE_STANDARD = c11;
 				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"${PODS_ROOT}/Headers/Public\"",
+					"\"${PODS_ROOT}/Headers/Public/LibTorch-Lite\"",
+					"$(inherited)",
+					"\"$(PODS_ROOT)/LibTorch-Lite/install/include/\"",
+				);
 				INFOPLIST_FILE = "ios-logger2-Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Recording mapping data";
@@ -731,6 +750,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "edu.occamlab.ios-logger";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "ios_logger2/Model/ios_logger2-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -742,6 +763,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"ios_logger2/Preview Content\"";
@@ -751,7 +774,15 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
+				GCC_C_LANGUAGE_STANDARD = c11;
 				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"${PODS_ROOT}/Headers/Public\"",
+					"\"${PODS_ROOT}/Headers/Public/LibTorch-Lite\"",
+					"$(inherited)",
+					"\"$(PODS_ROOT)/LibTorch-Lite/install/include/\"",
+				);
 				INFOPLIST_FILE = "ios-logger2-Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Recording mapping data";
@@ -769,6 +800,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "edu.occamlab.ios-logger";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "ios_logger2/Model/ios_logger2-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

@@ -1,4 +1,9 @@
 target 'ios_logger2' do
   pod 'LibTorch-Lite', '~> 1.13.0'
   platform :ios, '16.4'
+  
+  pod_target_xcconfig = {
+      'HEADER_SEARCH_PATHS' => '$(inherited) "${PODS_ROOT}/LibTorch/install/include" "${PODS_ROOT}/PytorchExpObjC/apis"',
+    }
+
 end
