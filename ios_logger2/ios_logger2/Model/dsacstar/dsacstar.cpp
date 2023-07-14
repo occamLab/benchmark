@@ -30,7 +30,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <torch/extension.h>
+#include <LibTorch.h>
 #include <opencv2/opencv.hpp>
 
 #include <iostream>
@@ -73,7 +73,6 @@ int dsacstar_rgb_forward(
 	float maxReproj,
 	int subSampling)
 {
-	ThreadRand::init();
 
 	// access to tensor objects
 	dsacstar::coord_t sceneCoordinates = 

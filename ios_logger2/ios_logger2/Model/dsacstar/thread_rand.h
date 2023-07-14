@@ -74,31 +74,13 @@ public:
    */
   static double dgauss(double mean, double stdDev, int tid = -1);
     
-  /**
-   * @brief Re-Initialize the object with the given seed.
-   * 
-   * @param seed Seed to initialize the random number generators (seed is incremented by one for each generator).
-   * @return void
-   */
-  static void forceInit(unsigned seed);
   
   /**
    * @brief List of random number generators. One for each thread.
    * 
    */
-  static std::vector<std::mt19937> generators;
+  static std::mt19937 generator;
 
-  /**
-   * @brief Initialize class with the given seed.
-   * 
-   * Method will create a random number generator for each thread. The given seed 
-   * will be incremented by one for each generator. This methods is automatically 
-   * called when this calss is used the first time.
-   * 
-   * @param seed Optional parameter. Seed to be used when initializing the generators. Will be incremented by one for each generator.
-   * @return void
-   */
-  static void init(unsigned seed = 1305);
 
 private:  
   /**

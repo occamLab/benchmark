@@ -5,7 +5,7 @@
 // LICENSE file in the root directory of this source tree.
 
 #import "TorchModule.h"
-#include <LibTorch-Lite/LibTorch-Lite.h>
+#include <LibTorch.h>
 
 @implementation TorchModule {
 @protected

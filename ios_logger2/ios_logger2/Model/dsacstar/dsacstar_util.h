@@ -32,7 +32,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
-#include <omp.h>
 #include "thread_rand.h"
 //#include "dsacstar_util_rgbd.h"
 
