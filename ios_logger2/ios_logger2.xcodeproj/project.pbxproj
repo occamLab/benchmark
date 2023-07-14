@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		610664AF2A6186FE007D622B /* Podfile in Resources */ = {isa = PBXBuildFile; fileRef = 610664AE2A6186FE007D622B /* Podfile */; };
 		610664BD2A6195C3007D622B /* TorchModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = 610664BC2A6195C3007D622B /* TorchModule.mm */; };
+		610664CE2A61B942007D622B /* setup.py in Resources */ = {isa = PBXBuildFile; fileRef = 610664C42A61B942007D622B /* setup.py */; };
+		610664CF2A61B942007D622B /* thread_rand.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 610664C52A61B942007D622B /* thread_rand.cpp */; };
+		610664D02A61B942007D622B /* dsacstar.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 610664CA2A61B942007D622B /* dsacstar.cpp */; };
 		612F51122A3B8F4700E32A6D /* AprilTag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 612F51112A3B8F4700E32A6D /* AprilTag.swift */; };
 		612F51142A3B8FE200E32A6D /* april_tag.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 612F51132A3B8FE200E32A6D /* april_tag.pb.swift */; };
 		613B110B2A3775EF002CA4DD /* GoogleCloudAnchor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 613B110A2A3775EF002CA4DD /* GoogleCloudAnchor.swift */; };
@@ -88,6 +91,16 @@
 		610664BA2A6195BA007D622B /* TorchModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TorchModule.h; sourceTree = "<group>"; };
 		610664BB2A6195C2007D622B /* ios_logger2-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ios_logger2-Bridging-Header.h"; sourceTree = "<group>"; };
 		610664BC2A6195C3007D622B /* TorchModule.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = TorchModule.mm; sourceTree = "<group>"; };
+		610664C42A61B942007D622B /* setup.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = setup.py; sourceTree = "<group>"; };
+		610664C52A61B942007D622B /* thread_rand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = thread_rand.cpp; sourceTree = "<group>"; };
+		610664C62A61B942007D622B /* dsacstar_loss.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dsacstar_loss.h; sourceTree = "<group>"; };
+		610664C72A61B942007D622B /* dsacstar_derivative.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dsacstar_derivative.h; sourceTree = "<group>"; };
+		610664C82A61B942007D622B /* dsacstar_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dsacstar_types.h; sourceTree = "<group>"; };
+		610664C92A61B942007D622B /* thread_rand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = thread_rand.h; sourceTree = "<group>"; };
+		610664CA2A61B942007D622B /* dsacstar.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dsacstar.cpp; sourceTree = "<group>"; };
+		610664CB2A61B942007D622B /* stop_watch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stop_watch.h; sourceTree = "<group>"; };
+		610664CC2A61B942007D622B /* dsacstar_util_rgbd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dsacstar_util_rgbd.h; sourceTree = "<group>"; };
+		610664CD2A61B942007D622B /* dsacstar_util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dsacstar_util.h; sourceTree = "<group>"; };
 		612F51112A3B8F4700E32A6D /* AprilTag.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AprilTag.swift; sourceTree = "<group>"; };
 		612F51132A3B8FE200E32A6D /* april_tag.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = april_tag.pb.swift; sourceTree = "<group>"; };
 		613B110A2A3775EF002CA4DD /* GoogleCloudAnchor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleCloudAnchor.swift; sourceTree = "<group>"; };
@@ -179,11 +192,29 @@
 		610664B72A6194BA007D622B /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				610664C32A61B931007D622B /* dsacstar */,
 				610664BA2A6195BA007D622B /* TorchModule.h */,
 				610664BC2A6195C3007D622B /* TorchModule.mm */,
 				610664BB2A6195C2007D622B /* ios_logger2-Bridging-Header.h */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		610664C32A61B931007D622B /* dsacstar */ = {
+			isa = PBXGroup;
+			children = (
+				610664C72A61B942007D622B /* dsacstar_derivative.h */,
+				610664C62A61B942007D622B /* dsacstar_loss.h */,
+				610664C82A61B942007D622B /* dsacstar_types.h */,
+				610664CC2A61B942007D622B /* dsacstar_util_rgbd.h */,
+				610664CD2A61B942007D622B /* dsacstar_util.h */,
+				610664CA2A61B942007D622B /* dsacstar.cpp */,
+				610664C42A61B942007D622B /* setup.py */,
+				610664CB2A61B942007D622B /* stop_watch.h */,
+				610664C52A61B942007D622B /* thread_rand.cpp */,
+				610664C92A61B942007D622B /* thread_rand.h */,
+			);
+			path = dsacstar;
 			sourceTree = "<group>";
 		};
 		613B110C2A378E64002CA4DD /* Secrets */ = {
@@ -467,6 +498,7 @@
 				61500B1D2A2FBAB8001FE294 /* Preview Assets.xcassets in Resources */,
 				61500B832A3252B5001FE294 /* GoogleService-Info.plist in Resources */,
 				610664AF2A6186FE007D622B /* Podfile in Resources */,
+				610664CE2A61B942007D622B /* setup.py in Resources */,
 				61500B1A2A2FBAB8001FE294 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -529,6 +561,7 @@
 				61500BCE2A375F06001FE294 /* PointCloud.swift in Sources */,
 				61500BF92A37645E001FE294 /* video.proto in Sources */,
 				61500B7E2A324F18001FE294 /* UploadManager.swift in Sources */,
+				610664CF2A61B942007D622B /* thread_rand.cpp in Sources */,
 				613B11132A379104002CA4DD /* google_cloud_anchor.proto in Sources */,
 				61500BD42A375F06001FE294 /* Intrinsics.swift in Sources */,
 				61500B862A325629001FE294 /* InternetConnectionUtil.swift in Sources */,
@@ -543,6 +576,7 @@
 				61500BE22A375FDB001FE294 /* intrinsics.proto in Sources */,
 				612F51122A3B8F4700E32A6D /* AprilTag.swift in Sources */,
 				61500BB32A375CF1001FE294 /* ios_logger2App.swift in Sources */,
+				610664D02A61B942007D622B /* dsacstar.cpp in Sources */,
 				61500BFB2A37650E001FE294 /* video.pb.swift in Sources */,
 				61500BF12A376100001FE294 /* light.pb.swift in Sources */,
 				612F51142A3B8FE200E32A6D /* april_tag.pb.swift in Sources */,
