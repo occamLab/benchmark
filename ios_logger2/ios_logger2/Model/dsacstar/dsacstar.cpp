@@ -180,11 +180,3 @@ int dsacstar_rgb_forward(
 	// Return the inlier count. cv::sum returns a scalar, so we return its first element.
 	return cv::sum(inlierMap)[0];
 }
-
-
-PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
-	m.def("forward_rgb", &dsacstar_rgb_forward, "DSAC* forward (RGB)");
-//	m.def("backward_rgb", &dsacstar_rgb_backward, "DSAC* backward (RGB)");
-//	m.def("forward_rgbd", &dsacstar_rgbd_forward, "DSAC* forward (RGB-D)");
-//	m.def("backward_rgbd", &dsacstar_rgbd_backward, "DSAC* backward (RGB-D)");
-}
