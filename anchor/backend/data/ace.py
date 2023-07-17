@@ -125,15 +125,15 @@ if __name__ == '__main__':
         save_model_for_mobile(pretrained_model, model_output)
         
         firebase_upload_dir = "iosLoggerDemo/trainedModels/"
-        vid_name = combined_path.rsplit(".", 1)[0]
-        vid_name = vid_name.rsplit("/", 1)[1]+".pt"
+        vid_name = Path(tar_name)
+        vid_name = vid_name.stem + ".pt"
         firebase_upload_path = Path(firebase_upload_dir) / Path(vid_name)
         print("[INFO]: Saving model to firebase as {}".format(firebase_upload_path))
-        downloader.upload_file(firebase_upload_path.as_posix(), pretrained_model)
+        downloader.upload_file(firebase_upload_path.as_posix(), model_output)
         
         if len(sys.argv) != 2:
             downloader.delete_file((Path(firebase_path) / tar_name).as_posix())
-            print("deleted tar from firebase")
+            print("[INFO}: Deleted tar from firebase")
         
         if visualizer_enabled: 
             os.system(f'/usr/bin/ffmpeg -framerate 30 -pattern_type glob -i "{render_target_path.as_posix()}/**/*.png" -c:v libx264 -pix_fmt yuv420p "{render_target_path.as_posix()}/out.mp4"')
