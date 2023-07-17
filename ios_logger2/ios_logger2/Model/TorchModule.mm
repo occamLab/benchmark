@@ -11,4 +11,19 @@
 @protected
     torch::jit::script::Module _impl;
 }
+
+- (nullable instancetype)initWithFileAtPath:(NSString*)filePath {
+    self = [super init];
+    if (self) {
+        try {
+            _impl = torch::jit::load(filePath.UTF8String);
+            _impl.eval();
+        } catch (const std::exception& exception) {
+            NSLog(@"%s", exception.what());
+            return nil;
+        }
+    }
+    return self;
+}
+
 @end

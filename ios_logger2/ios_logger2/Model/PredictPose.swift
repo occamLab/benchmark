@@ -8,7 +8,7 @@
 import Foundation
 
 
-func loadModule() {
+func loadModule(filePath: String) -> TorchModule {
     if let filePath = Bundle.main.path(forResource: "model", ofType: "pt"),
         let module = TorchModule(fileAtPath: filePath) {
         return module
