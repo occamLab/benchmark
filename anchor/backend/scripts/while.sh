@@ -19,4 +19,5 @@ export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
 while true
 do
     python -m anchor.backend.data.ace
+    sleep 30
 done
