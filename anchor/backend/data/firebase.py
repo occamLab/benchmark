@@ -23,7 +23,6 @@ def list_tars():
     tar_queue = "iosLoggerDemo/tarQueue/"
     tars = bucket.list_blobs(prefix=tar_queue)
     for tar in tars:
-        print(tar.name)
         if tar.name.endswith(".tar"):
             tar_path = tar.name
             return tar_path

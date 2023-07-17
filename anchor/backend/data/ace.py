@@ -94,7 +94,6 @@ if __name__ == '__main__':
     
     else:
         combined_path = list_tars()
-        print(combined_path)
 
     if combined_path != None:
         firebase_path: str = Path(combined_path).parent # ex: iosLoggerDemo/vyjFKi2zgLQDsxI1koAOjD899Ba2
@@ -137,3 +136,5 @@ if __name__ == '__main__':
         
         if visualizer_enabled: 
             os.system(f'/usr/bin/ffmpeg -framerate 30 -pattern_type glob -i "{render_target_path.as_posix()}/**/*.png" -c:v libx264 -pix_fmt yuv420p "{render_target_path.as_posix()}/out.mp4"')
+    else:
+        print("[INFO]: No new videos in firebase iosLoggerDemo/tarQueue")
