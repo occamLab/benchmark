@@ -1,6 +1,6 @@
 from pathlib import Path
 from anchor.backend.data.extracted import Extracted
-from anchor.backend.data.firebase import FirebaseDownloader
+from anchor.backend.data.firebase import FirebaseDownloader, list_tars
 from anchor.backend.data.error_summarizer import ErrorSummarizer
 from anchor.third_party.ace.ace_network import Regressor
 from torch.utils.mobile_optimizer import optimize_for_mobile, MobileOptimizerType
@@ -77,42 +77,65 @@ def save_model_for_mobile(ace_encoder_pretrained: Path, trained_weights: Path):
     optimized_model = optimize_for_mobile(scripted_module, backend='CPU')
     optimized_model.save(trained_weights.parent / "mobile.model.pt")
     optimized_model._save_for_lite_interpreter((trained_weights.parent / "mobile.model.ptl").as_posix())
+    
+"""
+Runs the ace evaluator on the trained model. To run paste the following into main:
+run_ace_evaluator(extracted_ace_folder, model_output, visualizer_enabled, render_flipped_portrait, render_target_path)
+"""
+def run_ace_evaluator(extracted_ace_folder, model_output, visualizer_enabled, render_flipped_portrait, render_target_path):
+    print("[INFO]: Running ace evaluater on dataset path: ", extracted_ace_folder)
+    os.system(f'./test_ace.py {extracted_ace_folder.as_posix()} {model_output.as_posix()} --render_visualization {"True" if visualizer_enabled else "False"}   --render_flipped_portrait {"True" if render_flipped_portrait else "False"} --render_target_path "{render_target_path.as_posix()}"')
+
 
 # test the benchmark here
 if __name__ == '__main__':
-    if len(sys.argv) != 2:
-        print("[ERROR]: Usage: python -m anchor.backend.data.ace iosLoggerDemo/vyjFKi2zgLQDsxI1koAOjD899Ba2/6B62493C-45C8-43F3-A540-41B5216429EC.tar")
+    if len(sys.argv) == 2:
+        combined_path = sys.argv[1]
+    
+    else:
+        combined_path = list_tars()
 
-    combined_path = sys.argv[1]
-    firebase_path: str = Path(combined_path).parent # ex: iosLoggerDemo/vyjFKi2zgLQDsxI1koAOjD899Ba2
-    tar_name: str = Path(combined_path).parts[-1] # ex: 6B62493C-45C8-43F3-A540-41B5216429EC.tar
+    if combined_path != None:
+        firebase_path: str = Path(combined_path).parent # ex: iosLoggerDemo/vyjFKi2zgLQDsxI1koAOjD899Ba2
+        tar_name: str = Path(combined_path).parts[-1] # ex: 6B62493C-45C8-43F3-A540-41B5216429EC.tar
 
-    print("[INFO]: Running e2e benchmark on tar with path: ", firebase_path, " and file name: ", tar_name)
+        print("[INFO]: Running e2e benchmark on tar with path: ", firebase_path, " and file name: ", tar_name)
 
-    downloader = FirebaseDownloader(firebase_path, tar_name)
-    downloader.extract_ios_logger_tar()
-    prepare_ace_data(downloader.extracted_data)
+        downloader = FirebaseDownloader(firebase_path, tar_name)
+        downloader.extract_ios_logger_tar()
+        prepare_ace_data(downloader.extracted_data)
 
-    print("[INFO]: Summarizing google cloud anchor observations: ")
-    calculate_google_cloud_anchor_quality(downloader.extracted_data)
+        print("[INFO]: Summarizing google cloud anchor observations: ")
+        calculate_google_cloud_anchor_quality(downloader.extracted_data)
 
-    extracted_ace_folder = downloader.local_extraction_location / "ace"
-    model_output = extracted_ace_folder / "model.pt"
-    render_target_path = extracted_ace_folder / "debug_visualizer"
-    render_target_path.mkdir(parents=True, exist_ok=True)
-    pretrained_model = Path(__file__).parent.parent.parent / "third_party" / "ace" / "ace_encoder_pretrained.pt"
-    visualizer_enabled = False
-    render_flipped_portrait = False 
-    training_epochs = 1
+        extracted_ace_folder = downloader.local_extraction_location / "ace"
+        model_output = extracted_ace_folder / "model.pt"
+        render_target_path = extracted_ace_folder / "debug_visualizer"
+        render_target_path.mkdir(parents=True, exist_ok=True)
+        pretrained_model = Path(__file__).parent.parent.parent / "third_party" / "ace" / "ace_encoder_pretrained.pt"
+        visualizer_enabled = False
+        render_flipped_portrait = False 
+        training_epochs = 1
 
-    print("[INFO]: Running ace training on dataset path: ", extracted_ace_folder)
-    os.chdir("anchor/third_party/ace")
-    os.system(f'./train_ace.py {extracted_ace_folder.as_posix()} {model_output.as_posix()} --render_visualization {"True" if visualizer_enabled else "False"} --render_flipped_portrait {"True" if render_flipped_portrait else "False"} --render_target_path "{render_target_path.as_posix()}" --epochs {training_epochs}')
+        print("[INFO]: Running ace training on dataset path: ", extracted_ace_folder)
+        os.chdir("anchor/third_party/ace")
+        os.system(f'./train_ace.py {extracted_ace_folder.as_posix()} {model_output.as_posix()} --render_visualization {"True" if visualizer_enabled else "False"} --render_flipped_portrait {"True" if render_flipped_portrait else "False"} --render_target_path "{render_target_path.as_posix()}" --epochs {training_epochs}')
 
-    print("[INFO]: Converting ACE model for mobile use")
-    save_model_for_mobile(pretrained_model, model_output)
-
-    print("[INFO]: Running ace evaluater on dataset path: ", extracted_ace_folder)
-    os.system(f'./test_ace.py {extracted_ace_folder.as_posix()} {model_output.as_posix()} --render_visualization {"True" if visualizer_enabled else "False"}   --render_flipped_portrait {"True" if render_flipped_portrait else "False"} --render_target_path "{render_target_path.as_posix()}"')
-    if visualizer_enabled: 
-      os.system(f'/usr/bin/ffmpeg -framerate 30 -pattern_type glob -i "{render_target_path.as_posix()}/**/*.png" -c:v libx264 -pix_fmt yuv420p "{render_target_path.as_posix()}/out.mp4"')
+        print("[INFO]: Converting ACE model for mobile use")
+        save_model_for_mobile(pretrained_model, model_output)
+        
+        firebase_upload_dir = "iosLoggerDemo/trainedModels/"
+        vid_name = combined_path.rsplit(".", 1)[0]
+        vid_name = vid_name.rsplit("/", 1)[1]+".pt"
+        firebase_upload_path = Path(firebase_upload_dir) / Path(vid_name)
+        print("[INFO]: Saving model to firebase as {}".format(firebase_upload_path))
+        downloader.upload_file(firebase_upload_path.as_posix(), pretrained_model)
+        
+        if len(sys.argv) != 2:
+            downloader.delete_file((Path(firebase_path) / tar_name).as_posix())
+            print("deleted tar from firebase")
+        
+        if visualizer_enabled: 
+            os.system(f'/usr/bin/ffmpeg -framerate 30 -pattern_type glob -i "{render_target_path.as_posix()}/**/*.png" -c:v libx264 -pix_fmt yuv420p "{render_target_path.as_posix()}/out.mp4"')
+    else:
+        print("[INFO]: No new videos in firebase iosLoggerDemo/tarQueue")

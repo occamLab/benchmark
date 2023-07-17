@@ -14,6 +14,19 @@ import tempfile
 import av
 import copy
 
+def list_tars():
+    if not FirebaseDownloader.initialized:
+            cred = credentials.Certificate(FirebaseDownloader.service_account_path)
+            initialize_app(cred)
+            FirebaseDownloader.initialized = True
+    bucket = storage.bucket(FirebaseDownloader.firebase_bucket_name)
+    tar_queue = "iosLoggerDemo/tarQueue/"
+    tars = bucket.list_blobs(prefix=tar_queue)
+    for tar in tars:
+        if tar.name.endswith(".tar"):
+            tar_path = tar.name
+            return tar_path
+    return None
 
 class FirebaseDownloader:
     service_account_name: str = "stepnavigation-firebase-adminsdk-service-account.json"
@@ -53,6 +66,16 @@ class FirebaseDownloader:
         bucket = storage.bucket(FirebaseDownloader.firebase_bucket_name)
         blob = bucket.blob(remote_location)
         blob.download_to_filename(filename=local_location)
+        
+    def delete_file(self, remote_location: str):
+        bucket = storage.bucket(FirebaseDownloader.firebase_bucket_name)
+        blob = bucket.blob(remote_location)
+        blob.delete()
+    
+    def upload_file(self, remote_location: str, local_location: str):
+        bucket = storage.bucket(FirebaseDownloader.firebase_bucket_name)
+        blob = bucket.blob(remote_location)
+        blob.upload_from_filename(local_location)
 
     def extract_ios_logger_tar(self) -> Path:
         FirebaseDownloader.root_download_dir.mkdir(parents=True, exist_ok=True)
