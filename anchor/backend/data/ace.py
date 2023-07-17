@@ -104,9 +104,6 @@ if __name__ == '__main__':
         downloader = FirebaseDownloader(firebase_path, tar_name)
         downloader.extract_ios_logger_tar()
         prepare_ace_data(downloader.extracted_data)
-        if len(sys.argv) != 2:
-            downloader.delete_file((Path(firebase_path) / tar_name).as_posix())
-            print("deleted tar from firebase")
 
         print("[INFO]: Summarizing google cloud anchor observations: ")
         calculate_google_cloud_anchor_quality(downloader.extracted_data)
@@ -133,6 +130,10 @@ if __name__ == '__main__':
         firebase_upload_path = Path(firebase_upload_dir) / Path(vid_name)
         print("[INFO]: Saving model to firebase as {}".format(firebase_upload_path))
         downloader.upload_file(firebase_upload_path.as_posix(), pretrained_model)
+        
+        if len(sys.argv) != 2:
+            downloader.delete_file((Path(firebase_path) / tar_name).as_posix())
+            print("deleted tar from firebase")
         
         if visualizer_enabled: 
             os.system(f'/usr/bin/ffmpeg -framerate 30 -pattern_type glob -i "{render_target_path.as_posix()}/**/*.png" -c:v libx264 -pix_fmt yuv420p "{render_target_path.as_posix()}/out.mp4"')
