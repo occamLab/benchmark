@@ -7,13 +7,17 @@
 
 import Foundation
 
-
-func loadModule(filePath: String) -> TorchModule {
-    if let filePath = Bundle.main.path(forResource: "model", ofType: "pt"),
-        let module = TorchModule(fileAtPath: filePath) {
-        return module
-    } else {
-        fatalError("Can't find the model file!")
+class PredictPose {
+    
+    var currentModule: TorchModule
+    
+    init(filePath: String) {
+        guard let model = TorchModule(fileAtPath: filePath) else {
+            fatalError("Can't find the model file!")
+        }
+        currentModule = model
     }
+    
 }
+
 
