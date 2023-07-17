@@ -22,7 +22,8 @@ sudo apt install ffmpeg -y
 conda install av -c conda-forge
 
 # install fastapi
-conda install -c conda-forge fastapi[all]
+# conda install -c conda-forge fastapi[all] // missing uvicorn for some reason
+pip install "fastapi[all]"
 
 # download our deps
 pip install firebase-admin==6.1.0
