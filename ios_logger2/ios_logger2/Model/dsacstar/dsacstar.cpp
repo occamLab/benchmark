@@ -30,7 +30,7 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <LibTorch.h>
+#include <LibTorch-Lite/LibTorch-Lite.h>
 #include <opencv2/opencv.hpp>
 
 #include <iostream>

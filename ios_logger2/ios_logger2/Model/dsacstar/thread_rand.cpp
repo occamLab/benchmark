@@ -1,5 +1,5 @@
 #include "thread_rand.h"
-#include <LibTorch.h>
+#include <LibTorch-Lite/LibTorch-Lite.h>
 
 std::mt19937 ThreadRand::generator = std::mt19937();
 
