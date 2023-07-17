@@ -15,6 +15,8 @@ class MotionManager: ObservableObject {
     init() {
         // note that UI updates must happen on the main thread which is why DispatchQueue.main.sync is used
         Task {
+            let model = await ModuleLoader.loadFromFirebase()
+            
             // allow time for alignment of phone
             DispatchQueue.main.sync {
                 self.phaseText = "Align phone to starting position (10 seconds)!!. HOLD VERTICALLY AGINST TABLE EDGE (camera staight on). For some reason the Arkit initial pose is absolute garbage if you hold the camera face down."

@@ -7,7 +7,7 @@
 
 import Foundation
 
-class PredictPose {
+class PosePredictor {
     
     var currentModule: TorchModule
     
@@ -20,4 +20,12 @@ class PredictPose {
     
 }
 
-
+class ModuleLoader {
+    
+    static func loadFromFirebase() async -> PosePredictor {
+        let modelLocation = await UploadManager.shared.downloadFile(filePath: "danielTest/mobile.model.ptl")
+        print(modelLocation!.path)
+        return PosePredictor(filePath: modelLocation!.path)
+    }
+    
+}
