@@ -22,6 +22,8 @@ modelLoader = ModelLoader()
 def read_root():
     return {"Hello": "World"}
 
+
+
 class LocalizeImageReq(BaseModel):
     base64Jpg: str
     modelName: str
