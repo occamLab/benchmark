@@ -62,7 +62,7 @@ class ModelLoader:
         img_file: BytesIO = BytesIO(img_bytes)
         pil_img: Image = Image.open(img_file)   
         train_resolution: int = 480
-        original_image_height: int = pil_img.size[2]
+        original_image_height: int = pil_img.size[1]
 
         focal_length /= (original_image_height / train_resolution)
         optical_x /= (original_image_height / train_resolution)
