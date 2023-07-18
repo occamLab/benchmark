@@ -1,8 +1,14 @@
 
 from anchor.third_party.ace.ace_network import Regressor
 from anchor.backend.data.firebase import FirebaseDownloader
+import dsacstar
+import torchvision.transforms.functional as TF
+from torchvision import transforms
+from torch.cuda.amp import autocast
 from pathlib import Path
-import torch, tempfile
+from io import BytesIO
+from PIL import Image
+import torch, tempfile, base64
 
 
 class ModelLoader: 
@@ -40,3 +46,61 @@ class ModelLoader:
             self.downloader.download_file((Path("iosLoggerDemo") / "trainedModels" / model_name).as_posix(), tmpFile)
             self.downloaded_model_cache[model_name] = tmpFile
         return self.downloaded_model_cache[model_name]
+    
+    """
+        Runs localization against the input image given a specified model
+
+        return: 
+            pose: 4x4 tensor, inlier_count: int
+            usually if inlier_count is below 100-200, this means that localization has failed
+
+    """
+    def localize_image(self, model_name: str, base64Jpg: str, focal_length: float, optical_x: float, optical_y: float):
+        model = self.load_ace_model_if_needed(model_name, self.download_model_if_needed(model_name))
+
+        img_bytes: bytes = base64.b64decode(base64Jpg) 
+        img_file: BytesIO = BytesIO(img_bytes)
+        pil_img: Image = Image.open(img_file)   
+        train_resolution: int = 480
+        original_image_height: int = pil_img.size[2]
+
+        focal_length /= (original_image_height / train_resolution)
+        optical_x /= (original_image_height / train_resolution)
+        optical_y /= (original_image_height / train_resolution)
+
+        image_transform = transforms.Compose([
+                transforms.Resize(train_resolution),
+                transforms.Grayscale(),
+                transforms.ToTensor(),
+                transforms.Normalize(
+                    mean=[0.4],  # statistics calculated over 7scenes training set, should generalize fairly well
+                    std=[0.25]
+                ),
+        ])
+        tensor_image = image_transform(pil_img)
+        tensor_image = tensor_image.unsqueeze(0) # this fills the batch_size as 1 by adding a new dimension
+        
+        device = torch.device("cuda")
+        tensor_image = tensor_image.to(device, non_blocking=True)
+
+        with autocast(enabled=True):
+            scene_coordinates = model(tensor_image).float().cpu()
+        
+        # Allocate output variable.
+        out_pose = torch.zeros((4, 4))
+
+        inlier_count: int = dsacstar.forward_rgb(
+            scene_coordinates,
+            out_pose,
+            64, # ransack hypothesis
+            10, # inlier threshold
+            focal_length, # focal length
+            optical_x, # ox
+            optical_y, # oy
+            100, # inlier alpha
+            100, # max pixel error
+            model.OUTPUT_SUBSAMPLE,
+        )
+
+        return out_pose, inlier_count
+    
