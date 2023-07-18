@@ -45,7 +45,8 @@ class Motion: NSObject, ARSessionDelegate {
         Pose(),
         Intrinsics(),
         GoogleCloudAnchor(),
-        AprilTag()
+        AprilTag(),
+        LocalizerDemo(),
     ]
     
     
