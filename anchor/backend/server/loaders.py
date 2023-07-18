@@ -49,8 +49,15 @@ class ModelLoader:
     
     """
         Runs localization against the input image given a specified model
+
+        
+        returns: {
+            "pose": out_pose,               # tensor 4x4
+            "inlier_count": inlier_count    # int
+        }
+
     """
-    def localize_image(self, model_name: str, base64Jpg: str):
+    def localize_image(self, model_name: str, base64Jpg: str, focal_length: float, optical_x: float, optical_y: float):
         train_resolution = 480
         model = self.load_ace_model_if_needed(model_name, self.download_model_if_needed(model_name))
 
@@ -84,17 +91,13 @@ class ModelLoader:
             out_pose,
             64, # ransack hypothesis
             10, # inlier threshold
-            10, # focal length
-            10, # ox
-            10, # oy
+            focal_length, # focal length
+            optical_x, # ox
+            optical_y, # oy
             100, # inlier alpha
             100, # max pixel error
             model.OUTPUT_SUBSAMPLE,
         )
 
-        print(inlier_count)
-     
-
-        # torch.Size([1, 1, 480, 640])
-        
-        #print(model)
+        return out_pose, inlier_count
+    
