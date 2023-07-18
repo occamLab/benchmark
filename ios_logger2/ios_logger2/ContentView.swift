@@ -46,10 +46,11 @@ class MotionManager: ObservableObject {
 }
 
 enum AppPhase {
-    case phaseOne
-    case phaseTwo
-    case phaseThree
+    case alignmentPhase
+    case resetPosePhase
+    case mappingPhase
     case mappingComplete
+    case resetPosePhase2
     case localizationPhase
     case localizationComplete
     case uploadData
@@ -57,7 +58,7 @@ enum AppPhase {
 
 struct ContentView: View {
     @StateObject var motionManager = MotionManager()
-    @State var appPhase = AppPhase.phaseOne
+    @State var appPhase = AppPhase.alignmentPhase
     @State var showButton = true
     var body: some View {
         ZStack {
@@ -67,19 +68,19 @@ struct ContentView: View {
             VStack {
                 
                 switch appPhase {
-                case .phaseOne:
+                case .alignmentPhase:
                     Text("Align phone to starting position! Hold vertically against table edge (camera straight on).")
                     Button("Phone is aligned") {
                         print("Phone aligned")
                         motionManager.setUpMotion()
-                        self.appPhase = .phaseTwo
+                        self.appPhase = .resetPosePhase
                     }
-                case .phaseTwo:
+                case .resetPosePhase:
                     Text("Walk to a random place to reset the pose.")
                     Button("Okay, I did") {
-                        self.appPhase = .phaseThree
+                        self.appPhase = .mappingPhase
                     }
-                case .phaseThree:
+                case .mappingPhase:
                     Text("Mapping phase (20 seconds).")
                     if (showButton) {
                         Button("Begin mapping phase") {
@@ -92,6 +93,11 @@ struct ContentView: View {
                     Button("Phone aligned") {
                         showButton = true
                         motionManager.transitionPhase()
+                        self.appPhase = .resetPosePhase2
+                    }
+                case .resetPosePhase2:
+                    Text("Walk to a random place to reset the pose.")
+                    Button("Okay, I did") {
                         self.appPhase = .localizationPhase
                     }
                 case .localizationPhase:
@@ -100,7 +106,6 @@ struct ContentView: View {
                         Button("Begin localization phase") {
                             showButton = false
                             motionManager.localizationPhase()
-//                            self.appPhase = .localizationComplete
                         }
                     }
                 case .localizationComplete:
@@ -127,7 +132,7 @@ struct ContentView: View {
             }
         }
         .onChange(of: motionManager.mappingComplete) { newValue in
-            if newValue && appPhase == .phaseThree {
+            if newValue && appPhase == .mappingPhase {
                 appPhase = .mappingComplete
             }
         }
