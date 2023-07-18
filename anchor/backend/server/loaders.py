@@ -50,11 +50,9 @@ class ModelLoader:
     """
         Runs localization against the input image given a specified model
 
-        
-        returns: {
-            "pose": out_pose,               # tensor 4x4
-            "inlier_count": inlier_count    # int
-        }
+        return: 
+            pose: 4x4 tensor, inlier_count: int
+            usually if inlier_count is below 100-200, this means that localization has failed
 
     """
     def localize_image(self, model_name: str, base64Jpg: str, focal_length: float, optical_x: float, optical_y: float):
