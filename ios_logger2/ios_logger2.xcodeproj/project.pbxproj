@@ -59,6 +59,7 @@
 		61500BF92A37645E001FE294 /* video.proto in Sources */ = {isa = PBXBuildFile; fileRef = 61500BF82A37645E001FE294 /* video.proto */; };
 		61500BFB2A37650E001FE294 /* video.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61500BFA2A37650E001FE294 /* video.pb.swift */; };
 		61500BFE2A376C1C001FE294 /* ARCoreCloudAnchors in Frameworks */ = {isa = PBXBuildFile; productRef = 61500BFD2A376C1C001FE294 /* ARCoreCloudAnchors */; };
+		617703422A65B686000413CE /* LocalizerDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617703412A65B686000413CE /* LocalizerDemo.swift */; };
 		61C6D7E82A3C9EC100FF9349 /* opencv2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 61C6D7E72A3C9EC100FF9349 /* opencv2.framework */; };
 /* End PBXBuildFile section */
 
@@ -126,6 +127,7 @@
 		61500BEF2A376100001FE294 /* point_cloud.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = point_cloud.pb.swift; sourceTree = "<group>"; };
 		61500BF82A37645E001FE294 /* video.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; path = video.proto; sourceTree = "<group>"; };
 		61500BFA2A37650E001FE294 /* video.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = video.pb.swift; sourceTree = "<group>"; };
+		617703412A65B686000413CE /* LocalizerDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizerDemo.swift; sourceTree = "<group>"; };
 		61C6D7E72A3C9EC100FF9349 /* opencv2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = opencv2.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -277,6 +279,7 @@
 				61500BCA2A375F06001FE294 /* Sensor.swift */,
 				61500BCD2A375F06001FE294 /* Video.swift */,
 				613B110A2A3775EF002CA4DD /* GoogleCloudAnchor.swift */,
+				617703412A65B686000413CE /* LocalizerDemo.swift */,
 			);
 			path = Sensors;
 			sourceTree = "<group>";
@@ -480,6 +483,7 @@
 				613B11152A37913D002CA4DD /* google_cloud_anchor.pb.swift in Sources */,
 				61500BE72A375FDB001FE294 /* pose.proto in Sources */,
 				61500B442A2FCC83001FE294 /* Motion.swift in Sources */,
+				617703422A65B686000413CE /* LocalizerDemo.swift in Sources */,
 				61500BD52A375F06001FE294 /* Gyro.swift in Sources */,
 				61500BF22A376100001FE294 /* accelerometer.pb.swift in Sources */,
 				61500BE02A375FDB001FE294 /* gyro.proto in Sources */,
