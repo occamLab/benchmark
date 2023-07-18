@@ -58,12 +58,17 @@ class ModelLoader:
 
     """
     def localize_image(self, model_name: str, base64Jpg: str, focal_length: float, optical_x: float, optical_y: float):
-        train_resolution = 480
         model = self.load_ace_model_if_needed(model_name, self.download_model_if_needed(model_name))
 
         img_bytes: bytes = base64.b64decode(base64Jpg) 
         img_file: BytesIO = BytesIO(img_bytes)
         pil_img: Image = Image.open(img_file)   
+        train_resolution: int = 480
+        original_image_height: int = pil_img.size[2]
+
+        focal_length /= (original_image_height / train_resolution)
+        optical_x /= (original_image_height / train_resolution)
+        optical_y /= (original_image_height / train_resolution)
 
         image_transform = transforms.Compose([
                 transforms.Resize(train_resolution),
@@ -86,7 +91,7 @@ class ModelLoader:
         # Allocate output variable.
         out_pose = torch.zeros((4, 4))
 
-        inlier_count = dsacstar.forward_rgb(
+        inlier_count: int = dsacstar.forward_rgb(
             scene_coordinates,
             out_pose,
             64, # ransack hypothesis
