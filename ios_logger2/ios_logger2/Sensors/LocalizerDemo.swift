@@ -55,8 +55,9 @@ class LocalizerManager {
             let json = try! JSONSerialization.jsonObject(with: data) as? [String: Any]
             if(json?["status"] as! String == "ok") {
                 let inlier_count = (json?["inlier_count"] as! NSNumber).intValue
-                let pose: [Float] = (json?["pose"] as! [NSNumber]).map { $0.floatValue }
-                print(inlier_count, pose)
+                  let poseList: [Float] = (json?["pose"] as! [NSNumber]).map { $0.floatValue }
+                  let poseTransform: simd_float4x4 = poseList.row_list_to_simd_float4x4()
+                  print(inlier_count, poseTransform)
             }
         })
         task.resume()
