@@ -8,11 +8,8 @@ import torch
 
 from anchor.backend.data.firebase import FirebaseDownloader
 
-
 # you can start the server by running: 
 #   uvicorn anchor.backend.server.localizer:app --reload --host 10.26.26.130 --port 8000
-
-
 app = FastAPI()
 modelLoader = ModelLoader()
 
@@ -20,15 +17,23 @@ modelLoader = ModelLoader()
 def read_root():
     return {"Hello": "World"}
 
+class LocalizeImageReq(BaseModel):
+    base64Jpg: str
+    modelName: str
 
 
 class LocalizeImageReq(BaseModel):
     base64Jpg: str
     modelName: str
+    focal_length: float
+    optical_x: float
+    optical_y: float
 
 @app.post("/localize/")
 def localizeImage(req: LocalizeImageReq):
-    model = modelLoader.load_ace_model_if_needed(req.modelName, modelLoader.download_model_if_needed(req.modelName))
-    print(model)
-
-    return {"status": "ok"}
+    out_pose, inlier_count = modelLoader.localize_image(req.modelName, req.base64Jpg, req.focal_length, req.optical_x, req.optical_y)
+    return {
+        "pose": out_pose.flatten().tolist(),
+        "inlier_count":  inlier_count,
+        "status": "ok"
+    }
