@@ -65,6 +65,19 @@ extension simd_float4x4 {
     
 }
 
+extension [Float] {
+
+    public func row_list_to_simd_float4x4()->simd_float4x4 {
+        var ret = simd_float4x4()
+        for i in 0...3 {
+            for j in 0...3 {
+                ret[i,j] = self[i*4+j]
+            }
+        }
+        return ret
+    }
+}
+
 extension simd_quatf {
     public func imagToArray()->[Float] {
         return [self.imag[0], self.imag[1], self.imag[2]]
