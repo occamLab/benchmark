@@ -37,8 +37,8 @@ class LocalizerManager {
             "base64Jpg": getBase64Jpg(frame: frame),
             "modelName": modelName,
             "focal_length": frame.camera.intrinsics[0, 0],
-            "optical_x": frame.camera.intrinsics[0, 2],
-            "optical_y": frame.camera.intrinsics[1, 2],
+            "optical_x": frame.camera.intrinsics[2, 0],
+            "optical_y": frame.camera.intrinsics[2, 1],
         ]
         
         // set req headers
@@ -60,8 +60,8 @@ class LocalizerManager {
                 let poseTransform: simd_float4x4 = poseList.row_list_to_simd_float4x4()
                 if(inlierCount >= self.inlierThreshold) {
                     resolveCallBack(poseTransform)
+                    print(inlierCount, poseTransform)
                 }
-                print(inlierCount, poseTransform)
             }
         })
         task.resume()
@@ -76,7 +76,14 @@ class LocalizerDemo: Sensor, SensorProtocol {
     
     
     func renderDemo(renderLocationInAnchorFrame: simd_float4x4, cameraInAnchorWorldFrame: simd_float4x4, cameraInCurrentWorldFrame: simd_float4x4, arView: ARSCNView) {
-        let renderLocationInCurrentFrame = cameraInCurrentWorldFrame * renderLocationInAnchorFrame * cameraInAnchorWorldFrame.inverse
+        
+        print(cameraInAnchorWorldFrame, cameraInAnchorWorldFrame, cameraInCurrentWorldFrame)
+        
+        
+        
+        // renderLocationInAnchorFrame = cameraInAnchorWorldFrame * shift
+        // shift = renderLocationInAnchorFrame * cameraInAnchorWorldFrame.inverse
+        let renderLocationInCurrentFrame = cameraInCurrentWorldFrame * (renderLocationInAnchorFrame * cameraInAnchorWorldFrame.inverse)
         let anchorName = "demo_render_anchor"
         if let existingTagNode = arView.scene.rootNode.childNode(withName: anchorName, recursively: false)  {
             existingTagNode.simdTransform = renderLocationInCurrentFrame
