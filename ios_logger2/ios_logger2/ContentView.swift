@@ -6,12 +6,16 @@
 //
 
 import SwiftUI
+import Firebase
+import FirebaseStorage
+import FirebaseAuth
 
 class MotionManager: ObservableObject {
     @Published var motion: Motion?
     @Published var isPresentingUploadConfirmation: Bool = false
     @Published var mappingComplete = false
     @Published var localizationComplete = false
+    @Published var filesList: [String] = []
     
     init() {
         print("Init")
@@ -41,8 +45,40 @@ class MotionManager: ObservableObject {
         self.isPresentingUploadConfirmation = false
         self.mappingComplete = false
         self.localizationComplete = false
+        self.filesList = []
     }
+    func resetLocalizationDemo() {
+//        self.fileNamesList = []
+        self.filesList = []
+    }
+    func listFromFirebase(completionHandler: @escaping ([[String]])->()) {
+        var filesList: [[String]] = []
+        let storageReference = Storage.storage().reference().child("iosLoggerDemo/trainedModels")
+        storageReference.listAll { (result, error) in
+            if let error = error {
+                print(error)
+            }
+            var fullNamesList: [String] = []
+            var fileNamesList: [String] = ["Select anchor"]
+            for item in result!.items {
+                let fullName: String = "\(item)"
+                let fileNameWithPrefixArray: [String] = fullName.components(separatedBy: "/")
+                let fileNameWithPrefix: String  = fileNameWithPrefixArray.last!
+                let fileName: String = fileNameWithPrefix.components(separatedBy: ".")[0]
+                fullNamesList.append(fullName)
+                fileNamesList.append(fileName)
+            }
+            filesList.append(fileNamesList)
+            filesList.append(fullNamesList)
+            return completionHandler(filesList)
+        }
+    }
+//    func getFromFirebase(filePath) {
+//        let storageReference = Storage.storage().reference().child("iosLoggerDemo/trainedModels")
+//    }
 }
+
+//class FirebaseManager:
 
 enum AppPhase {
     case beginning
@@ -65,7 +101,9 @@ struct ContentView: View {
     @State var appPhase = AppPhase.beginning
     @State var showButton = true
     @State private var selection = "Select anchor"
-    let anchors = ["Select anchor", "Green", "Blue", "Black", "Tartan"]
+    @State private var selectionLocation = "Select anchor"
+    @State var anchorNames: [String] = ["Select anchor"]
+    @State var anchors: [[String]] = []
     
     var body: some View {
         ZStack {
@@ -78,7 +116,11 @@ struct ContentView: View {
                 // Choose which route to go down: localization demo or record new anchor
                 case .beginning:
                     Button("Localization demo") {
-                        self.appPhase = .anchorSelection
+                        motionManager.listFromFirebase() { fileNamesList in
+                            self.anchorNames = fileNamesList[0]
+                            self.anchors = fileNamesList
+                            self.appPhase = .anchorSelection
+                        }
                     }
                     .buttonStyle(.borderedProminent)
                     .controlSize(.large)
@@ -92,7 +134,7 @@ struct ContentView: View {
                 case .anchorSelection: //user selects cloud anchor, render something at the origin
                     Text("Choose an anchor from the dropdown")
                     Picker("Select an anchor", selection: $selection) {
-                        ForEach(anchors, id: \.self) {
+                        ForEach(anchors[0], id: \.self) {
                             Text($0)
                         }
                     }
@@ -100,14 +142,24 @@ struct ContentView: View {
                     .pickerStyle(.menu)
                     if (selection != "Select anchor") {
                         Button("Continue") {
+                            let selectionIndex: Int = anchors[0].firstIndex(of: selection)!
+                            self.selectionLocation = anchors[1][selectionIndex-1]
                             self.appPhase = .showAnchor
+                            self.selection = selection
+                            print(self.selectionLocation)
                         }
                         .buttonStyle(.borderedProminent)
                         .controlSize(.large)
                     }
                 case .showAnchor:
                     Button("Return to start menu") {
+                        print(self.selection)
+                        print(self.selectionLocation)
                         self.selection = "Select anchor"
+                        self.selectionLocation = "Select anchor"
+                        self.anchorNames = ["Select anchor"]
+                        self.anchors = []
+                        motionManager.resetLocalizationDemo()
                         self.appPhase = .beginning
                     }
                     .buttonStyle(.borderedProminent)
