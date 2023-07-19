@@ -26,9 +26,11 @@ class MotionManager: ObservableObject {
             self.mappingComplete = true
         }
     }
-    func transitionPhase() {
+    func transitionPhase() async {
+        await motion!.switchToLocalization()
         motion!.initMotionSensors()
         motion!.initArSession()
+        self.motion!.disabledCollection = false
     }
     func localizationPhase() {
         motion!.disabledCollection = false
@@ -55,6 +57,7 @@ enum AppPhase {
     case resetPosePhase2
     case localizationPhase
     case localizationComplete
+    case enterAnchorName
     case uploadData
     case dataNotUploaded
     case finishedUpload
@@ -64,6 +67,7 @@ struct ContentView: View {
     @StateObject var motionManager = MotionManager()
     @State var appPhase = AppPhase.beginning
     @State var showButton = true
+    @State private var anchorCreationName = "default_anchor_name"
     @State private var selection = "Select anchor"
     let anchors = ["Select anchor", "Green", "Blue", "Black", "Tartan"]
     
@@ -143,8 +147,10 @@ struct ContentView: View {
                     Text("Mapping phase complete! Align phone to starting position! Hold vertically against table edge (camera straight on).")
                     Button("Phone aligned") {
                         showButton = true
-                        motionManager.transitionPhase()
-                        self.appPhase = .resetPosePhase2
+                        Task {
+                            await motionManager.transitionPhase()
+                            self.appPhase = .resetPosePhase2
+                        }
                     }
                     .buttonStyle(.borderedProminent)
                     .controlSize(.large)
@@ -169,10 +175,17 @@ struct ContentView: View {
                     Text("Localization phase complete!")
                     Button("Next") {
                         showButton = true
-                        self.appPhase = .uploadData
+                        self.appPhase = .enterAnchorName
                     }
                     .buttonStyle(.borderedProminent)
                     .controlSize(.large)
+                case .enterAnchorName:
+                    Text("").alert("Name your new anchor", isPresented: .constant(true)) {
+                        TextField("Anchor name goes here", text: $anchorCreationName)
+                        Button("OK", action: {
+                            self.appPhase = .uploadData
+                        })
+                    }
                 case .uploadData:
                     Button("Cancel Upload Data", role: .cancel, action: {
                         Task {
@@ -185,13 +198,14 @@ struct ContentView: View {
                     .controlSize(.large)
                     Button("Upload Data?", role: .destructive, action: {
                         Task {
-                            await motionManager.motion!.finalExport()
+                            await motionManager.motion!.finalExport(tarName: anchorCreationName)
                             motionManager.isPresentingUploadConfirmation = false
                         }
                         self.appPhase = .finishedUpload
                     })
                     .buttonStyle(.borderedProminent)
                     .controlSize(.large)
+
                 case .dataNotUploaded:
                     Text("Not so great success! Data not uploaded.")
                     Button("Back to start") {
