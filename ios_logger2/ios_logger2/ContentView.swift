@@ -21,7 +21,7 @@ class MotionManager: ObservableObject {
     }
     func mappingPhase() {
         motion!.disabledCollection = false
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 20) {
             self.motion!.disabledCollection = true
             self.mappingComplete = true
         }
@@ -32,7 +32,7 @@ class MotionManager: ObservableObject {
     }
     func localizationPhase() {
         motion!.disabledCollection = false
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
             self.motion!.disabledCollection = true
             self.localizationComplete = true
         }
