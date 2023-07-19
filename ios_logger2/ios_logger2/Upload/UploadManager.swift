@@ -35,11 +35,11 @@ class UploadManager {
     }
     
 
-    func uploadLocalDataToCloud(completion: ((StorageMetadata?, Error?) -> Void)?) {
+    func uploadLocalDataToCloud(tarName: String, completion: ((StorageMetadata?, Error?) -> Void)?) {
         let container = TarContainer.create(from: files)
         let fileType = StorageMetadata()
         
-        let storageRef = Storage.storage().reference().child(UploadManager.rootFolder).child(Auth.auth().currentUser!.uid).child("\(UUID().uuidString).tar")
+        let storageRef = Storage.storage().reference().child(UploadManager.rootFolder).child("tarQueue").child(tarName + ".tar")
         
         fileType.contentType = "application/x-tar"
         let _ = storageRef.putData(container, metadata: fileType)

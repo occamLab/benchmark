@@ -119,7 +119,7 @@ class Motion: NSObject, ARSessionDelegate {
         }
     }
     
-    func finalExport() async {
+    func finalExport(tarName: String) async {
         stopDataCollection()
         for sensor in sensors {
             // some of our sensors like GoogleCloudAnchor/Video need to do async work before the protobuf data is availiable for packaging
@@ -128,9 +128,9 @@ class Motion: NSObject, ARSessionDelegate {
             sensor.uploadProtobuf()
         }
         // batch upload the data
-        UploadManager.shared.uploadLocalDataToCloud {(storageMetadata: StorageMetadata?, error: Error?)  in
+        UploadManager.shared.uploadLocalDataToCloud(tarName: tarName, completion: {(storageMetadata: StorageMetadata?, error: Error?)  in
             print("done uploading data")
-        }
+        })
     }
     
     
