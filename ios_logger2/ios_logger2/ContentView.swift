@@ -9,80 +9,63 @@ import SwiftUI
 
 class MotionManager: ObservableObject {
     @Published var motion: Motion?
-    @Published var phaseText: String = "Currently in mapping phase!!"
     @Published var isPresentingUploadConfirmation: Bool = false
-
+    @Published var mappingComplete = false
+    @Published var localizationComplete = false
     
     init() {
-        // note that UI updates must happen on the main thread which is why DispatchQueue.main.sync is used
-        Task {
-            // allow time for alignment of phone
-            DispatchQueue.main.sync {
-                self.phaseText = "Align phone to starting position (10 seconds)!!. HOLD VERTICALLY AGINST TABLE EDGE (camera staight on). For some reason the Arkit initial pose is absolute garbage if you hold the camera face down."
-            }
-            try! await Task.sleep(for: .seconds(10))
-            
-            DispatchQueue.main.sync {
-                motion = Motion() // initialize
-                // we don't want to collect data for the first few seconds so that the mapping
-                // data does not exactly start in the same visual place as the localization data
-                // that could help the cloud anchor model cheat
-                self.phaseText = "Walk to a random place to reset the pose"
-            }
-            try! await Task.sleep(for: .seconds(10))
-            
-            // start collecting data
-            DispatchQueue.main.sync {
-                self.phaseText = "Currently in mapping phase (20 seconds)"
-                motion!.disabledCollection = false
-            }
-            
-            // allow time for mapping phase
-            try! await Task.sleep(for: .seconds(20))
-            DispatchQueue.main.sync {
-                self.phaseText = "Transitioning between phases!!"
-                motion!.disabledCollection = true
-            }
-            
-            // allow time for alignment of phone
-            await motion!.switchToLocalization()
-            DispatchQueue.main.sync {
-                self.phaseText = "Align phone to starting position (10 seconds)!!. HOLD VERTICALLY AGINST TABLE EDGE (camera staight on). For some reason the Arkit initial pose is absolute garbage if you hold the camera face down."
-            }
-
-            try! await Task.sleep(for: .seconds(10))
-            // reset our knowledge of our position
-            motion!.initMotionSensors()
-            motion!.initArSession()
-            
-            // we don't want to collect data for the first few seconds so that the mapping
-            // data does not exactly start in the same visual place as the localization data
-            // that could help the cloud anchor model cheat
-            DispatchQueue.main.sync {
-                self.phaseText = "Walk to a random place to reset the pose"
-            }
-            try! await Task.sleep(for: .seconds(10))
-            
-            
-            // allow time for localization phase
-            DispatchQueue.main.sync {
-                self.phaseText = "Currently in localization phase!!"
-                motion!.disabledCollection = false
-            }
-            
-            try! await Task.sleep(for: .seconds(20)) // allow time for localization phase
-            DispatchQueue.main.sync {
-                self.phaseText = "Finished localization phase!!"
-                self.isPresentingUploadConfirmation = true
-                motion!.disabledCollection = true
-            }
+        print("Init")
+    }
+    func setUpMotion() {
+        motion = Motion()
+    }
+    func mappingPhase() {
+        motion!.disabledCollection = false
+        DispatchQueue.main.asyncAfter(deadline: .now() + 20) {
+            self.motion!.disabledCollection = true
+            self.mappingComplete = true
         }
+    }
+    func transitionPhase() {
+        motion!.initMotionSensors()
+        motion!.initArSession()
+    }
+    func localizationPhase() {
+        motion!.disabledCollection = false
+        DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
+            self.motion!.disabledCollection = true
+            self.localizationComplete = true
+        }
+    }
+    func resetRecordNewAnchors() {
+        self.isPresentingUploadConfirmation = false
+        self.mappingComplete = false
+        self.localizationComplete = false
     }
 }
 
+enum AppPhase {
+    case beginning
+    case anchorSelection
+    case showAnchor
+    case alignmentPhase
+    case resetPosePhase
+    case mappingPhase
+    case mappingComplete
+    case resetPosePhase2
+    case localizationPhase
+    case localizationComplete
+    case uploadData
+    case dataNotUploaded
+    case finishedUpload
+}
 
 struct ContentView: View {
-    @ObservedObject var motionManager = MotionManager()
+    @StateObject var motionManager = MotionManager()
+    @State var appPhase = AppPhase.beginning
+    @State var showButton = true
+    @State private var selection = "Select anchor"
+    let anchors = ["Select anchor", "Green", "Blue", "Black", "Tartan"]
     
     var body: some View {
         ZStack {
@@ -90,38 +73,153 @@ struct ContentView: View {
                 ARViewRepresentable(arDelegate: motionManager.motion!)
             }
             VStack {
-                Image(systemName: "globe")
-                    .imageScale(.large)
-                    .foregroundColor(.accentColor)
+        
+                switch appPhase {
+                // Choose which route to go down: localization demo or record new anchor
+                case .beginning:
+                    Button("Localization demo") {
+                        self.appPhase = .anchorSelection
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
+                    Button("Record new anchor") {
+                        self.appPhase = .alignmentPhase
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
                 
-                Text(motionManager.phaseText)
-                
-                .confirmationDialog("Upload Data",
-                                    isPresented: $motionManager.isPresentingUploadConfirmation) {
+                // Localization demo route
+                case .anchorSelection: //user selects cloud anchor, render something at the origin
+                    Text("Choose an anchor from the dropdown")
+                    Picker("Select an anchor", selection: $selection) {
+                        ForEach(anchors, id: \.self) {
+                            Text($0)
+                        }
+                    }
+                    .controlSize(.large)
+                    .pickerStyle(.menu)
+                    if (selection != "Select anchor") {
+                        Button("Continue") {
+                            self.appPhase = .showAnchor
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.large)
+                    }
+                case .showAnchor:
+                    Button("Return to start menu") {
+                        self.selection = "Select anchor"
+                        self.appPhase = .beginning
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
+                    
+                // Record new anchor route
+                case .alignmentPhase:
+                    Text("Align phone to starting position! Hold vertically against table edge (camera straight on).")
+                    Button("Phone is aligned") {
+                        motionManager.setUpMotion()
+                        self.appPhase = .resetPosePhase
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
+                case .resetPosePhase:
+                    Text("Walk to a random place to reset the pose.")
+                    Button("Okay, I did") {
+                        self.appPhase = .mappingPhase
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
+                case .mappingPhase:
+                    Text("Mapping phase (20 seconds).")
+                    if (showButton) {
+                        Button("Begin mapping phase") {
+                            showButton = false
+                            motionManager.mappingPhase()
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.large)
+                    }
+                case .mappingComplete:
+                    Text("Mapping phase complete! Align phone to starting position! Hold vertically against table edge (camera straight on).")
+                    Button("Phone aligned") {
+                        showButton = true
+                        motionManager.transitionPhase()
+                        self.appPhase = .resetPosePhase2
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
+                case .resetPosePhase2:
+                    Text("Walk to a random place to reset the pose.")
+                    Button("Okay, I did") {
+                        self.appPhase = .localizationPhase
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
+                case .localizationPhase:
+                    Text("Localization phase (10 seconds).")
+                    if (showButton) {
+                        Button("Begin localization phase") {
+                            showButton = false
+                            motionManager.localizationPhase()
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.large)
+                    }
+                case .localizationComplete:
+                    Text("Localization phase complete!")
+                    Button("Next") {
+                        showButton = true
+                        self.appPhase = .uploadData
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
+                case .uploadData:
                     Button("Cancel Upload Data", role: .cancel, action: {
                         Task {
                             motionManager.motion!.stopDataCollection()
-                            motionManager.phaseText = "Cancelled uploading data"
                             motionManager.isPresentingUploadConfirmation = false
                         }
+                        self.appPhase = .dataNotUploaded
                     })
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
                     Button("Upload Data?", role: .destructive, action: {
                         Task {
                             await motionManager.motion!.finalExport()
-                            motionManager.phaseText = "Uploaded data"
                             motionManager.isPresentingUploadConfirmation = false
                         }
+                        self.appPhase = .finishedUpload
                     })
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
+                case .dataNotUploaded:
+                    Text("Not so great success! Data not uploaded.")
+                    Button("Back to start") {
+                        motionManager.resetRecordNewAnchors()
+                        self.appPhase = .beginning
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
+                case .finishedUpload:
+                    Text("Great success! Anchor created.")
+                    Button("Back to start") {
+                        motionManager.resetRecordNewAnchors()
+                        self.appPhase = .beginning
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
                 }
-            
             }
-            .padding()
         }
-    }
-}
-
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
+        .onChange(of: motionManager.mappingComplete) { newValue in
+            if newValue && appPhase == .mappingPhase {
+                appPhase = .mappingComplete
+            }
+        }
+        .onChange(of: motionManager.localizationComplete) { newValue in
+            if newValue && appPhase == .localizationPhase {
+                appPhase = .localizationComplete
+            }
+        }
     }
 }
