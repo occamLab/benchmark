@@ -10,7 +10,7 @@ import DequeModule
 class LocalizerManager {
     var server_url: URL = URL(string: "http://10.26.26.130:8000/localize")!
     var pendingReq: Bool = false
-    var inlierThreshold: Int = 100
+    var inlierThreshold: Int = 200
 
     /* Retrieves image from ARFrame as a base64 jpg string */
     private func getBase64Jpg(frame: ARFrame) -> String {
@@ -58,9 +58,10 @@ class LocalizerManager {
                 let inlierCount = (json?["inlier_count"] as! NSNumber).intValue
                 let poseList: [Float] = (json?["pose"] as! [NSNumber]).map { $0.floatValue }
                 let poseTransform: simd_float4x4 = poseList.row_list_to_simd_float4x4()
+                print(inlierCount)
                 if(inlierCount >= self.inlierThreshold) {
                     resolveCallBack(poseTransform)
-                    print(inlierCount, poseTransform)
+                    //print(inlierCount, poseTransform)
                 }
             }
         })
@@ -77,13 +78,16 @@ class LocalizerDemo: Sensor, SensorProtocol {
     
     func renderDemo(renderLocationInAnchorFrame: simd_float4x4, cameraInAnchorWorldFrame: simd_float4x4, cameraInCurrentWorldFrame: simd_float4x4, arView: ARSCNView) {
         
-        print(cameraInAnchorWorldFrame, cameraInAnchorWorldFrame, cameraInCurrentWorldFrame)
         
         
         
         // renderLocationInAnchorFrame = cameraInAnchorWorldFrame * shift
         // shift = renderLocationInAnchorFrame * cameraInAnchorWorldFrame.inverse
         let renderLocationInCurrentFrame = cameraInCurrentWorldFrame * (renderLocationInAnchorFrame * cameraInAnchorWorldFrame.inverse)
+        
+        print(renderLocationInCurrentFrame.translationValues())
+
+        
         let anchorName = "demo_render_anchor"
         if let existingTagNode = arView.scene.rootNode.childNode(withName: anchorName, recursively: false)  {
             existingTagNode.simdTransform = renderLocationInCurrentFrame
