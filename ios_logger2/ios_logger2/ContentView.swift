@@ -26,9 +26,11 @@ class MotionManager: ObservableObject {
             self.mappingComplete = true
         }
     }
-    func transitionPhase() {
+    func transitionPhase() async {
+        await motion!.switchToLocalization()
         motion!.initMotionSensors()
         motion!.initArSession()
+        self.motion!.disabledCollection = false
     }
     func localizationPhase() {
         motion!.disabledCollection = false
@@ -145,8 +147,10 @@ struct ContentView: View {
                     Text("Mapping phase complete! Align phone to starting position! Hold vertically against table edge (camera straight on).")
                     Button("Phone aligned") {
                         showButton = true
-                        motionManager.transitionPhase()
-                        self.appPhase = .resetPosePhase2
+                        Task {
+                            await motionManager.transitionPhase()
+                            self.appPhase = .resetPosePhase2
+                        }
                     }
                     .buttonStyle(.borderedProminent)
                     .controlSize(.large)
