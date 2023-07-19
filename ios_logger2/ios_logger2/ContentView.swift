@@ -15,7 +15,6 @@ class MotionManager: ObservableObject {
     @Published var isPresentingUploadConfirmation: Bool = false
     @Published var mappingComplete = false
     @Published var localizationComplete = false
-    @Published var filesList: [String] = []
     
     init() {
         print("Init")
@@ -45,12 +44,8 @@ class MotionManager: ObservableObject {
         self.isPresentingUploadConfirmation = false
         self.mappingComplete = false
         self.localizationComplete = false
-        self.filesList = []
     }
-    func resetLocalizationDemo() {
-//        self.fileNamesList = []
-        self.filesList = []
-    }
+
     func listFromFirebase(completionHandler: @escaping ([[String]])->()) {
         var filesList: [[String]] = []
         let storageReference = Storage.storage().reference().child("iosLoggerDemo/trainedModels")
@@ -73,12 +68,7 @@ class MotionManager: ObservableObject {
             return completionHandler(filesList)
         }
     }
-//    func getFromFirebase(filePath) {
-//        let storageReference = Storage.storage().reference().child("iosLoggerDemo/trainedModels")
-//    }
 }
-
-//class FirebaseManager:
 
 enum AppPhase {
     case beginning
@@ -159,7 +149,6 @@ struct ContentView: View {
                         self.selectionLocation = "Select anchor"
                         self.anchorNames = ["Select anchor"]
                         self.anchors = []
-                        motionManager.resetLocalizationDemo()
                         self.appPhase = .beginning
                     }
                     .buttonStyle(.borderedProminent)
