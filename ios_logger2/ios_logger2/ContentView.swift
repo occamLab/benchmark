@@ -5,22 +5,31 @@
 //  Created by Daniel Sudzilouski on 6/6/23.
 //
 
+import ARCore
 import SwiftUI
 import Firebase
 import FirebaseStorage
 import FirebaseAuth
 
 class MotionManager: ObservableObject {
+    public var arView: ARSCNView = ARSCNView(frame: .zero)
+    var interactiveLocalize: InteractiveLocalizer
     @Published var motion: Motion?
     @Published var isPresentingUploadConfirmation: Bool = false
     @Published var mappingComplete = false
     @Published var localizationComplete = false
     
     init() {
-        print("Init")
+        interactiveLocalize = InteractiveLocalizer(_arSCNView: arView)
     }
     func setUpMotion() {
-        motion = Motion()
+        motion = Motion(_arView: arView)
+    }
+    func setupInteractiveLocalizer() {
+        interactiveLocalize.initArSession()
+    }
+    func stopInteractiveLocalizer() {
+        interactiveLocalize.stop()
     }
     func mappingPhase() {
         motion!.disabledCollection = false
@@ -140,12 +149,15 @@ struct ContentView: View {
                             self.selectionLocation = anchors[1][selectionIndex-1]
                             self.appPhase = .showAnchor
                             self.selection = selection
+                            motionManager.setupInteractiveLocalizer()
                             print(self.selectionLocation)
                         }
                         .buttonStyle(.borderedProminent)
                         .controlSize(.large)
                     }
                 case .showAnchor:
+                    // localization demo goes here
+                    InteractiveLocalizerARViewRepresentable(arDelegate: motionManager.interactiveLocalize.arView)
                     Button("Return to start menu") {
                         print(self.selection)
                         print(self.selectionLocation)
@@ -154,6 +166,7 @@ struct ContentView: View {
                         self.anchorNames = ["Select anchor"]
                         self.anchors = []
                         self.appPhase = .beginning
+                        motionManager.stopInteractiveLocalizer()
                     }
                     .buttonStyle(.borderedProminent)
                     .controlSize(.large)

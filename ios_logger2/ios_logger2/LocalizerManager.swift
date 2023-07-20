@@ -1,7 +1,5 @@
 import Foundation
-import ARKit
-import CoreMotion
-import DequeModule
+import ARCore
 
 /*
  *  Client API for sending images to localizer server.
@@ -61,17 +59,5 @@ class LocalizerManager {
             }
         })
         task.resume()
-    }
-}
-
-class LocalizerDemo: Sensor, SensorProtocol {
-    var sensorName: String = "_localizer_ignore"
-    var localizerManager = LocalizerManager()
-    public var series = GyroData()
-
-    
-    func collectData(motion: CMDeviceMotion?, frame: ARFrame?, arView: ARSCNView) {
-        guard let frame = frame else {return}
-        localizerManager.sendLocaliztionRequest(frame: frame, modelName: "dup2.pt")
     }
 }
