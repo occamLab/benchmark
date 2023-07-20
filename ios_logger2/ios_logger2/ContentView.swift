@@ -13,7 +13,7 @@ import FirebaseAuth
 
 class MotionManager: ObservableObject {
     public var arView: ARSCNView = ARSCNView(frame: .zero)
-    var interactiveLocalize: InteractiveLocalizer
+    @Published var interactiveLocalize: InteractiveLocalizer
     @Published var motion: Motion?
     @Published var isPresentingUploadConfirmation: Bool = false
     @Published var mappingComplete = false
@@ -157,6 +157,8 @@ struct ContentView: View {
                     }
                 case .showAnchor:
                     // localization demo goes here
+                    let translations = motionManager.interactiveLocalize.resolvedTranslationValues
+                    Text("\(translations[0]) \(translations[1]) \(translations[2])")
                     InteractiveLocalizerARViewRepresentable(arDelegate: motionManager.interactiveLocalize.arView)
                     Button("Return to start menu") {
                         print(self.selection)
