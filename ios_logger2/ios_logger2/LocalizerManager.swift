@@ -8,6 +8,7 @@ import ARCore
 class LocalizerManager {
     var server_url: URL = URL(string: "http://10.26.26.130:8000/localize")!
     var pendingReq: Bool = false
+    var inlierThreshold: Int = 200
     
     /* Retrieves image from ARFrame as a base64 jpg string */
     private func getBase64Jpg(frame: ARFrame) -> String {
@@ -23,7 +24,7 @@ class LocalizerManager {
     }
     
     /* Sends a localization request to the server if one is not already pending */
-    public func sendLocaliztionRequest(frame: ARFrame, modelName: String) {
+    public func sendLocaliztionRequest(frame: ARFrame, modelName: String, resolveCallBack: @escaping ((simd_float4x4) -> Void)) {
         if(pendingReq) {
             return
         }
@@ -33,9 +34,9 @@ class LocalizerManager {
         let parameters: [String : Any] = [
             "base64Jpg": getBase64Jpg(frame: frame),
             "modelName": modelName,
-            "focal_length": 10,
-            "optical_x": 10,
-            "optical_y": 10,
+            "focal_length": frame.camera.intrinsics[0, 0],
+            "optical_x": frame.camera.intrinsics[2, 0],
+            "optical_y": frame.camera.intrinsics[2, 1],
         ]
         
         // set req headers
@@ -52,10 +53,13 @@ class LocalizerManager {
             guard let data = data else {return}
             let json = try! JSONSerialization.jsonObject(with: data) as? [String: Any]
             if(json?["status"] as! String == "ok") {
-                let inlier_count = (json?["inlier_count"] as! NSNumber).intValue
-                  let poseList: [Float] = (json?["pose"] as! [NSNumber]).map { $0.floatValue }
-                  let poseTransform: simd_float4x4 = poseList.row_list_to_simd_float4x4()
-                  print(inlier_count, poseTransform)
+                let inlierCount = (json?["inlier_count"] as! NSNumber).intValue
+                let poseList: [Float] = (json?["pose"] as! [NSNumber]).map { $0.floatValue }
+                let poseTransform: simd_float4x4 = poseList.row_list_to_simd_float4x4()
+                print(inlierCount)
+                if(inlierCount >= self.inlierThreshold) {
+                    resolveCallBack(poseTransform)
+                }
             }
         })
         task.resume()

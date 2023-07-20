@@ -71,7 +71,7 @@ extension [Float] {
         var ret = simd_float4x4()
         for i in 0...3 {
             for j in 0...3 {
-                ret[i,j] = self[i*4+j]
+                ret[j,i] = self[i*4+j]
             }
         }
         return ret
