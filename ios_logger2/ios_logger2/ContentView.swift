@@ -31,6 +31,9 @@ class MotionManager: ObservableObject {
     func stopInteractiveLocalizer() {
         interactiveLocalize.stop()
     }
+    func setAnchorName(anchorName: String) {
+        interactiveLocalize.selectedAnchor = anchorName
+    }
     func mappingPhase() {
         motion!.disabledCollection = false
         DispatchQueue.main.asyncAfter(deadline: .now() + 20) {
@@ -149,6 +152,7 @@ struct ContentView: View {
                             self.selectionLocation = anchors[1][selectionIndex-1]
                             self.appPhase = .showAnchor
                             self.selection = selection
+                            motionManager.setAnchorName(anchorName: selection)
                             motionManager.setupInteractiveLocalizer()
                             print(self.selectionLocation)
                         }
