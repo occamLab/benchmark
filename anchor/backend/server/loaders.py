@@ -1,6 +1,7 @@
 
 from anchor.third_party.ace.ace_network import Regressor
 from anchor.backend.data.firebase import FirebaseDownloader
+from anchor.backend.server.logs import nostdout, nostderr
 import dsacstar
 import torchvision.transforms.functional as TF
 from torchvision import transforms
@@ -59,14 +60,19 @@ class ModelLoader:
         model = self.load_ace_model_if_needed(model_name, self.download_model_if_needed(model_name))
 
         img_bytes: bytes = base64.b64decode(base64Jpg) 
+        with open("example.jpg", "wb") as handle:
+            handle.write(img_bytes)
+        
         img_file: BytesIO = BytesIO(img_bytes)
         pil_img: Image = Image.open(img_file)   
         train_resolution: int = 480
         original_image_height: int = pil_img.size[1]
 
-        focal_length /= (original_image_height / train_resolution)
-        optical_x /= (original_image_height / train_resolution)
-        optical_y /= (original_image_height / train_resolution)
+        scale_factor = train_resolution / original_image_height
+
+        focal_length *= scale_factor
+        optical_x *= scale_factor
+        optical_y *= scale_factor
 
         image_transform = transforms.Compose([
                 transforms.Resize(train_resolution),
@@ -88,19 +94,23 @@ class ModelLoader:
         
         # Allocate output variable.
         out_pose = torch.zeros((4, 4))
+        
+        with nostdout():
+            inlier_count: int = dsacstar.forward_rgb(
+                scene_coordinates,
+                out_pose,
+                64, # ransack hypothesis
+                10, # inlier threshold
+                focal_length, # focal length
+                optical_x, # ox
+                optical_y, # oy
+                100, # inlier alpha
+                100, # max pixel error
+                model.OUTPUT_SUBSAMPLE,
+            )
 
-        inlier_count: int = dsacstar.forward_rgb(
-            scene_coordinates,
-            out_pose,
-            64, # ransack hypothesis
-            10, # inlier threshold
-            focal_length, # focal length
-            optical_x, # ox
-            optical_y, # oy
-            100, # inlier alpha
-            100, # max pixel error
-            model.OUTPUT_SUBSAMPLE,
-        )
+        if(inlier_count > 200):
+            print(float(out_pose[0,3]), float(out_pose[1,3]), float(out_pose[2,3]))
 
         return out_pose, inlier_count
     
