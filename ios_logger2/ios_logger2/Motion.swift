@@ -29,7 +29,7 @@ class Motion: NSObject, ARSessionDelegate {
     
     public static var arConfiguration = ARWorldTrackingConfiguration()
     public var motionSensors = CMMotionManager()
-    public var arView: ARSCNView = ARSCNView(frame: .zero)
+    public var arView: ARSCNView
     public var motionUpdateQueue = OperationQueue()
     public var disabledCollection: Bool = true
     
@@ -46,7 +46,6 @@ class Motion: NSObject, ARSessionDelegate {
         Intrinsics(),
         GoogleCloudAnchor(),
         AprilTag(),
-        LocalizerDemo(),
     ]
     
     
@@ -78,6 +77,7 @@ class Motion: NSObject, ARSessionDelegate {
         Motion.arConfiguration.isAutoFocusEnabled = true
         Motion.arConfiguration.videoFormat = ARWorldTrackingConfiguration.recommendedVideoFormatForHighResolutionFrameCapturing!
         Motion.arConfiguration.planeDetection = [.horizontal, .vertical]
+        arView.session.pause()
         arView.session.run(Motion.arConfiguration, options: [
             ARSession.RunOptions.resetTracking,
             ARSession.RunOptions.resetSceneReconstruction,
@@ -134,9 +134,10 @@ class Motion: NSObject, ARSessionDelegate {
     }
     
     
-    override init() {
-        super.init()
-        initMotionSensors()
-        initArSession()
+     init(_arView: ARSCNView) {
+         arView = _arView
+         super.init()
+         initMotionSensors()
+         initArSession()
     }
 }
