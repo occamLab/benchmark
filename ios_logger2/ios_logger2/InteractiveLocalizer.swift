@@ -31,6 +31,7 @@ class InteractiveLocalizer: NSObject, ARSessionDelegate {
     public var arView: ARSCNView = ARSCNView(frame: .zero)
     var localizerManager = LocalizerManager()
     var resolvedTranslationValues: [Float] = [0,0,0]
+    var selectedAnchor: String? = nil
     
     
     public func initArSession() {
@@ -73,7 +74,8 @@ class InteractiveLocalizer: NSObject, ARSessionDelegate {
     
     
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
-        localizerManager.sendLocaliztionRequest(frame: frame, modelName: "dup2.pt", resolveCallBack: {(resolvedTransform: simd_float4x4) in
+        guard let selectedAnchor = selectedAnchor else {return}
+        localizerManager.sendLocaliztionRequest(frame: frame, modelName: selectedAnchor + ".pt", resolveCallBack: {(resolvedTransform: simd_float4x4) in
             self.renderDemo(renderLocationInAnchorFrame: matrix_identity_float4x4, cameraInAnchorWorldFrame: resolvedTransform, cameraInCurrentWorldFrame: frame.camera.transform, arView: self.arView)
           })
     }
