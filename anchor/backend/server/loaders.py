@@ -108,34 +108,5 @@ class ModelLoader:
                     model.OUTPUT_SUBSAMPLE,
                 )
 
-            # save debug information
-            
-            timestamp = "0001" #int(time.time())
-            save_path: Path = Path("/tmp") / "repro" / "batch1" / "test"
-            pose_path = save_path / "poses"
-            image_path = save_path / "rgb"
-            calibration_path = save_path / "calibration"
-            inlier_count_path = save_path / "inlier_count"
-            pose_path.mkdir(parents=True, exist_ok=True)
-            image_path.mkdir(parents=True, exist_ok=True)
-            calibration_path.mkdir(parents=True, exist_ok=True)
-            inlier_count_path.mkdir(parents=True, exist_ok=True)
-
-            if(inlier_count > 400):
-                with open((pose_path / (str(timestamp) + ".pose.txt")).as_posix(), 'w') as file:
-                    np.savetxt(file, out_pose.numpy(), fmt='%f')
-                with open((calibration_path / (str(timestamp) + ".calibration.txt")).as_posix(), "w") as file:
-                    intrinsics = np.eye(3, 3)
-                    intrinsics[0,0] = focal_length
-                    intrinsics[1,1] = focal_length
-                    intrinsics[0,2] = optical_x
-                    intrinsics[1,2] = optical_y
-                    np.savetxt(file, intrinsics, fmt='%f')
-                with open((image_path / (str(timestamp) + ".color.jpg")).as_posix(), "wb") as file:
-                    file.write(img_bytes)
-                with open((inlier_count_path / (str(timestamp) + ".count.txt")).as_posix(), "w") as file:
-                    file.write(f'inliers: {inlier_count}, focal: {focal_length * scale_factor}, ox: {optical_x * scale_factor}, oy: {optical_y * scale_factor}\n')
-                
-            
             print(inlier_count)
             return out_pose, inlier_count
