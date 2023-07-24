@@ -115,7 +115,7 @@ if __name__ == '__main__':
         pretrained_model = Path(__file__).parent.parent.parent / "third_party" / "ace" / "ace_encoder_pretrained.pt"
         visualizer_enabled = False
         render_flipped_portrait = False 
-        training_epochs = 1
+        training_epochs = 16
 
         print("[INFO]: Running ace training on dataset path: ", extracted_ace_folder)
         os.chdir("anchor/third_party/ace")
