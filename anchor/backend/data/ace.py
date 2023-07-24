@@ -115,11 +115,14 @@ if __name__ == '__main__':
         pretrained_model = Path(__file__).parent.parent.parent / "third_party" / "ace" / "ace_encoder_pretrained.pt"
         visualizer_enabled = False
         render_flipped_portrait = False 
-        training_epochs = 16
+        training_epochs = 1
 
         print("[INFO]: Running ace training on dataset path: ", extracted_ace_folder)
         os.chdir("anchor/third_party/ace")
         os.system(f'./train_ace.py {extracted_ace_folder.as_posix()} {model_output.as_posix()} --render_visualization {"True" if visualizer_enabled else "False"} --render_flipped_portrait {"True" if render_flipped_portrait else "False"} --render_target_path "{render_target_path.as_posix()}" --epochs {training_epochs}')
+
+        print("[INFO]: Running ace evaluation on dataset path: ", extracted_ace_folder)
+        run_ace_evaluator(extracted_ace_folder, model_output, False, True, extracted_ace_folder)
 
         print("[INFO]: Converting ACE model for mobile use")
         save_model_for_mobile(pretrained_model, model_output)
