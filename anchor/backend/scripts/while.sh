@@ -18,6 +18,7 @@ export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
 # trains if new tar file is found, deletes the tar file and uploads the model to iosLoggerDemo/trainedModels/
 while true
 do
-    python -m anchor.backend.data.ace
+    export PYTHONUNBUFFERED=1
+    python -m anchor.backend.data.ace |& python -m "anchor.backend.data.log_uploader"
     sleep 30
 done
