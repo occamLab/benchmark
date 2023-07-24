@@ -98,9 +98,9 @@ if __name__ == '__main__':
     if combined_path != None:
         firebase_path: str = Path(combined_path).parent # ex: iosLoggerDemo/vyjFKi2zgLQDsxI1koAOjD899Ba2
         tar_name: str = Path(combined_path).parts[-1] # ex: 6B62493C-45C8-43F3-A540-41B5216429EC.tar
+        print(combined_path) # logger will use this to know that new log needs to be uploaded
 
         print("[INFO]: Running e2e benchmark on tar with path: ", firebase_path, " and file name: ", tar_name)
-
         downloader = FirebaseDownloader(firebase_path, tar_name)
         downloader.extract_ios_logger_tar()
         prepare_ace_data(downloader.extracted_data)
@@ -133,7 +133,8 @@ if __name__ == '__main__':
         
         if len(sys.argv) != 2:
             downloader.delete_file((Path(firebase_path) / tar_name).as_posix())
-            print("[INFO}: Deleted tar from firebase")
+            print("[INFO]: Deleted tar from firebase")
+        
         
         if visualizer_enabled: 
             os.system(f'/usr/bin/ffmpeg -framerate 30 -pattern_type glob -i "{render_target_path.as_posix()}/**/*.png" -c:v libx264 -pix_fmt yuv420p "{render_target_path.as_posix()}/out.mp4"')
