@@ -4,9 +4,8 @@ import sys, tempfile
 
 with tempfile.NamedTemporaryFile(mode="w") as tmp:
     model_name = None
-    print(model_name)
     for line in sys.stdin:
-        if line == "[INFO]: No new videos in firebase iosLoggerDemo/tarQueue": 
+        if "[INFO]: No new videos in firebase iosLoggerDemo/tarQueue" in line:
             exit(0)
         if model_name == None:
             model_name = line
