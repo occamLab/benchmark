@@ -38,6 +38,7 @@ def send_localization_from_path(model_name: str, image_path: Path, intrinsics_pa
     intrinsics = np.loadtxt(intrinsics_path)
     return send_localization_request(model_name, image_b64, intrinsics[0,0], intrinsics[0,2], intrinsics[1,2])
 
+
 """
     Provide a partially complete ace dataset for https://github.com/nianticlabs/ace/blob/main/test_ace.py 
     with folders for rgb and calibration
