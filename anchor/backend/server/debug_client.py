@@ -34,7 +34,7 @@ def send_localization_request(model_name: str, base64_image: str, focal_length: 
 def send_localization_from_path(model_name: str, image_path: Path, intrinsics_path: Path):
     image_b64: str = base64.b64encode(image_path.read_bytes()).decode()
     intrinsics = np.loadtxt(intrinsics_path)
-    send_localization_request(model_name, image_b64, intrinsics[0,0], intrinsics[2,0], intrinsics[1,2])
+    send_localization_request(model_name, image_b64, intrinsics[0,0], intrinsics[0,2], intrinsics[1,2])
 
 
 send_localization_from_path("Library_circle.pt", Path("/tmp/repro/batch1/test/rgb/0001.color.jpg"), Path("/tmp/repro/batch1/test/calibration/0001.calibration.txt"))
