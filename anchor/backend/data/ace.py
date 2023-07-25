@@ -5,7 +5,6 @@ from anchor.backend.data.error_summarizer import ErrorSummarizer
 from anchor.third_party.ace.ace_network import Regressor
 from torch.utils.mobile_optimizer import optimize_for_mobile, MobileOptimizerType
 import shutil
-import random
 import sys
 import os
 import torch
