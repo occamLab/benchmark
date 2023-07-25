@@ -81,6 +81,6 @@ def test_dataset_e2e(model_name: str, partial_ace_data_set: Path):
     with tempfile.NamedTemporaryFile() as tmp:
         firebase_downloader = FirebaseDownloader("", "")
         firebase_downloader.download_file((Path("iosLoggerDemo") / "trainedModels" / model_name).as_posix(), tmp.name)
-        run_ace_evaluator(partial_ace_data_set, Path(tmp.name), False, False, Path("/dev/null"))
+        run_ace_evaluator(partial_ace_data_set, Path(tmp.name), False, False, Path("/dev/null"), 0)
 
 test_dataset_e2e("Library_circle.pt", Path("/tmp/repro/batch1"))
