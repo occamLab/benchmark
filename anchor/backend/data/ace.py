@@ -81,7 +81,7 @@ def save_model_for_mobile(ace_encoder_pretrained: Path, trained_weights: Path):
 Runs the ace evaluator on the trained model. To run paste the following into main:
 run_ace_evaluator(extracted_ace_folder, model_output, visualizer_enabled, render_flipped_portrait, render_target_path)
 """
-def run_ace_evaluator(extracted_ace_folder, model_output, visualizer_enabled, render_flipped_portrait, render_target_path):
+def run_ace_evaluator(extracted_ace_folder: Path, model_output: Path, visualizer_enabled: bool, render_flipped_portrait: bool, render_target_path: Path):
     print("[INFO]: Running ace evaluater on dataset path: ", extracted_ace_folder)
     os.system(f'./test_ace.py {extracted_ace_folder.as_posix()} {model_output.as_posix()} --render_visualization {"True" if visualizer_enabled else "False"}   --render_flipped_portrait {"True" if render_flipped_portrait else "False"} --render_target_path "{render_target_path.as_posix()}"')
 
