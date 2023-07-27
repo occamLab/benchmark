@@ -54,9 +54,52 @@ class InteractiveLocalizer: NSObject, ARSessionDelegate {
         arView.session.pause()
     }
     
+    func visualizeTransformAxis(_ transformName: String, _ visTransform: simd_float4x4) {
+        let nodeName: String = "Tag_" + transformName
+        var tranformNoTranslation = visTransform
+        tranformNoTranslation.columns.3.x = 0
+        tranformNoTranslation.columns.3.y = 0
+        tranformNoTranslation.columns.3.z = 0
+        
+        if let existingNode = arView.scene.rootNode.childNode(withName: nodeName, recursively: false)  {
+            existingNode.simdTransform = tranformNoTranslation
+        }
+        else {
+            let visNode = SCNNode()
+            visNode.simdTransform = tranformNoTranslation
+            visNode.geometry = SCNBox(width: 0.15875, height: 0.15875, length: 0.05, chamferRadius: 0)
+            visNode.name = nodeName
+            visNode.geometry?.firstMaterial?.diffuse.contents = UIColor.cyan
+            
+            /// Add axes to the tag to aid in the visualization
+            let xAxis = SCNNode(geometry: SCNBox(width: 1.0, height: 0.05, length: 0.05, chamferRadius: 0))
+            xAxis.position = SCNVector3.init(0.75, 0, 0)
+            xAxis.geometry?.firstMaterial?.diffuse.contents = UIColor.red
+            let yAxis = SCNNode(geometry: SCNBox(width: 0.05, height: 1.0, length: 0.05, chamferRadius: 0))
+            yAxis.position = SCNVector3.init(0, 0.75, 0)
+            yAxis.geometry?.firstMaterial?.diffuse.contents = UIColor.green
+            let zAxis = SCNNode(geometry: SCNBox(width: 0.05, height: 0.05, length: 1.0, chamferRadius: 0))
+            zAxis.position = SCNVector3.init(0, 0, 0.75)
+            zAxis.geometry?.firstMaterial?.diffuse.contents = UIColor.blue
+            visNode.addChildNode(xAxis)
+            visNode.addChildNode(yAxis)
+            visNode.addChildNode(zAxis)
+            arView.scene.rootNode.addChildNode(visNode)
+        }
+    }
+    
     func renderDemo(renderLocationInAnchorFrame: simd_float4x4, cameraInAnchorWorldFrame: simd_float4x4, cameraInCurrentWorldFrame: simd_float4x4, arView: ARSCNView) {
-           let renderLocationInCurrentFrame = cameraInCurrentWorldFrame * (renderLocationInAnchorFrame * cameraInAnchorWorldFrame.inverse)
-            resolvedTranslationValues = renderLocationInCurrentFrame.translationValues()
+        // current_frame * transform = anchor_frame
+        // transform = inv(current_frame) * anchor_frame
+        
+        // pos_in_anchor_frame * anchor_to_current = pos_in_current_frame
+        // anchor_to_current = inv(pos_in_anchor_frame) * pos_in_current_frame
+       //    let renderLocationInCurrentFrame = cameraInCurrentWorldFrame.inverse * cameraInAnchorWorldFrame
+        
+        let renderLocationInCurrentFrame = cameraInCurrentWorldFrame.inverse * cameraInAnchorWorldFrame
+        resolvedTranslationValues = renderLocationInCurrentFrame.translationValues()
+        
+        print(cameraInAnchorWorldFrame.translationValues(), cameraInCurrentWorldFrame.translationValues(), renderLocationInCurrentFrame.translationValues())
 
            
            let anchorName = "demo_render_anchor"
@@ -74,6 +117,7 @@ class InteractiveLocalizer: NSObject, ARSessionDelegate {
     
     
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
+        visualizeTransformAxis("origin", matrix_identity_float4x4)
         guard let selectedAnchor = selectedAnchor else {return}
         localizerManager.sendLocaliztionRequest(frame: frame, modelName: selectedAnchor + ".pt", resolveCallBack: {(resolvedTransform: simd_float4x4) in
             self.renderDemo(renderLocationInAnchorFrame: matrix_identity_float4x4, cameraInAnchorWorldFrame: resolvedTransform, cameraInCurrentWorldFrame: frame.camera.transform, arView: self.arView)

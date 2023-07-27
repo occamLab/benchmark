@@ -56,7 +56,7 @@ class LocalizerManager {
                 let inlierCount = (json?["inlier_count"] as! NSNumber).intValue
                 let poseList: [Float] = (json?["pose"] as! [NSNumber]).map { $0.floatValue }
                 let poseTransform: simd_float4x4 = poseList.row_list_to_simd_float4x4()
-                print(inlierCount)
+                //print(inlierCount)
                 if(inlierCount >= self.inlierThreshold) {
                     resolveCallBack(poseTransform)
                 }
