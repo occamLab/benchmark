@@ -85,11 +85,14 @@ def visualize_pose_list():
 
         # anchor_to_arkit * anchor = arkit
         # anchor_to_arkit =  arkit * inv(anchor)
-        anchor_to_arkit = np.matmul(arkit_pose, np.linalg.inv(anchor_pose))
+        device_arkit_to_device_opencv = np.diag([1.0, -1.0, -1.0, 1.0])
+        
+        
+        anchor_to_arkit = anchor_pose @ device_arkit_to_device_opencv @ np.linalg.inv(arkit_pose)
         plot_tranform(anchor_to_arkit, 'red', plt3d)
 
         print(anchor_to_arkit[0:3, 3])
-    
+        
 
     plt.savefig((Path(__file__).parent / "out.png").as_posix(), dpi=1000)
 
