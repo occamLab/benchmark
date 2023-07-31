@@ -46,8 +46,7 @@ def plot_tranform(transform: np.matrix, color: str, axes: plt.Axes):
     point4 = np.matmul(point4, transform)
     point5 = np.matmul(point5, transform)
 
-    if random.random() < 0.2:
-        plot_pyramid([point1[0:3, 3], point5[0:3, 3], point3[0:3, 3], point2[0:3, 3], point4[0:3, 3]], color, axes)
+    plot_pyramid([point1[0:3, 3], point5[0:3, 3], point3[0:3, 3], point2[0:3, 3], point4[0:3, 3]], color, axes)
     #plot_pyramid([point1[0:3, 3], point1[0:3, 3], point1[0:3, 3], point1[0:3, 3], point1[0:3, 3]], color, axes)
     #plot_pyramid([point2[0:3, 3], point2[0:3, 3], point2[0:3, 3], point2[0:3, 3], point2[0:3, 3]], color, axes)
     #plot_pyramid([point3[0:3, 3], point3[0:3, 3], point3[0:3, 3], point3[0:3, 3], point3[0:3, 3]], color, axes)
@@ -65,18 +64,15 @@ def visualize_pose_list():
     plt3d.set_ylim(-3, 3)
     plt3d.set_zlim(-3, 3)
 
-    num =0
-
     for transform_path in os.listdir("/tmp/repro"): 
-        num += 1
         transform = np.loadtxt(f"/tmp/repro/{transform_path}")
-        if "anchor" in transform_path:
-            plot_tranform(transform, 'green', plt3d)
-        else: 
-            plot_tranform(transform, 'blue', plt3d)
-        if num == 2000:
-            break
+        if random.random() < 0.2:
 
+            if "anchor" in transform_path:
+                plot_tranform(transform, 'green', plt3d)
+            else: 
+                plot_tranform(transform, 'blue', plt3d)
+    
 
 
     plt.savefig((Path(__file__).parent / "out.png").as_posix(), dpi=1000)
