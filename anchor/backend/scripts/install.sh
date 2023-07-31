@@ -18,6 +18,9 @@ pip install -e anchor/third_party/ace/dsacstar
 # create debug videos of training process in ace
 sudo apt install ffmpeg -y
 
+# jupyter server
+conda install -c anaconda jupyter
+
 # install pyav video library https://pyav.org/docs/stable/
 conda install av -c conda-forge
 

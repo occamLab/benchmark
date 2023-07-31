@@ -3,7 +3,9 @@ from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 import numpy as np
 from pathlib import Path
 from typing import List, Any, Tuple
-import os, random
+import os, random, re
+from scipy.spatial.transform import Rotation as R
+
 
 """ 
     Given 5 points, plots a pyramid into the current figure
@@ -26,7 +28,7 @@ def plot_pyramid(vertices: List[Tuple[float, float, float, float]], color: str, 
 """
 def plot_tranform(transform: np.matrix, color: str, axes: plt.Axes):
     point1 = np.eye(4)
-    point1[0:3, 3] = np.array([0.9, 0, 0])
+    point1[0:3, 3] = np.array([0.5, 0, 0])
 
     point2 = np.eye(4)
     point2[0:3, 3] = np.array([1, 1, 1])
@@ -40,11 +42,11 @@ def plot_tranform(transform: np.matrix, color: str, axes: plt.Axes):
     point5 = np.eye(4)
     point5[0:3, 3] = np.array([1, -1, -1])
 
-    point1 = np.matmul(point1, transform)
-    point2 = np.matmul(point2, transform)
-    point3 = np.matmul(point3, transform)
-    point4 = np.matmul(point4, transform)
-    point5 = np.matmul(point5, transform)
+    point1 = np.matmul(transform, point1)
+    point2 = np.matmul(transform, point2)
+    point3 = np.matmul(transform, point3)
+    point4 = np.matmul(transform, point4)
+    point5 = np.matmul(transform, point5)
 
     plot_pyramid([point1[0:3, 3], point5[0:3, 3], point3[0:3, 3], point2[0:3, 3], point4[0:3, 3]], color, axes)
     #plot_pyramid([point1[0:3, 3], point1[0:3, 3], point1[0:3, 3], point1[0:3, 3], point1[0:3, 3]], color, axes)
@@ -63,17 +65,31 @@ def visualize_pose_list():
     plt3d.set_xlim(-3, 3)
     plt3d.set_ylim(-3, 3)
     plt3d.set_zlim(-3, 3)
+    plt3d.set_xlabel("X")
+    plt3d.set_ylabel("Y")
+    plt3d.set_zlabel("Z")
 
-    for transform_path in os.listdir("/tmp/repro"): 
-        transform = np.loadtxt(f"/tmp/repro/{transform_path}")
-        if random.random() < 0.2:
-
-            if "anchor" in transform_path:
-                plot_tranform(transform, 'green', plt3d)
-            else: 
-                plot_tranform(transform, 'blue', plt3d)
+    all_files = os.listdir("/tmp/repro")
+    anchor_poses = [x for x in all_files if "anchor" in x]
+    arkit_poses = [x for x in all_files if "arkit" in x]
+    anchor_poses.sort(key=lambda x: re.findall('\d+', x))
+    arkit_poses.sort(key=lambda x: re.findall('\d+', x))
     
 
+    for idx, _ in enumerate(arkit_poses):
+        arkit_pose = np.loadtxt(f"/tmp/repro/{arkit_poses[idx]}")
+        anchor_pose = np.loadtxt(f"/tmp/repro/{anchor_poses[idx]}")
+
+        plot_tranform(arkit_pose, 'blue', plt3d)
+        plot_tranform(anchor_pose, 'green', plt3d)
+
+        # anchor_to_arkit * anchor = arkit
+        # anchor_to_arkit =  arkit * inv(anchor)
+        anchor_to_arkit = np.matmul(arkit_pose, np.linalg.inv(anchor_pose))
+        plot_tranform(anchor_to_arkit, 'red', plt3d)
+
+        print(anchor_to_arkit[0:3, 3])
+    
 
     plt.savefig((Path(__file__).parent / "out.png").as_posix(), dpi=1000)
 
