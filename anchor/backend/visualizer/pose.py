@@ -48,11 +48,12 @@ def plot_tranform(transform: np.matrix, color: str, axes: plt.Axes):
 
     if random.random() < 0.2:
         plot_pyramid([point1[0:3, 3], point5[0:3, 3], point3[0:3, 3], point2[0:3, 3], point4[0:3, 3]], color, axes)
-    plot_pyramid([point1[0:3, 3], point1[0:3, 3], point1[0:3, 3], point1[0:3, 3], point1[0:3, 3]], color, axes)
-    plot_pyramid([point2[0:3, 3], point2[0:3, 3], point2[0:3, 3], point2[0:3, 3], point2[0:3, 3]], color, axes)
-    plot_pyramid([point3[0:3, 3], point3[0:3, 3], point3[0:3, 3], point3[0:3, 3], point3[0:3, 3]], color, axes)
-    plot_pyramid([point4[0:3, 3], point4[0:3, 3], point4[0:3, 3], point4[0:3, 3], point4[0:3, 3]], color, axes)
-    plot_pyramid([point5[0:3, 3], point5[0:3, 3], point5[0:3, 3], point5[0:3, 3], point5[0:3, 3]], color, axes)
+    #plot_pyramid([point1[0:3, 3], point1[0:3, 3], point1[0:3, 3], point1[0:3, 3], point1[0:3, 3]], color, axes)
+    #plot_pyramid([point2[0:3, 3], point2[0:3, 3], point2[0:3, 3], point2[0:3, 3], point2[0:3, 3]], color, axes)
+    #plot_pyramid([point3[0:3, 3], point3[0:3, 3], point3[0:3, 3], point3[0:3, 3], point3[0:3, 3]], color, axes)
+    #plot_pyramid([point4[0:3, 3], point4[0:3, 3], point4[0:3, 3], point4[0:3, 3], point4[0:3, 3]], color, axes)
+    #plot_pyramid([point5[0:3, 3], point5[0:3, 3], point5[0:3, 3], point5[0:3, 3], point5[0:3, 3]], color, axes)
+
 
 """
     For debug purposes, it is sometimes useful to visualize poses to be able to determine 
@@ -60,6 +61,10 @@ def plot_tranform(transform: np.matrix, color: str, axes: plt.Axes):
 """
 def visualize_pose_list(): 
     plt3d = plt.figure().add_subplot(projection='3d')
+    plt3d.set_xlim(-3, 3)
+    plt3d.set_ylim(-3, 3)
+    plt3d.set_zlim(-3, 3)
+
     num =0
 
     for transform_path in os.listdir("/tmp/repro"): 

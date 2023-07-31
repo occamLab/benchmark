@@ -110,8 +110,9 @@ class ModelLoader:
                 )
             
             # save debug poses for visualization
-            timestamp = time.time()
-            np.savetxt(f"/tmp/repro/{timestamp}.pose-anchor.txt", out_pose.numpy(), fmt="%f")
+            if inlier_count > 600:
+                timestamp = time.time()
+                np.savetxt(f"/tmp/repro/{timestamp}.pose-anchor.txt", out_pose.numpy(), fmt="%f")
 
             print(inlier_count)
             return out_pose, inlier_count
