@@ -30,7 +30,6 @@ class InteractiveLocalizer: NSObject, ARSessionDelegate {
     var arSCNView: ARSCNView
     public var arView: ARSCNView = ARSCNView(frame: .zero)
     var localizerManager = LocalizerManager()
-    var resolvedTranslationValues: [Float] = [0,0,0]
     var selectedAnchor: String? = nil
     
     
@@ -89,17 +88,14 @@ class InteractiveLocalizer: NSObject, ARSessionDelegate {
     }
     
     func renderDemo(renderLocationInAnchorFrame: simd_float4x4, cameraInAnchorWorldFrame: simd_float4x4, cameraInCurrentWorldFrame: simd_float4x4, arView: ARSCNView) {
-        // current_frame * transform = anchor_frame
-        // transform = inv(current_frame) * anchor_frame
         
-        // pos_in_anchor_frame * anchor_to_current = pos_in_current_frame
-        // anchor_to_current = inv(pos_in_anchor_frame) * pos_in_current_frame
-       //    let renderLocationInCurrentFrame = cameraInCurrentWorldFrame.inverse * cameraInAnchorWorldFrame
+        let device_opencv_to_arkit_mapping = cameraInAnchorWorldFrame
+        let device_arkit_to_device_opencv = simd_float4x4(diagonal: simd_float4(1, -1, -1, 1))
+        let arlocalization_to_device_arkit = cameraInCurrentWorldFrame.inverse
         
-        let renderLocationInCurrentFrame = cameraInCurrentWorldFrame.inverse * cameraInAnchorWorldFrame
-        resolvedTranslationValues = renderLocationInCurrentFrame.translationValues()
+        let arlocalization_to_ar_mapping = device_opencv_to_arkit_mapping * device_arkit_to_device_opencv * arlocalization_to_device_arkit
         
-        print(cameraInAnchorWorldFrame.translationValues(), cameraInCurrentWorldFrame.translationValues(), renderLocationInCurrentFrame.translationValues())
+        let renderLocationInCurrentFrame = arlocalization_to_ar_mapping
 
            
            let anchorName = "demo_render_anchor"
