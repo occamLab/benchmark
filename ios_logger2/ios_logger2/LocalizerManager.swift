@@ -30,7 +30,7 @@ class LocalizerManager {
             return
         }
         pendingReq = true
-        arkitPose = frame.camera.transform.inCameraConventions().rotationMatrix().rotationMatrix()
+        arkitPose = frame.camera.transform.rotationMatrix()
         print(arkitPose)
             
         // req params that we send to the server
