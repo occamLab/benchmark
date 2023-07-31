@@ -10,6 +10,7 @@ from PIL import Image
 from skimage import io
 import torchvision.transforms.functional as TF
 import torch, tempfile, base64, dsacstar, time, numpy as np
+from typing import List
 
 
 class ModelLoader: 
@@ -56,7 +57,7 @@ class ModelLoader:
             usually if inlier_count is below 100-200, this means that localization has failed
 
     """
-    def localize_image(self, model_name: str, base64Jpg: str, focal_length: float, optical_x: float, optical_y: float):
+    def localize_image(self, model_name: str, base64Jpg: str, focal_length: float, optical_x: float, optical_y: float, arkit_pose: List[float]):
         with torch.no_grad():
             model = self.load_ace_model_if_needed(model_name, self.download_model_if_needed(model_name))
 

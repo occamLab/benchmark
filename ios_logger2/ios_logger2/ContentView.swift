@@ -258,7 +258,7 @@ struct ContentView: View {
                     .controlSize(.large)
                     Button("Upload Data?", role: .destructive, action: {
                         Task {
-                            await motionManager.motion!.finalExport(tarName: anchorCreationName)
+                            await motionManager.motion!.finalExport(tarName: anchorCreationName.trimmingCharacters(in: .whitespaces))
                             motionManager.isPresentingUploadConfirmation = false
                         }
                         self.appPhase = .finishedUpload

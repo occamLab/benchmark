@@ -29,6 +29,7 @@ class LocalizerManager {
             return
         }
         pendingReq = true
+        arkitPose = frame.camera.transform.rotationMatrix()
             
         // req params that we send to the server
         let parameters: [String : Any] = [
@@ -37,6 +38,7 @@ class LocalizerManager {
             "focal_length": frame.camera.intrinsics[0, 0],
             "optical_x": frame.camera.intrinsics[2, 0],
             "optical_y": frame.camera.intrinsics[2, 1],
+            "arkit_pose": arkitPose
         ]
         
         // set req headers
