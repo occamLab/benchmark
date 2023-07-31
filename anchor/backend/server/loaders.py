@@ -113,6 +113,7 @@ class ModelLoader:
             if inlier_count > 600:
                 timestamp = time.time()
                 np.savetxt(f"/tmp/repro/{timestamp}.pose-anchor.txt", out_pose.numpy(), fmt="%f")
+                np.savetxt(f"/tmp/repro/{timestamp}.pose-arkit.txt", np.matrix(arkit_pose), fmt="%f")
 
             print(inlier_count)
             return out_pose, inlier_count
