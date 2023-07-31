@@ -49,12 +49,6 @@ def plot_tranform(transform: np.matrix, color: str, axes: plt.Axes):
     point5 = np.matmul(transform, point5)
 
     plot_pyramid([point1[0:3, 3], point5[0:3, 3], point3[0:3, 3], point2[0:3, 3], point4[0:3, 3]], color, axes)
-    #plot_pyramid([point1[0:3, 3], point1[0:3, 3], point1[0:3, 3], point1[0:3, 3], point1[0:3, 3]], color, axes)
-    #plot_pyramid([point2[0:3, 3], point2[0:3, 3], point2[0:3, 3], point2[0:3, 3], point2[0:3, 3]], color, axes)
-    #plot_pyramid([point3[0:3, 3], point3[0:3, 3], point3[0:3, 3], point3[0:3, 3], point3[0:3, 3]], color, axes)
-    #plot_pyramid([point4[0:3, 3], point4[0:3, 3], point4[0:3, 3], point4[0:3, 3], point4[0:3, 3]], color, axes)
-    #plot_pyramid([point5[0:3, 3], point5[0:3, 3], point5[0:3, 3], point5[0:3, 3], point5[0:3, 3]], color, axes)
-
 
 """
     For debug purposes, it is sometimes useful to visualize poses to be able to determine 
@@ -83,10 +77,7 @@ def visualize_pose_list():
         plot_tranform(arkit_pose, 'blue', plt3d)
         plot_tranform(anchor_pose, 'green', plt3d)
 
-        # anchor_to_arkit * anchor = arkit
-        # anchor_to_arkit =  arkit * inv(anchor)
         device_arkit_to_device_opencv = np.diag([1.0, -1.0, -1.0, 1.0])
-        
         
         anchor_to_arkit = anchor_pose @ device_arkit_to_device_opencv @ np.linalg.inv(arkit_pose)
         plot_tranform(anchor_to_arkit, 'red', plt3d)
