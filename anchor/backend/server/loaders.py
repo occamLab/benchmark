@@ -108,6 +108,12 @@ class ModelLoader:
                     100, # max pixel error
                     model.OUTPUT_SUBSAMPLE,
                 )
+            
+            # save debug poses for visualization
+            if inlier_count > 600:
+                timestamp = time.time()
+                np.savetxt(f"/tmp/repro/{timestamp}.pose-anchor.txt", out_pose.numpy(), fmt="%f")
+                np.savetxt(f"/tmp/repro/{timestamp}.pose-arkit.txt", np.reshape(arkit_pose, (4,4)).transpose(), fmt="%f")
 
             print(inlier_count)
             return out_pose, inlier_count
