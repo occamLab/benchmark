@@ -95,7 +95,7 @@ class InteractiveLocalizer: NSObject, ARSessionDelegate {
         
         let arlocalization_to_ar_mapping = device_opencv_to_arkit_mapping * device_arkit_to_device_opencv * arlocalization_to_device_arkit
         
-        let renderLocationInCurrentFrame = arlocalization_to_ar_mapping
+        let renderLocationInCurrentFrame = arlocalization_to_ar_mapping.inverse
 
            
            let anchorName = "demo_render_anchor"
