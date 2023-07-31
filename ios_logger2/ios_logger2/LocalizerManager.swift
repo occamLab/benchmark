@@ -31,7 +31,6 @@ class LocalizerManager {
         }
         pendingReq = true
         arkitPose = frame.camera.transform.rotationMatrix()
-        print(arkitPose)
             
         // req params that we send to the server
         let parameters: [String : Any] = [
