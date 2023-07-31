@@ -1,6 +1,5 @@
 import Foundation
 import ARCore
-import 
 
 /*
  *  Client API for sending images to localizer server.
