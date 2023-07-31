@@ -161,8 +161,6 @@ struct ContentView: View {
                     }
                 case .showAnchor:
                     // localization demo goes here
-                    let translations = motionManager.interactiveLocalize.resolvedTranslationValues
-                    Text("\(translations[0]) \(translations[1]) \(translations[2])")
                     InteractiveLocalizerARViewRepresentable(arDelegate: motionManager.interactiveLocalize.arView)
                     Button("Return to start menu") {
                         print(self.selection)
