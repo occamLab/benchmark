@@ -6,7 +6,7 @@ import ARCore
  */
 
 class LocalizerManager {
-    var server_url: URL = URL(string: "http://10.26.26.130:8000/localize")!
+    var server_url: URL = URL(string: "http://10.26.25.130:8000/localize")!
     var pendingReq: Bool = false
     var inlierThreshold: Int = 200
     
