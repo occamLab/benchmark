@@ -95,22 +95,28 @@ class InteractiveLocalizer: NSObject, ARSessionDelegate {
         
         let arlocalization_to_ar_mapping = device_opencv_to_arkit_mapping * device_arkit_to_device_opencv * arlocalization_to_device_arkit
         
-        let renderLocationInCurrentFrame = arlocalization_to_ar_mapping
+        let renderLocationInCurrentFrame = arlocalization_to_ar_mapping.inverse
+        
+        let anchorName = "paulModel"
+        if let existingTagNode = arView.scene.rootNode.childNode(withName: anchorName, recursively: false)  {
+            existingTagNode.simdTransform = renderLocationInCurrentFrame
+            existingTagNode.scale = SCNVector3(x: 0.1, y: 0.1, z: 0.1)
+        } else {
+            let scene = SCNScene()
+            let paulScene = SCNScene(named: "lowPolyPaul.dae")
+
+            guard let paulNode = paulScene?.rootNode.childNode(withName: "paulModel", recursively: true) else {
+                fatalError("paulModel not found :(")
+            }
+            scene.rootNode.addChildNode(paulNode)
+            paulNode.simdTransform = renderLocationInCurrentFrame
+            paulNode.scale = SCNVector3(x: 0.1, y: 0.1, z: 0.1)
+            paulNode.name = anchorName
+            arView.scene.rootNode.addChildNode(paulNode)
+        }
+    }
 
            
-           let anchorName = "demo_render_anchor"
-           if let existingTagNode = arView.scene.rootNode.childNode(withName: anchorName, recursively: false)  {
-               existingTagNode.simdTransform = renderLocationInCurrentFrame
-           } else {
-               let anchorNode = SCNNode()
-               anchorNode.simdTransform = renderLocationInCurrentFrame
-               anchorNode.geometry = SCNSphere(radius: 0.2)
-               anchorNode.name = anchorName
-               anchorNode.geometry?.firstMaterial?.diffuse.contents = UIColor.cyan
-               arView.scene.rootNode.addChildNode(anchorNode)
-           }
-       }
-    
     
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         visualizeTransformAxis("origin", matrix_identity_float4x4)
