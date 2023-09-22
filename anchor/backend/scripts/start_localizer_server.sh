@@ -14,6 +14,6 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 cd ../../../
 
 export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
-uvicorn anchor.backend.server.localizer:app --reload --host 10.26.26.130 --port 8000 "$@"
+uvicorn anchor.backend.server.localizer:app --reload --host 0.0.0.0 --port 8000 "$@"
 
 # --log-level critical

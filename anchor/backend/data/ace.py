@@ -6,6 +6,7 @@ from anchor.third_party.ace.ace_network import Regressor
 from torch.utils.mobile_optimizer import optimize_for_mobile, MobileOptimizerType
 import shutil
 import sys
+import subprocess
 import os
 import torch
 
@@ -83,7 +84,14 @@ run_ace_evaluator(extracted_ace_folder, model_output, visualizer_enabled, render
 """
 def run_ace_evaluator(extracted_ace_folder: Path, model_output: Path, visualizer_enabled: bool, render_flipped_portrait: bool, render_target_path: Path, frame_exclusion=400):
     print("[INFO]: Running ace evaluater on dataset path: ", extracted_ace_folder)
-    os.system(f'./test_ace.py {extracted_ace_folder.as_posix()} {model_output.as_posix()} --render_visualization {"True" if visualizer_enabled else "False"}   --render_flipped_portrait {"True" if render_flipped_portrait else "False"} --render_target_path "{render_target_path.as_posix()}" --frame_exclusion_threshold={frame_exclusion}')
+    # TODO: thsi doesn't handle spaces properly
+    subprocess.run(['./test_ace.py',
+                    extracted_ace_folder.as_posix(),
+                    model_output.as_posix(),
+                    '--render_visualization', str(visualizer_enabled),
+                    '--render_flipped_portrait', str(render_flipped_portrait),
+                    '--render_target_path', render_target_path.as_posix(),
+                    '--frame_exclusion_threshold', str(frame_exclusion)])
 
 
 # test the benchmark here
@@ -105,7 +113,7 @@ if __name__ == '__main__':
         prepare_ace_data(downloader.extracted_data)
 
         print("[INFO]: Summarizing google cloud anchor observations: ")
-        calculate_google_cloud_anchor_quality(downloader.extracted_data)
+        # calculate_google_cloud_anchor_quality(downloader.extracted_data)
 
         extracted_ace_folder = downloader.local_extraction_location / "ace"
         model_output = extracted_ace_folder / "model.pt"
@@ -114,11 +122,17 @@ if __name__ == '__main__':
         pretrained_model = Path(__file__).parent.parent.parent / "third_party" / "ace" / "ace_encoder_pretrained.pt"
         visualizer_enabled = False
         render_flipped_portrait = False 
-        training_epochs = 1
+        training_epochs = 8
 
         print("[INFO]: Running ace training on dataset path: ", extracted_ace_folder)
         os.chdir("anchor/third_party/ace")
-        os.system(f'./train_ace.py {extracted_ace_folder.as_posix()} {model_output.as_posix()} --render_visualization {"True" if visualizer_enabled else "False"} --render_flipped_portrait {"True" if render_flipped_portrait else "False"} --render_target_path "{render_target_path.as_posix()}" --epochs {training_epochs}')
+        subprocess.run(['./train_ace.py',
+                        extracted_ace_folder.as_posix(),
+                        model_output.as_posix(),
+                        '--render_visualization', str(visualizer_enabled),
+                        '--render_flipped_portrait', str(render_flipped_portrait),
+                        '--render_target_path', render_target_path.as_posix(),
+                        '--epochs', str(training_epochs)])
 
         print("[INFO]: Running ace evaluation on dataset path: ", extracted_ace_folder)
         run_ace_evaluator(extracted_ace_folder, model_output, False, True, extracted_ace_folder)
@@ -138,7 +152,18 @@ if __name__ == '__main__':
             print("[INFO]: Deleted tar from firebase")
         
         
-        if visualizer_enabled: 
-            os.system(f'/usr/bin/ffmpeg -framerate 30 -pattern_type glob -i "{render_target_path.as_posix()}/**/*.png" -c:v libx264 -pix_fmt yuv420p "{render_target_path.as_posix()}/out.mp4"')
+        if visualizer_enabled:
+            subprocess.run(['/usr/bin/ffmpeg',
+                            '-framerate',
+                            '30',
+                            '-pattern_type',
+                            'glob',
+                            '-i',
+                            f"{render_target_path.as_posix()}/**/*.png",
+                            '-c:v',
+                            'libx264',
+                            '-pix_fmt',
+                            'yuv420p',
+                            f"{render_target_path.as_posix()}/out.mp4"])
     else:
         print("[INFO]: No new videos in firebase iosLoggerDemo/tarQueue")
