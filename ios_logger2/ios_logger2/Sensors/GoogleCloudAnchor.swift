@@ -50,7 +50,9 @@ class GoogleCloudAnchor: Sensor, SensorProtocol {
                     self.resolvedAnchorIdentifier = garAnchor.identifier
                 }
             } catch {
-                print("error \(error.localizedDescription)")
+                // NOTE: this is not being reloaded properly when localizing
+                print(series.mappingPhase.cloudAnchorHost.cloudAnchorName)
+                print("resolving error \(error.localizedDescription)")
             }
         }
         

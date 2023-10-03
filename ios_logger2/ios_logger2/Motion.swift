@@ -105,7 +105,7 @@ class Motion: NSObject, ARSessionDelegate {
     }
     
     // finished collecting mapping data, swith to collecting localization data
-    func switchToLocalization() async {
+    func finalizeMapping() async {
         // stop feeds of data, I'm assuming this happens instantly right now
         stopDataCollection()
         
@@ -113,6 +113,14 @@ class Motion: NSObject, ARSessionDelegate {
         for sensor in sensors {
             // some of our sensors like GoogleCloudAnchor/Video need to do async work before the protobuf data is availiable for packaging
             await sensor.additionalUpload()
+        }
+    }
+    
+    // finished collecting mapping data, swith to collecting localization data
+    func switchToLocalization() async {
+        // queue data for upload
+        for sensor in sensors {
+            // some of our sensors like GoogleCloudAnchor/Video need to do async work before the protobuf data is availiable for packaging
             sensor.currentPhase = Phase.localizationPhase
             // some sensors such as video may need to hook on this action to reset state
             sensor.switchToLocalization()

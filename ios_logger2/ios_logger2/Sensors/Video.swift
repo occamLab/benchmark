@@ -25,8 +25,8 @@ class CurrentVideo {
             AVVideoWidthKey:  Motion.arConfiguration.videoFormat.imageResolution.width,
             AVVideoHeightKey: Motion.arConfiguration.videoFormat.imageResolution.height,
             AVVideoCompressionPropertiesKey: [
-                AVVideoAverageBitRateKey: 1024 * 100, // 100 Kib/seconds,
-                AVVideoQualityKey: 0.7, // between 0 and 1.0, some people say it does not do anything, some people say it does...
+                AVVideoAverageBitRateKey: 1024 * 10000, // 1000 Kib/seconds,
+                AVVideoQualityKey: 0.85, // between 0 and 1.0, some people say it does not do anything, some people say it does...
             ] as [String : Any],
         ]
         encoderInput = AVAssetWriterInput(mediaType: AVMediaType.video, outputSettings: outputSettings)
