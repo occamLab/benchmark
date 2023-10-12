@@ -41,6 +41,7 @@ class GoogleCloudAnchor: Sensor, SensorProtocol {
         if(!self.startedResolvingAnchors) {
             self.startedResolvingAnchors = true
             do {
+                print("resolving \(series.mappingPhase.cloudAnchorHost.cloudAnchorName)")
                 try garSession?.resolveCloudAnchor(series.mappingPhase.cloudAnchorHost.cloudAnchorName) { garAnchor, cloudState in
                     guard let garAnchor = garAnchor else {
                         print("[ERROR]: Unable to resolve anchor")

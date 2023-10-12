@@ -48,6 +48,26 @@ class Motion: NSObject, ARSessionDelegate {
         AprilTag(),
     ]
     
+    /// Grab the most recently hosted cloud anchor
+    /// - Returns: the cloud anchor identifier or nil if none has been hosted
+    public func getHostedCloudAnchorID()->String? {
+        for sensor in sensors {
+            if let sensor = sensor as? GoogleCloudAnchor {
+                return sensor.series.mappingPhase.cloudAnchorHost.cloudAnchorName
+            }
+        }
+        return nil
+    }
+    
+    /// Set the anchor ID of the hosted cloud anchor (useful for testing anchors that have been previously created)
+    /// - Parameter anchorID: the cloud anchor ID to resolve
+    public func setHostedCloudAnchorID(anchorID: String) {
+        for sensor in sensors {
+            if let sensor = sensor as? GoogleCloudAnchor {
+                sensor.series.mappingPhase.cloudAnchorHost.cloudAnchorName = anchorID
+            }
+        }
+    }
     
     public func initMotionSensors() {
         // Set the update frequencies for gyro, accelerometer, and motion

@@ -122,11 +122,12 @@ struct ContentView: View {
     @StateObject var motionManager = MotionManager()
     @State var appPhase = AppPhase.beginning
     @State var showButton = true
+    @State var hostedCloudAnchorID = ""
     @State private var anchorCreationName = ""
     @State private var selection = "Select anchor"
     @State private var selectionLocation = "Select anchor"
-    @State var anchorNames: [String] = ["Select anchor"]
     @State var anchors: [[String]] = []
+    let cloudIDLength = 35
     
     var body: some View {
         ZStack {
@@ -140,8 +141,13 @@ struct ContentView: View {
                 case .beginning:
                     Button("Localization demo") {
                         motionManager.listFromFirebase() { fileNamesList in
-                            self.anchorNames = fileNamesList[0]
                             self.anchors = fileNamesList
+                            for (i, name) in self.anchors[0].enumerated() {
+                                if name.starts(with: "training_ua") {
+                                    let end = name.index(name.startIndex, offsetBy: "training_".count + cloudIDLength + 1)
+                                    self.anchors[0][i] = String(name[end...])
+                                }
+                            }
                             self.appPhase = .anchorSelection(isRealtimeLocalization: true)
                         }
                     }
@@ -150,6 +156,7 @@ struct ContentView: View {
                     Button("Record new anchor") {
                         self.appPhase = .alignmentPhase
                         self.anchorCreationName = ""
+                        self.hostedCloudAnchorID = ""
                     }
                     .buttonStyle(.borderedProminent)
                     .controlSize(.large)
@@ -157,8 +164,14 @@ struct ContentView: View {
                     Button("Test anchor") {
                         self.anchorCreationName = ""
                         motionManager.listFromFirebase() { fileNamesList in
-                            self.anchorNames = fileNamesList[0]
                             self.anchors = fileNamesList
+                            for (i, name) in self.anchors[0].enumerated() {
+                                print("name \(name)")
+                                if name.starts(with: "training_ua") {
+                                    let end = name.index(name.startIndex, offsetBy: "training_".count + cloudIDLength + 1)
+                                    self.anchors[0][i] = String(name[end...])
+                                }
+                            }
                             self.appPhase = .anchorSelection(isRealtimeLocalization: false)
                         }
                     }
@@ -180,7 +193,15 @@ struct ContentView: View {
                             let selectionIndex: Int = anchors[0].firstIndex(of: selection)!
                             self.selectionLocation = anchors[1][selectionIndex-1]
                             motionManager.setAnchorName(anchorName: selection)
+                            print("selection \(selection)")
                             self.selection = selection
+                            if let cloudAnchorIndexRange = selectionLocation.range(of: "training_ua") {
+                                let start = selectionLocation.index(cloudAnchorIndexRange.lowerBound, offsetBy: "training_".count)
+                                let end = selectionLocation.index(cloudAnchorIndexRange.lowerBound, offsetBy: "training_".count + cloudIDLength)
+                                hostedCloudAnchorID = String(selectionLocation[start..<end])
+                            } else {
+                                hostedCloudAnchorID = ""
+                            }
                             
                             if isRealtimeLocalization {
                                 self.appPhase = .showAnchor
@@ -189,6 +210,10 @@ struct ContentView: View {
                                 self.appPhase = .mappingComplete
                                 anchorCreationName = self.selection
                                 motionManager.setUpMotion()
+                                if !hostedCloudAnchorID.isEmpty {
+                                    motionManager.motion?.setHostedCloudAnchorID(anchorID: hostedCloudAnchorID)
+                                }
+                                
                                 Task {
                                     print("switching to localization!")
                                     await self.motionManager.motion?.switchToLocalization()
@@ -206,7 +231,6 @@ struct ContentView: View {
                         print(self.selectionLocation)
                         self.selection = "Select anchor"
                         self.selectionLocation = "Select anchor"
-                        self.anchorNames = ["Select anchor"]
                         self.anchors = []
                         self.appPhase = .beginning
                         motionManager.stopInteractiveLocalizer()
@@ -306,7 +330,7 @@ struct ContentView: View {
                             if isTestDataOnly {
                                 tarName = "testing_\(UUID().uuidString)_\(anchorCreationName.trimmingCharacters(in: .whitespaces))"
                             } else {
-                                tarName = "training_\(anchorCreationName.trimmingCharacters(in: .whitespaces))"
+                                tarName = "training_\(motionManager.motion?.getHostedCloudAnchorID() ?? "nil")_\(anchorCreationName.trimmingCharacters(in: .whitespaces))"
                             }
                             await motionManager.motion!.finalExport(tarName: tarName)
                             motionManager.isPresentingUploadConfirmation = false
