@@ -61,7 +61,7 @@ class ModelLoader:
         with torch.no_grad():
             model = self.load_ace_model_if_needed(model_name, self.download_model_if_needed(model_name))
 
-            img_bytes: bytes = base64.b64decode(base64Jpg) 
+            img_bytes: bytes = base64.b64decode(base64Jpg)
             train_resolution: int = 480
 
             pil_image: Image

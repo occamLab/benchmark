@@ -9,6 +9,11 @@ import sys
 import subprocess
 import os
 import torch
+import tempfile
+from dataclasses import dataclass
+from scipy.spatial.transform import Rotation as R
+import numpy as np
+import json
 
 
 def prepare_ace_data(extracted_data: Extracted):
@@ -19,6 +24,8 @@ def prepare_ace_data(extracted_data: Extracted):
     }
 
     for phase in extracted_data.sensors_extracted:
+        if not extracted_data.sensors_extracted[phase]["video"]:
+            continue
         for data in extracted_data.sensors_extracted[phase]["video"]:
 
             ace_input = extracted_data.extract_root / "ace"
@@ -94,6 +101,143 @@ def run_ace_evaluator(extracted_ace_folder: Path, model_output: Path, visualizer
                     '--frame_exclusion_threshold', str(frame_exclusion)])
 
 
+def process_training_data(combined_path: str, downloader: FirebaseDownloader):
+    prepare_ace_data(downloader.extracted_data)
+
+    # TODO: fix cloud anchor analysis
+    # print("[INFO]: Summarizing google cloud anchor observations: ")
+    # calculate_google_cloud_anchor_quality(downloader.extracted_data)
+
+    extracted_ace_folder = downloader.local_extraction_location / "ace"
+    model_output = extracted_ace_folder / "model.pt"
+    render_target_path = extracted_ace_folder / "debug_visualizer"
+    render_target_path.mkdir(parents=True, exist_ok=True)
+    pretrained_model = Path(__file__).parent.parent.parent / "third_party" / "ace" / "ace_encoder_pretrained.pt"
+    visualizer_enabled = False
+    render_flipped_portrait = False 
+    training_epochs = 8
+
+    print("[INFO]: Running ace training on dataset path: ", extracted_ace_folder)
+    os.chdir("anchor/third_party/ace")
+    subprocess.run(['./train_ace.py',
+                    extracted_ace_folder.as_posix(),
+                    model_output.as_posix(),
+                    '--render_visualization', str(visualizer_enabled),
+                    '--render_flipped_portrait', str(render_flipped_portrait),
+                    '--render_target_path', render_target_path.as_posix(),
+                    '--epochs', str(training_epochs)])
+
+    print("[INFO]: Running ace evaluation on dataset path: ", extracted_ace_folder)
+    run_ace_evaluator(extracted_ace_folder, model_output, False, True, extracted_ace_folder)
+
+    print("[INFO]: Converting ACE model for mobile use")
+    save_model_for_mobile(pretrained_model, model_output)
+    
+    firebase_upload_dir = "iosLoggerDemo/trainedModels/"
+    vid_name = Path(tar_name)
+    vid_name = vid_name.stem + ".pt"
+    firebase_upload_path = Path(firebase_upload_dir) / Path(vid_name)
+    print("[INFO]: Saving model to firebase as {}".format(firebase_upload_path))
+    downloader.upload_file(firebase_upload_path.as_posix(), model_output)
+    
+    if len(sys.argv) != 2:
+        firebase_tar_queue_path: str = Path(combined_path).parent
+        firebase_processed_tar_path: str = Path(combined_path).parent.parent / "processedTrainingTars"
+        downloader.delete_file((Path(firebase_tar_queue_path) / tar_name).as_posix())
+        downloader.upload_file(remote_location=firebase_processed_tar_path, local_location=downloader.local_tar_location)
+        print("[INFO]: Moved tar from to processedTars directory in firebase")
+    
+    if visualizer_enabled:
+        subprocess.run(['/usr/bin/ffmpeg',
+                        '-framerate',
+                        '30',
+                        '-pattern_type',
+                        'glob',
+                        '-i',
+                        f"{render_target_path.as_posix()}/**/*.png",
+                        '-c:v',
+                        'libx264',
+                        '-pix_fmt',
+                        'yuv420p',
+                        f"{render_target_path.as_posix()}/out.mp4"])
+
+@dataclass
+class PoseData:
+    frame_num: int
+    q_w: float
+    q_x: float
+    q_y: float
+    q_z: float
+    t_x: float
+    t_y: float
+    t_z: float
+    r_err: float
+    t_err: float
+    inlier_counter: int
+
+    @property
+    def as_matrix(self):
+        homogeneous = np.zeros([4,4])
+        rot = R.from_quat([self.q_x, self.q_y, self.q_z, self.q_w]).as_matrix()
+        homogeneous[0:3, 0:3] = rot
+        homogeneous[0, 3] = self.t_x
+        homogeneous[1, 3] = self.t_y
+        homogeneous[2, 3] = self.t_z
+        homogeneous[3, 3] = 1
+
+        return homogeneous.reshape(16, order="F")
+
+
+
+
+def process_testing_data(combined_path: str, downloader: FirebaseDownloader):
+    prepare_ace_data(downloader.extracted_data)
+    
+    # from anchor.backend.server.loaders import ModelLoader
+    # model_loader = ModelLoader()
+    os.chdir("anchor/third_party/ace")
+    extracted_ace_folder = downloader.local_extraction_location / "ace"
+    model_name = "_".join(str(extracted_ace_folder.parts[-2]).split("_")[2:])
+    model_data_folder = Path(tempfile.gettempdir()) / f"benchmark/{model_name}/ace"
+    model_weights_path = model_data_folder / "model.pt"
+    # TODO: make this more robust, currently ACE just saves the poses to the directory of the training data, so it will overwrite on each new test dataset
+    ace_test_pose_file = model_data_folder / "poses_ace_.txt"
+    # run_ace_evaluat   r(extracted_ace_folder, model_weights_path, False, True, extracted_ace_folder)
+    poses = []
+    header = [
+        "frame_num",
+        "q_w",
+        "q_x",
+        "q_y",
+        "q_z",
+        "t_x",
+        "t_y",
+        "t_z",
+        "r_err",
+        "t_err",
+        "inlier_counter",
+    ]
+    with open(ace_test_pose_file, "r") as file:
+        for line in file.readlines():
+            data = line.strip("\n").split(" ")
+            data[0] = int(data[0].split(".")[0])
+            ace_pose = PoseData(**{header[i]: data[i] for i in range(len(header))}).as_matrix
+            arkit_pose = downloader.extracted_data.sensors_extracted["localization_phase"]["poses"][data[0]]["rotation_matrix"]
+            poses.append({
+                "frame_num": data[0],
+                "ACE": list(ace_pose),
+                "ARKIT": list(arkit_pose)
+            })
+    
+    tmp_pose_path = Path(__file__).parent / "jsons/temp_pose_data.json"
+    with open(tmp_pose_path, "w") as file:
+        json.dump({"data": poses}, file)
+
+    print("[INFO]: Uploading processed JSON to firebase")
+    firebase_processed_json_path: str = Path(combined_path).parent.parent / f"processedJsons/{model_name}.json"
+    downloader.upload_file(firebase_processed_json_path.as_posix(), tmp_pose_path)
+
+
 # test the benchmark here
 if __name__ == '__main__':
     if len(sys.argv) == 2:
@@ -103,67 +247,19 @@ if __name__ == '__main__':
         combined_path = list_tars()
 
     if combined_path != None:
-        firebase_path: str = Path(combined_path).parent # ex: iosLoggerDemo/vyjFKi2zgLQDsxI1koAOjD899Ba2
+        firebase_tar_queue_path: str = Path(combined_path).parent # ex: iosLoggerDemo/vyjFKi2zgLQDsxI1koAOjD899Ba2
         tar_name: str = Path(combined_path).parts[-1] # ex: 6B62493C-45C8-43F3-A540-41B5216429EC.tar
         print(combined_path) # logger will use this to know that new log needs to be uploaded
 
-        print("[INFO]: Running e2e benchmark on tar with path: ", firebase_path, " and file name: ", tar_name)
-        downloader = FirebaseDownloader(firebase_path, tar_name)
+        print("[INFO]: Running e2e benchmark on tar with path: ", firebase_tar_queue_path, " and file name: ", tar_name)
+        downloader: FirebaseDownloader = FirebaseDownloader(firebase_tar_queue_path, tar_name)
         downloader.extract_ios_logger_tar()
-        prepare_ace_data(downloader.extracted_data)
 
-        print("[INFO]: Summarizing google cloud anchor observations: ")
-        # calculate_google_cloud_anchor_quality(downloader.extracted_data)
-
-        extracted_ace_folder = downloader.local_extraction_location / "ace"
-        model_output = extracted_ace_folder / "model.pt"
-        render_target_path = extracted_ace_folder / "debug_visualizer"
-        render_target_path.mkdir(parents=True, exist_ok=True)
-        pretrained_model = Path(__file__).parent.parent.parent / "third_party" / "ace" / "ace_encoder_pretrained.pt"
-        visualizer_enabled = False
-        render_flipped_portrait = False 
-        training_epochs = 8
-
-        print("[INFO]: Running ace training on dataset path: ", extracted_ace_folder)
-        os.chdir("anchor/third_party/ace")
-        subprocess.run(['./train_ace.py',
-                        extracted_ace_folder.as_posix(),
-                        model_output.as_posix(),
-                        '--render_visualization', str(visualizer_enabled),
-                        '--render_flipped_portrait', str(render_flipped_portrait),
-                        '--render_target_path', render_target_path.as_posix(),
-                        '--epochs', str(training_epochs)])
-
-        print("[INFO]: Running ace evaluation on dataset path: ", extracted_ace_folder)
-        run_ace_evaluator(extracted_ace_folder, model_output, False, True, extracted_ace_folder)
-
-        print("[INFO]: Converting ACE model for mobile use")
-        save_model_for_mobile(pretrained_model, model_output)
-        
-        firebase_upload_dir = "iosLoggerDemo/trainedModels/"
-        vid_name = Path(tar_name)
-        vid_name = vid_name.stem + ".pt"
-        firebase_upload_path = Path(firebase_upload_dir) / Path(vid_name)
-        print("[INFO]: Saving model to firebase as {}".format(firebase_upload_path))
-        downloader.upload_file(firebase_upload_path.as_posix(), model_output)
-        
-        if len(sys.argv) != 2:
-            downloader.delete_file((Path(firebase_path) / tar_name).as_posix())
-            print("[INFO]: Deleted tar from firebase")
-        
-        
-        if visualizer_enabled:
-            subprocess.run(['/usr/bin/ffmpeg',
-                            '-framerate',
-                            '30',
-                            '-pattern_type',
-                            'glob',
-                            '-i',
-                            f"{render_target_path.as_posix()}/**/*.png",
-                            '-c:v',
-                            'libx264',
-                            '-pix_fmt',
-                            'yuv420p',
-                            f"{render_target_path.as_posix()}/out.mp4"])
+        if Path(combined_path).parts[-1].startswith("training"):
+            process_training_data(combined_path, downloader)
+        elif Path(combined_path).parts[-1].startswith("testing"):
+            process_testing_data(combined_path, downloader)
+        else:
+            raise RuntimeError("Invalid file name (must have \"testing\" or \"training\" in the name).")
     else:
         print("[INFO]: No new videos in firebase iosLoggerDemo/tarQueue")

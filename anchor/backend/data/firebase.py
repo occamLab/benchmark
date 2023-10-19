@@ -22,10 +22,13 @@ def list_tars():
     bucket = storage.bucket(FirebaseDownloader.firebase_bucket_name)
     tar_queue = "iosLoggerDemo/tarQueue/"
     tars = bucket.list_blobs(prefix=tar_queue)
+
     for tar in tars:
+        print(tar.name)
         if tar.name.endswith(".tar"):
             tar_path = tar.name
             return tar_path
+        continue
     return None
 
 class FirebaseDownloader:
@@ -90,21 +93,24 @@ class FirebaseDownloader:
         shutil.rmtree(self.local_extraction_location, ignore_errors=True)
         shutil.unpack_archive(self.local_tar_location, extract_dir=self.local_extraction_location)
 
-        # extract the videos
-        self.extract_ios_logger_video(self.local_extraction_location / "mapping-video.mp4", True)
-        self.extract_ios_logger_video(self.local_extraction_location / "localization-video.mp4", False)
-
-        self.extract_intrinsics(self.local_extraction_location, True)
-        self.extract_intrinsics(self.local_extraction_location, False)
-
-        self.extract_pose(self.local_extraction_location, True)
-        self.extract_pose(self.local_extraction_location, False)
-
-        self.extract_april_tags(self.local_extraction_location, True)
-        self.extract_april_tags(self.local_extraction_location, False)
-
-        self.extract_google_cloud_anchors(self.local_extraction_location, True)
-        self.extract_google_cloud_anchors(self.local_extraction_location, False)
+        # extract the videos by phase (test videos will not have mapping data so they need to be handled separately)
+        try:
+            self.extract_ios_logger_video(self.local_extraction_location / "mapping-video.mp4", True)
+            self.extract_intrinsics(self.local_extraction_location, True)
+            self.extract_pose(self.local_extraction_location, True)
+            self.extract_april_tags(self.local_extraction_location, True)
+            self.extract_google_cloud_anchors(self.local_extraction_location, True)
+        except:
+            pass
+        
+        try:
+            self.extract_ios_logger_video(self.local_extraction_location / "localization-video.mp4", False)
+            self.extract_intrinsics(self.local_extraction_location, False)
+            self.extract_pose(self.local_extraction_location, False)
+            self.extract_april_tags(self.local_extraction_location, False)
+            self.extract_google_cloud_anchors(self.local_extraction_location, False)
+        except:
+            pass
 
         self.extracted_data.transform_poses_in_global_frame()
         self.extracted_data.match_all_sensor()
