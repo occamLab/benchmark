@@ -41,6 +41,7 @@ class GoogleCloudAnchor: Sensor, SensorProtocol {
         if(!self.startedResolvingAnchors) {
             self.startedResolvingAnchors = true
             do {
+                print("resolving \(series.mappingPhase.cloudAnchorHost.cloudAnchorName)")
                 try garSession?.resolveCloudAnchor(series.mappingPhase.cloudAnchorHost.cloudAnchorName) { garAnchor, cloudState in
                     guard let garAnchor = garAnchor else {
                         print("[ERROR]: Unable to resolve anchor")
@@ -50,7 +51,9 @@ class GoogleCloudAnchor: Sensor, SensorProtocol {
                     self.resolvedAnchorIdentifier = garAnchor.identifier
                 }
             } catch {
-                print("error \(error.localizedDescription)")
+                // NOTE: this is not being reloaded properly when localizing
+                print(series.mappingPhase.cloudAnchorHost.cloudAnchorName)
+                print("resolving error \(error.localizedDescription)")
             }
         }
         

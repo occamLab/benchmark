@@ -48,6 +48,26 @@ class Motion: NSObject, ARSessionDelegate {
         AprilTag(),
     ]
     
+    /// Grab the most recently hosted cloud anchor
+    /// - Returns: the cloud anchor identifier or nil if none has been hosted
+    public func getHostedCloudAnchorID()->String? {
+        for sensor in sensors {
+            if let sensor = sensor as? GoogleCloudAnchor {
+                return sensor.series.mappingPhase.cloudAnchorHost.cloudAnchorName
+            }
+        }
+        return nil
+    }
+    
+    /// Set the anchor ID of the hosted cloud anchor (useful for testing anchors that have been previously created)
+    /// - Parameter anchorID: the cloud anchor ID to resolve
+    public func setHostedCloudAnchorID(anchorID: String) {
+        for sensor in sensors {
+            if let sensor = sensor as? GoogleCloudAnchor {
+                sensor.series.mappingPhase.cloudAnchorHost.cloudAnchorName = anchorID
+            }
+        }
+    }
     
     public func initMotionSensors() {
         // Set the update frequencies for gyro, accelerometer, and motion
@@ -105,7 +125,7 @@ class Motion: NSObject, ARSessionDelegate {
     }
     
     // finished collecting mapping data, swith to collecting localization data
-    func switchToLocalization() async {
+    func finalizeMapping() async {
         // stop feeds of data, I'm assuming this happens instantly right now
         stopDataCollection()
         
@@ -113,6 +133,14 @@ class Motion: NSObject, ARSessionDelegate {
         for sensor in sensors {
             // some of our sensors like GoogleCloudAnchor/Video need to do async work before the protobuf data is availiable for packaging
             await sensor.additionalUpload()
+        }
+    }
+    
+    // finished collecting mapping data, swith to collecting localization data
+    func switchToLocalization() async {
+        // queue data for upload
+        for sensor in sensors {
+            // some of our sensors like GoogleCloudAnchor/Video need to do async work before the protobuf data is availiable for packaging
             sensor.currentPhase = Phase.localizationPhase
             // some sensors such as video may need to hook on this action to reset state
             sensor.switchToLocalization()

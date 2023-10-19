@@ -41,8 +41,11 @@ class MotionManager: ObservableObject {
             self.mappingComplete = true
         }
     }
+    func finalizeMapping() async {
+        await motion!.finalizeMapping()
+    }
+    
     func transitionPhase() async {
-        await motion!.switchToLocalization()
         motion!.initMotionSensors()
         motion!.initArSession()
         self.motion!.disabledCollection = false
@@ -86,7 +89,7 @@ class MotionManager: ObservableObject {
 
 enum AppPhase {
     case beginning
-    case anchorSelection
+    case anchorSelection(isRealtimeLocalization: Bool)
     case showAnchor
     case alignmentPhase
     case resetPosePhase
@@ -96,20 +99,35 @@ enum AppPhase {
     case localizationPhase
     case localizationComplete
     case enterAnchorName
-    case uploadData
+    case uploadData(isTestDataOnly: Bool)
     case dataNotUploaded
     case finishedUpload
+    
+    func isMappingPhase()->Bool {
+        if case .mappingPhase = self {
+            return true
+        }
+        return false
+    }
+    
+    func isLocalizationPhase()->Bool {
+        if case .localizationPhase = self {
+            return true
+        }
+        return false
+    }
 }
 
 struct ContentView: View {
     @StateObject var motionManager = MotionManager()
     @State var appPhase = AppPhase.beginning
     @State var showButton = true
-    @State private var anchorCreationName = "default_anchor_name"
+    @State var hostedCloudAnchorID = ""
+    @State private var anchorCreationName = ""
     @State private var selection = "Select anchor"
     @State private var selectionLocation = "Select anchor"
-    @State var anchorNames: [String] = ["Select anchor"]
     @State var anchors: [[String]] = []
+    let cloudIDLength = 35
     
     var body: some View {
         ZStack {
@@ -119,25 +137,49 @@ struct ContentView: View {
             VStack {
         
                 switch appPhase {
-                // Choose which route to go down: localization demo or record new anchor
+                    // Choose which route to go down: localization demo or record new anchor
                 case .beginning:
                     Button("Localization demo") {
                         motionManager.listFromFirebase() { fileNamesList in
-                            self.anchorNames = fileNamesList[0]
                             self.anchors = fileNamesList
-                            self.appPhase = .anchorSelection
+                            for (i, name) in self.anchors[0].enumerated() {
+                                if name.starts(with: "training_ua") {
+                                    let end = name.index(name.startIndex, offsetBy: "training_".count + cloudIDLength + 1)
+                                    self.anchors[0][i] = String(name[end...])
+                                }
+                            }
+                            self.appPhase = .anchorSelection(isRealtimeLocalization: true)
                         }
                     }
                     .buttonStyle(.borderedProminent)
                     .controlSize(.large)
                     Button("Record new anchor") {
                         self.appPhase = .alignmentPhase
+                        self.anchorCreationName = ""
+                        self.hostedCloudAnchorID = ""
                     }
                     .buttonStyle(.borderedProminent)
                     .controlSize(.large)
-                
-                // Localization demo route
-                case .anchorSelection: //user selects cloud anchor, render something at the origin
+                    
+                    Button("Test anchor") {
+                        self.anchorCreationName = ""
+                        motionManager.listFromFirebase() { fileNamesList in
+                            self.anchors = fileNamesList
+                            for (i, name) in self.anchors[0].enumerated() {
+                                print("name \(name)")
+                                if name.starts(with: "training_ua") {
+                                    let end = name.index(name.startIndex, offsetBy: "training_".count + cloudIDLength + 1)
+                                    self.anchors[0][i] = String(name[end...])
+                                }
+                            }
+                            self.appPhase = .anchorSelection(isRealtimeLocalization: false)
+                        }
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
+                    
+                    // Localization demo route
+                case .anchorSelection(let isRealtimeLocalization): //user selects cloud anchor, render something at the origin
                     Text("Choose an anchor from the dropdown")
                     Picker("Select an anchor", selection: $selection) {
                         ForEach(anchors[0], id: \.self) {
@@ -150,11 +192,33 @@ struct ContentView: View {
                         Button("Continue") {
                             let selectionIndex: Int = anchors[0].firstIndex(of: selection)!
                             self.selectionLocation = anchors[1][selectionIndex-1]
-                            self.appPhase = .showAnchor
-                            self.selection = selection
                             motionManager.setAnchorName(anchorName: selection)
-                            motionManager.setupInteractiveLocalizer()
-                            print(self.selectionLocation)
+                            print("selection \(selection)")
+                            self.selection = selection
+                            if let cloudAnchorIndexRange = selectionLocation.range(of: "training_ua") {
+                                let start = selectionLocation.index(cloudAnchorIndexRange.lowerBound, offsetBy: "training_".count)
+                                let end = selectionLocation.index(cloudAnchorIndexRange.lowerBound, offsetBy: "training_".count + cloudIDLength)
+                                hostedCloudAnchorID = String(selectionLocation[start..<end])
+                            } else {
+                                hostedCloudAnchorID = ""
+                            }
+                            
+                            if isRealtimeLocalization {
+                                self.appPhase = .showAnchor
+                                motionManager.setupInteractiveLocalizer()
+                            } else {
+                                self.appPhase = .mappingComplete
+                                anchorCreationName = self.selection
+                                motionManager.setUpMotion()
+                                if !hostedCloudAnchorID.isEmpty {
+                                    motionManager.motion?.setHostedCloudAnchorID(anchorID: hostedCloudAnchorID)
+                                }
+                                
+                                Task {
+                                    print("switching to localization!")
+                                    await self.motionManager.motion?.switchToLocalization()
+                                }
+                            }
                         }
                         .buttonStyle(.borderedProminent)
                         .controlSize(.large)
@@ -167,7 +231,6 @@ struct ContentView: View {
                         print(self.selectionLocation)
                         self.selection = "Select anchor"
                         self.selectionLocation = "Select anchor"
-                        self.anchorNames = ["Select anchor"]
                         self.anchors = []
                         self.appPhase = .beginning
                         motionManager.stopInteractiveLocalizer()
@@ -175,7 +238,7 @@ struct ContentView: View {
                     .buttonStyle(.borderedProminent)
                     .controlSize(.large)
                     
-                // Record new anchor route
+                    // Record new anchor route
                 case .alignmentPhase:
                     Text("Align phone to starting position! Hold vertically against table edge (camera straight on).")
                     Button("Phone is aligned") {
@@ -207,6 +270,7 @@ struct ContentView: View {
                         showButton = true
                         Task {
                             await motionManager.transitionPhase()
+                            await motionManager.motion?.switchToLocalization()
                             self.appPhase = .resetPosePhase2
                         }
                     }
@@ -233,18 +297,24 @@ struct ContentView: View {
                     Text("Localization phase complete!")
                     Button("Next") {
                         showButton = true
-                        self.appPhase = .enterAnchorName
+                        if anchorCreationName.isEmpty {
+                            self.appPhase = .enterAnchorName
+                        } else {
+                            self.appPhase = .uploadData(isTestDataOnly: true)
+                        }
                     }
                     .buttonStyle(.borderedProminent)
                     .controlSize(.large)
                 case .enterAnchorName:
-                    Text("").alert("Name your new anchor", isPresented: .constant(true)) {
+                    Text("Name your new anchor")
+                    VStack {
                         TextField("Anchor name goes here", text: $anchorCreationName)
                         Button("OK", action: {
-                            self.appPhase = .uploadData
-                        })
+                            print(anchorCreationName.count, anchorCreationName.isEmpty)
+                            self.appPhase = .uploadData(isTestDataOnly: false)
+                        }).disabled(anchorCreationName.isEmpty)
                     }
-                case .uploadData:
+                case .uploadData(let isTestDataOnly):
                     Button("Cancel Upload Data", role: .cancel, action: {
                         Task {
                             motionManager.motion!.stopDataCollection()
@@ -256,7 +326,13 @@ struct ContentView: View {
                     .controlSize(.large)
                     Button("Upload Data?", role: .destructive, action: {
                         Task {
-                            await motionManager.motion!.finalExport(tarName: anchorCreationName.trimmingCharacters(in: .whitespaces))
+                            let tarName: String
+                            if isTestDataOnly {
+                                tarName = "testing_\(UUID().uuidString)_\(anchorCreationName.trimmingCharacters(in: .whitespaces))"
+                            } else {
+                                tarName = "training_\(motionManager.motion?.getHostedCloudAnchorID() ?? "nil")_\(anchorCreationName.trimmingCharacters(in: .whitespaces))"
+                            }
+                            await motionManager.motion!.finalExport(tarName: tarName)
                             motionManager.isPresentingUploadConfirmation = false
                         }
                         self.appPhase = .finishedUpload
@@ -284,12 +360,15 @@ struct ContentView: View {
             }
         }
         .onChange(of: motionManager.mappingComplete) { newValue in
-            if newValue && appPhase == .mappingPhase {
+            if newValue && appPhase.isMappingPhase() {
                 appPhase = .mappingComplete
+                Task {
+                    await motionManager.finalizeMapping()
+                }
             }
         }
         .onChange(of: motionManager.localizationComplete) { newValue in
-            if newValue && appPhase == .localizationPhase {
+            if newValue && appPhase.isLocalizationPhase() {
                 appPhase = .localizationComplete
             }
         }
