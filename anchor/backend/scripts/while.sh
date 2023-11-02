@@ -21,6 +21,8 @@ do
     # disable output buffering so that all logs are in the correct order
     export PYTHONUNBUFFERED=1 
     # retains logs to console and pushes them to the log_uploader as well
-    python -m anchor.backend.data.ace |& tee /dev/tty |& python -m "anchor.backend.data.log_uploader"
-    sleep 30
+    python -m anchor.backend.data.ace
+    # |& tee /dev/tty |& python -m "anchor.backend.data.log_uploader"
+    # sleep 30
+    break
 done
