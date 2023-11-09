@@ -136,6 +136,115 @@ def run_ace_evaluator(
     )
 
 
+def process_localization_phase(
+    combined_path: str, downloader: FirebaseDownloader, ace_test_pose_file: str
+):
+    poses = []
+    header = [
+        "frame_num",
+        "q_w",
+        "q_x",
+        "q_y",
+        "q_z",
+        "t_x",
+        "t_y",
+        "t_z",
+        "r_err",
+        "t_err",
+        "inlier_counter",
+    ]
+
+    current_cloud_anchor_idx = 0
+    ca_poses_by_timestamp = {}
+
+    if downloader.extracted_data.sensors_extracted["localization_phase"][
+        "google_cloud_anchor"
+    ]:
+        for pose in downloader.extracted_data.sensors_extracted["localization_phase"][
+            "poses"
+        ]:
+            # Skip ARKIT Poses before first Cloud Anchor Detection
+            if (
+                downloader.extracted_data.sensors_extracted["localization_phase"][
+                    "google_cloud_anchor"
+                ][0]["timestamp"]
+                > pose["timestamp"]
+            ):
+                continue
+            homogeneous_pose = np.reshape(pose["rotation_matrix"], [4, 4], order="F")
+            if not current_cloud_anchor_idx == len(
+                downloader.extracted_data.sensors_extracted["localization_phase"][
+                    "google_cloud_anchor"
+                ]
+            ) - 1 and (
+                pose["timestamp"]
+                >= downloader.extracted_data.sensors_extracted["localization_phase"][
+                    "google_cloud_anchor"
+                ][current_cloud_anchor_idx + 1]["timestamp"]
+            ):
+                current_cloud_anchor_idx += 1
+
+            cloud_anchor_pose = np.reshape(
+                downloader.extracted_data.sensors_extracted["localization_phase"][
+                    "google_cloud_anchor"
+                ][current_cloud_anchor_idx]["anchor_rotation_matrix"],
+                [4, 4],
+                order="F",
+            )
+            ca_poses_by_timestamp[pose["timestamp"]] = np.reshape(
+                homogeneous_pose @ np.linalg.inv(cloud_anchor_pose), 16, order="F"
+            )
+
+    with open(ace_test_pose_file, "r") as file:
+        for line in file.readlines():
+            data = line.strip("\n").split(" ")
+            data[0] = int(data[0].split(".")[0])
+            ace_pose = PoseData(
+                **{header[i]: data[i] for i in range(len(header))}
+            ).as_matrix
+            timestamp = downloader.extracted_data.sensors_extracted[
+                "localization_phase"
+            ]["poses"][data[0]]["timestamp"]
+            arkit_pose = downloader.extracted_data.sensors_extracted[
+                "localization_phase"
+            ]["poses"][data[0]]["rotation_matrix"]
+            ca_pose = ca_poses_by_timestamp.get(timestamp)
+            poses.append(
+                {
+                    "frame_num": data[0],
+                    "timestamp": timestamp,
+                    "ACE": list(ace_pose),
+                    "ARKIT": list(arkit_pose),
+                    "CLOUD_ANCHOR": list(ca_pose) if ca_pose is not None else [],
+                }
+            )
+
+    tmp_pose_path = Path(__file__).parent / "jsons/temp_pose_data.json"
+    with open(tmp_pose_path, "w") as file:
+        json.dump({"data": poses}, file)
+
+    print("[INFO]: Uploading processed JSON to firebase")
+    firebase_processed_json_path: str = (
+        Path(combined_path).parent.parent
+        / f"processedJsons/{Path(downloader.tar_name).stem}.json"
+    )
+    downloader.upload_file(firebase_processed_json_path.as_posix(), tmp_pose_path)
+
+    if len(sys.argv) != 2:
+        firebase_tar_queue_path: str = Path(combined_path).parent
+        firebase_processed_tar_path: str = str(
+            Path(combined_path).parent.parent / f"processedTestTars/{tar_name}"
+        )
+        downloader.delete_file((Path(firebase_tar_queue_path) / tar_name).as_posix())
+        downloader.upload_file(
+            remote_location=firebase_processed_tar_path,
+            local_location=downloader.local_tar_location,
+        )
+        print(
+            "[INFO]: Moved tar from tarQueue to processedTestTars directory in firebase"
+        )
+
+
 def process_training_data(combined_path: str, downloader: FirebaseDownloader):
     prepare_ace_data(downloader.extracted_data)
 
@@ -158,7 +267,7 @@ def process_training_data(combined_path: str, downloader: FirebaseDownloader):
     training_epochs = 8
 
     print("[INFO]: Running ace training on dataset path: ", extracted_ace_folder)
-    os.chdir("anchor/third_party/ace")
+    os.chdir(Path(__file__).parent.parent.parent / "third_party/ace")
     subprocess.run(
         [
             "./train_ace.py",
@@ -185,22 +294,28 @@ def process_training_data(combined_path: str, downloader: FirebaseDownloader):
 
     firebase_upload_dir = "iosLoggerDemo/trainedModels/"
     vid_name = Path(tar_name)
-    vid_name = vid_name.stem + ".pt"
+    vid_name = vid_name.stem.split("training_")[-1] + ".pt"
     firebase_upload_path = Path(firebase_upload_dir) / Path(vid_name)
     print("[INFO]: Saving model to firebase as {}".format(firebase_upload_path))
     downloader.upload_file(firebase_upload_path.as_posix(), model_output)
 
-    # if len(sys.argv) != 2:
-    #     firebase_tar_queue_path: str = Path(combined_path).parent
-    #     firebase_processed_tar_path: str = (
-    #         Path(combined_path).parent.parent / "processedTrainingTars"
-    #     )
-    #     downloader.delete_file((Path(firebase_tar_queue_path) / tar_name).as_posix())
-    #     downloader.upload_file(
-    #         remote_location=firebase_processed_tar_path,
-    #         local_location=downloader.local_tar_location,
-    #     )
-    #     print("[INFO]: Moved tar from to processedTars directory in firebase")
+    if len(sys.argv) != 2:
+        firebase_tar_queue_path: str = Path(combined_path).parent
+        firebase_processed_tar_path: str = str(
+            Path(combined_path).parent.parent / f"processedTrainingTars/{tar_name}"
+        )
+        downloader.delete_file((Path(firebase_tar_queue_path) / tar_name).as_posix())
+        downloader.upload_file(
+            remote_location=firebase_processed_tar_path,
+            local_location=downloader.local_tar_location,
+        )
+        print("[INFO]: Moved tar from tarQueue to processedTars directory in firebase")
+
+    ace_test_pose_file = (
+        Path(tempfile.gettempdir())
+        / f"benchmark/{Path(tar_name).stem}/ace/poses_ace_.txt"
+    )
+    process_localization_phase(combined_path, downloader, ace_test_pose_file)
 
     if visualizer_enabled:
         subprocess.run(
@@ -250,102 +365,34 @@ class PoseData:
 
 def process_testing_data(combined_path: str, downloader: FirebaseDownloader):
     prepare_ace_data(downloader.extracted_data)
-    os.chdir("anchor/third_party/ace")
+    os.chdir(Path(__file__).parent.parent.parent / "third_party/ace")
     extracted_ace_folder = downloader.local_extraction_location / "ace"
-    model_name = "_".join(str(extracted_ace_folder.parts[-2]).split("_")[2:])
+    model_name = Path(combined_path).stem.split("training_")[-1]
     model_data_folder = (
-        Path(tempfile.gettempdir())
-        / f"benchmark/training_ua-3f3225423d13f0cd8d31aac6990de6f9_test2_oct_19/ace"
+        Path(tempfile.gettempdir()) / f"benchmark/training_{model_name}/ace"
     )
     model_weights_path = model_data_folder / "model.pt"
-    # TODO: make this more robust, currently ACE just saves the poses to the directory of the training data, so it will overwrite on each new test dataset
+    if not model_weights_path.exists():
+        downloader.download_file(
+            f"iosLoggerDemo/trainedModels/{model_name}.pt", model_weights_path
+        )
     ace_test_pose_file = model_data_folder / "poses_ace_.txt"
     run_ace_evaluator(
         extracted_ace_folder, model_weights_path, False, True, extracted_ace_folder
     )
 
-    poses = []
-    header = [
-        "frame_num",
-        "q_w",
-        "q_x",
-        "q_y",
-        "q_z",
-        "t_x",
-        "t_y",
-        "t_z",
-        "r_err",
-        "t_err",
-        "inlier_counter",
-    ]
-
-    current_cloud_anchor_idx = 0
-    ca_poses = []
-
-    for pose in downloader.extracted_data.sensors_extracted["localization_phase"][
-        "poses"
-    ]:
-        homogeneous_pose = np.reshape(pose["rotation_matrix"], [4, 4], order="F")
-        if not current_cloud_anchor_idx == len(
-            downloader.extracted_data.sensors_extracted["localization_phase"][
-                "google_cloud_anchor"
-            ]
-        ) - 1 and (
-            pose["timestamp"]
-            >= downloader.extracted_data.sensors_extracted["localization_phase"][
-                "google_cloud_anchor"
-            ][current_cloud_anchor_idx + 1]["timestamp"]
-        ):
-            current_cloud_anchor_idx += 1
-
-        cloud_anchor_pose = np.reshape(
-            downloader.extracted_data.sensors_extracted["localization_phase"][
-                "google_cloud_anchor"
-            ][current_cloud_anchor_idx]["anchor_rotation_matrix"],
-            [4, 4],
-            order="F",
-        )
-        ca_poses.append(np.reshape(homogeneous_pose @ cloud_anchor_pose, 16, order="F"))
-    with open(ace_test_pose_file, "r") as file:
-        for line in file.readlines():
-            data = line.strip("\n").split(" ")
-            data[0] = int(data[0].split(".")[0])
-            ace_pose = PoseData(
-                **{header[i]: data[i] for i in range(len(header))}
-            ).as_matrix
-            arkit_pose = downloader.extracted_data.sensors_extracted[
-                "localization_phase"
-            ]["poses"][data[0]]["rotation_matrix"]
-            ca_pose = ca_poses[data[0]]
-            poses.append(
-                {
-                    "frame_num": data[0],
-                    "ACE": list(ace_pose),
-                    "ARKIT": list(arkit_pose),
-                    "CLOUD_ANCHOR": list(ca_pose),
-                }
-            )
-
-    tmp_pose_path = Path(__file__).parent / "jsons/temp_pose_data.json"
-    with open(tmp_pose_path, "w") as file:
-        json.dump({"data": poses}, file)
-
-    print("[INFO]: Uploading processed JSON to firebase")
-    firebase_processed_json_path: str = (
-        Path(combined_path).parent.parent / f"processedJsons/{model_name}.json"
-    )
-    downloader.upload_file(firebase_processed_json_path.as_posix(), tmp_pose_path)
+    process_localization_phase(combined_path, downloader, ace_test_pose_file)
 
 
 # test the benchmark here
 if __name__ == "__main__":
     if len(sys.argv) == 2:
-        combined_path = sys.argv[1]
+        tars = sys.argv[1]
 
     else:
-        combined_path = list_tars()
+        tars = list_tars()
 
-    if combined_path != None:
+    for combined_path in tars:
         firebase_tar_queue_path: str = Path(
             combined_path
         ).parent  # ex: iosLoggerDemo/vyjFKi2zgLQDsxI1koAOjD899Ba2
@@ -375,5 +422,3 @@ if __name__ == "__main__":
             raise RuntimeError(
                 'Invalid file name (must have "testing" or "training" in the name).'
             )
-    else:
-        print("[INFO]: No new videos in firebase iosLoggerDemo/tarQueue")

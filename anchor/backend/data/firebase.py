@@ -24,12 +24,16 @@ def list_tars():
     tar_queue = "iosLoggerDemo/tarQueue/"
     tars = bucket.list_blobs(prefix=tar_queue)
 
+    tar_names = []
+
     for tar in tars:
         print(tar.name)
-        if tar.name.endswith(".tar") and 'testing_EED31DB7-F1C3-489E-96DA-DCF2C04EEB45_test2_oct_19.tar' in tar.name:
-            tar_path = tar.name
-            return tar_path
-    return None
+        if tar.name.endswith(".tar") and tar.name.endswith(
+            "testing_EED31DB7-F1C3-489E-96DA-DCF2C04EEB45_test2_oct_19.tar"
+        ):
+            tar_names.append(tar.name)
+
+    return tar_names
 
 
 class FirebaseDownloader:
