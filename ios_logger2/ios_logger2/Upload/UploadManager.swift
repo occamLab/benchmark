@@ -37,6 +37,9 @@ class UploadManager {
 
     func uploadLocalDataToCloud(tarName: String, completion: ((StorageMetadata?, Error?) -> Void)?) {
         let container = TarContainer.create(from: files)
+        
+        // we get one shot at uploading the files... otherwise they are lost.
+        files = []
         let fileType = StorageMetadata()
         
         let storageRef = Storage.storage().reference().child(UploadManager.rootFolder).child("tarQueue").child(tarName + ".tar")

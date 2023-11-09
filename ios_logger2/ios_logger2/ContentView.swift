@@ -317,6 +317,7 @@ struct ContentView: View {
                 case .uploadData(let isTestDataOnly):
                     Button("Cancel Upload Data", role: .cancel, action: {
                         Task {
+                            UploadManager.shared.files = []
                             motionManager.motion!.stopDataCollection()
                             motionManager.isPresentingUploadConfirmation = false
                         }
