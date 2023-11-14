@@ -4,6 +4,9 @@ from pprint import pprint
 from scipy.spatial.transform import Rotation as R
 import matplotlib.pyplot as plt
 from pathlib import Path
+import os
+
+FOLDER_PATH = "iosLoggerDemo/processedJsons"
 
 
 def convert_to_4x4(raw_list_pose):
@@ -45,15 +48,18 @@ def visualize_simd4x4(ace_4x4s, arkit_4x4s):
     plt.show()
 
 
-def main():
-    with open(
-        Path(__file__).parent.parent
-        / ".cache/testing_EDC41487-4626-4AAB-84E9-7915BA8E6121_richard3_3a.json",
-        "r",
-    ) as rf:
+def main(file_to_test: str):
+    # with open(
+    #     Path(__file__).parent.parent / f"{file_to_test}",
+    #     "r",
+    # ) as rf:
+    #     data = json.load(rf)["data"]
+
+    with open(f"{FOLDER_PATH}/{file_to_test}", "r") as rf:
         data = json.load(rf)["data"]
 
-    print(convert_to_4x4(data[1]["ACE"]))
+    # print(data)
+    # print(convert_to_4x4(data[1]["ACE"]))
     aces = []
     arkits = []
     cas = []
@@ -68,8 +74,8 @@ def main():
         aces.append(ace_4x4)
         arkit_4x4 = convert_to_4x4(frame["ARKIT"])
         arkits.append(arkit_4x4)
-        # ca_4x4 = convert_to_4x4(frame["CLOUD_ANCHOR"])
-        # cas.append(ca_4x4)
+        ca_4x4 = convert_to_4x4(frame["CLOUD_ANCHOR"])
+        cas.append(ca_4x4)
 
         ace_translation_error = compute_translation_error(
             ace_4x4[:3, 3], arkit_4x4[:3, 3]
@@ -80,30 +86,39 @@ def main():
         )
         ace_rotational_errors.append(ace_rotational_error)
 
-        # ca_translation_error = compute_translation_error(
-        #     ca_4x4[:3, 3], arkit_4x4[:3, 3]
-        # )
-        # ca_translation_errors.append(ca_translation_error)
-        # ca_rotational_error = compute_rotational_error(
-        #     ca_4x4[:3, :3], arkit_4x4[:3, :3]
-        # )
-        # ca_rotational_errors.append(ca_rotational_error)
+        ca_translation_error = compute_translation_error(
+            ca_4x4[:3, 3], arkit_4x4[:3, 3]
+        )
+        ca_translation_errors.append(ca_translation_error)
+        ca_rotational_error = compute_rotational_error(
+            ca_4x4[:3, :3], arkit_4x4[:3, :3]
+        )
+        ca_rotational_errors.append(ca_rotational_error)
+    print(file_to_test)
     print(
         f"ACE MEAN ERRORS {np.mean(ace_translation_errors)}, {np.mean(ace_rotational_errors)}"
     )
-    # print(
-    #     f"CA MEAN ERRORS {np.mean(ca_translation_errors)}, {np.mean(ca_rotational_errors)}"
-    # )
+    print(
+        f"CA MEAN ERRORS {np.mean(ca_translation_errors)}, {np.mean(ca_rotational_errors)}"
+    )
     print(
         f"ACE MEDIAN ERRORS {np.median(ace_translation_errors)}, {np.mean(ace_rotational_errors)}"
     )
-    # print(
-    #     f"CA MEDIAN ERRORS {np.median(ca_translation_errors)}, {np.mean(ca_rotational_errors)}"
-    # )
 
-    visualize_simd4x4(aces, arkits)
+    print(
+        f"CA MEDIAN ERRORS {np.median(ca_translation_errors)}, {np.mean(ca_rotational_errors)}"
+    )
+    print("________________________")
+    # visualize_simd4x4(aces, arkits)
     # visualize_simd4x4(cas, arkits)
 
 
 if __name__ == "__main__":
-    main()
+    file_list = os.listdir(FOLDER_PATH)
+    print(file_list)
+    for file in file_list:
+        try:
+            main(file)
+        except Exception as e:
+            # print(f"file {file} threw {e.__class__.__name__}: {e} while running")
+            pass
