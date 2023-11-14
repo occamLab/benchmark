@@ -48,7 +48,7 @@ def visualize_simd4x4(ace_4x4s, arkit_4x4s):
 def main():
     with open(
         Path(__file__).parent.parent
-        / ".cache/iosLoggerDemo_processedJsons_test2_oct_19.json",
+        / ".cache/testing_EDC41487-4626-4AAB-84E9-7915BA8E6121_richard3_3a.json",
         "r",
     ) as rf:
         data = json.load(rf)["data"]
@@ -68,8 +68,8 @@ def main():
         aces.append(ace_4x4)
         arkit_4x4 = convert_to_4x4(frame["ARKIT"])
         arkits.append(arkit_4x4)
-        ca_4x4 = convert_to_4x4(frame["CLOUD_ANCHOR"])
-        cas.append(ca_4x4)
+        # ca_4x4 = convert_to_4x4(frame["CLOUD_ANCHOR"])
+        # cas.append(ca_4x4)
 
         ace_translation_error = compute_translation_error(
             ace_4x4[:3, 3], arkit_4x4[:3, 3]
@@ -80,23 +80,29 @@ def main():
         )
         ace_rotational_errors.append(ace_rotational_error)
 
-        ca_translation_error = compute_translation_error(
-            ca_4x4[:3, 3], arkit_4x4[:3, 3]
-        )
-        ca_translation_errors.append(ca_translation_error)
-        ca_rotational_error = compute_rotational_error(
-            ca_4x4[:3, :3], arkit_4x4[:3, :3]
-        )
-        ca_rotational_errors.append(ca_rotational_error)
+        # ca_translation_error = compute_translation_error(
+        #     ca_4x4[:3, 3], arkit_4x4[:3, 3]
+        # )
+        # ca_translation_errors.append(ca_translation_error)
+        # ca_rotational_error = compute_rotational_error(
+        #     ca_4x4[:3, :3], arkit_4x4[:3, :3]
+        # )
+        # ca_rotational_errors.append(ca_rotational_error)
     print(
         f"ACE MEAN ERRORS {np.mean(ace_translation_errors)}, {np.mean(ace_rotational_errors)}"
     )
+    # print(
+    #     f"CA MEAN ERRORS {np.mean(ca_translation_errors)}, {np.mean(ca_rotational_errors)}"
+    # )
     print(
-        f"CA MEAN ERRORS {np.mean(ca_translation_errors)}, {np.mean(ca_rotational_errors)}"
+        f"ACE MEDIAN ERRORS {np.median(ace_translation_errors)}, {np.mean(ace_rotational_errors)}"
     )
-    
-    # visualize_simd4x4(aces, arkits)
-    visualize_simd4x4(cas, arkits)
+    # print(
+    #     f"CA MEDIAN ERRORS {np.median(ca_translation_errors)}, {np.mean(ca_rotational_errors)}"
+    # )
+
+    visualize_simd4x4(aces, arkits)
+    # visualize_simd4x4(cas, arkits)
 
 
 if __name__ == "__main__":
