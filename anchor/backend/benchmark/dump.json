@@ -1,0 +1,138 @@
+{
+  "0": {
+    "test_name": "training_ayush_nov_14_3.json",
+    "description": "",
+    "ace_mean_translation_error": 0.1794812664447576,
+    "ace_mean_rotational_error": 0.10092962968320097,
+    "ace_median_translation_error": 0.15491604683990304,
+    "ace_median_rotational_error": 0.11223040029899951
+  },
+  "1": {
+    "test_name": "testing_916E83DA-EB88-45D1-94FF-3A9705C91A0C_ayush_nov_14_4.json",
+    "description": "",
+    "ace_mean_translation_error": 0.34361174844803816,
+    "ace_mean_rotational_error": 0.03782394307603793,
+    "ace_median_translation_error": 0.24983999514654948,
+    "ace_median_rotational_error": 0.030789361937016337
+  },
+  "2": {
+    "test_name": "testing_585B19F6-1149-4406-BD34-042D4EC3E2CC_ayush_nov_14_6.json",
+    "description": "",
+    "ace_mean_translation_error": 0.3764811246308068,
+    "ace_mean_rotational_error": 0.04303961537177487,
+    "ace_median_translation_error": 0.379022111637334,
+    "ace_median_rotational_error": 0.03702371233430872
+  },
+  "3": {
+    "test_name": "testing_D942AA09-5F83-4A4A-9CED-D69B203027FD_ayush_nov_14_3.json",
+    "description": "",
+    "ace_mean_translation_error": NaN,
+    "ace_mean_rotational_error": NaN,
+    "ace_median_translation_error": NaN,
+    "ace_median_rotational_error": NaN
+  },
+  "4": {
+    "test_name": "training_ayush_nov_14_1.json",
+    "description": "",
+    "ace_mean_translation_error": 2.3692865400490755,
+    "ace_mean_rotational_error": 0.13817623883077504,
+    "ace_median_translation_error": 2.3820507256642074,
+    "ace_median_rotational_error": 0.13998715688888974
+  },
+  "5": {
+    "test_name": "testing_632F9815-002B-4E7E-8BF2-ACA38DC26F4B_ayush_nov_14_4.json",
+    "description": "",
+    "ace_mean_translation_error": 0.23239894984512757,
+    "ace_mean_rotational_error": 0.05481980459533218,
+    "ace_median_translation_error": 0.1419548475898616,
+    "ace_median_rotational_error": 0.03397225396183497
+  },
+  "6": {
+    "test_name": "testing_46F804E3-8948-43D0-BF64-2B7F00D6663F_ayush_nov_14_4.json",
+    "description": "",
+    "ace_mean_translation_error": 0.6574719379867999,
+    "ace_mean_rotational_error": 0.09513006554745718,
+    "ace_median_translation_error": 0.27579589352075146,
+    "ace_median_rotational_error": 0.04142085984341527
+  },
+  "7": {
+    "test_name": "training_ua-91d440c72710fb46f9ee32fe7744e1f6_ayush_nov_14_2.json",
+    "description": "",
+    "ace_mean_translation_error": 1.181224815358119,
+    "ace_mean_rotational_error": 0.054114594764018614,
+    "ace_median_translation_error": 1.2050767026372498,
+    "ace_median_rotational_error": 0.04380112695208853
+  },
+  "8": {
+    "test_name": "testing_5F8501A2-AC9B-4E0C-8F47-3B66C6842071_ayush_nov_14_6.json",
+    "description": "",
+    "ace_mean_translation_error": 0.14340667694497922,
+    "ace_mean_rotational_error": 0.02290854080268944,
+    "ace_median_translation_error": 0.12384821321565358,
+    "ace_median_rotational_error": 0.021627856451509036
+  },
+  "9": {
+    "test_name": "testing_0AC24C4E-C4D2-4B9E-952D-0C44A2752EC2_ayush_nov_14_3.json",
+    "description": "",
+    "ace_mean_translation_error": 0.08517723815361258,
+    "ace_mean_rotational_error": 0.03166063733987048,
+    "ace_median_translation_error": 0.08023265694166126,
+    "ace_median_rotational_error": 0.029845526459951734
+  },
+  "10": {
+    "test_name": "testing_A88A09D0-DD39-4E9B-9688-93096690EB59_ayush_nov_14_5.json",
+    "description": "",
+    "ace_mean_translation_error": 0.2808276396313553,
+    "ace_mean_rotational_error": 0.041318875505671926,
+    "ace_median_translation_error": 0.260153336173937,
+    "ace_median_rotational_error": 0.03897550945012319
+  },
+  "11": {
+    "test_name": "testing_1378446C-16A7-42D7-AE0A-FE15AF107C5C_ayush_nov_14_5.json",
+    "description": "",
+    "ace_mean_translation_error": 0.08360126266289164,
+    "ace_mean_rotational_error": 0.028120189672086883,
+    "ace_median_translation_error": 0.06820318193113868,
+    "ace_median_rotational_error": 0.02049990615095573
+  },
+  "12": {
+    "test_name": "training_ayush_nov_14_6.json",
+    "description": "",
+    "ace_mean_translation_error": 0.26081916220356327,
+    "ace_mean_rotational_error": 0.03034207880390636,
+    "ace_median_translation_error": 0.274855988436009,
+    "ace_median_rotational_error": 0.032023226591778475
+  },
+  "13": {
+    "test_name": "testing_26077932-EFC7-4B24-B7C6-DC6878E6B0D4_ayush_nov_14_3.json",
+    "description": "",
+    "ace_mean_translation_error": 0.1334321006850321,
+    "ace_mean_rotational_error": 0.052999494205636856,
+    "ace_median_translation_error": 0.10638695487656173,
+    "ace_median_rotational_error": 0.042593317203068325
+  },
+  "14": {
+    "test_name": "training_ayush_nov_14_5.json",
+    "description": "",
+    "ace_mean_translation_error": 0.10987733701478783,
+    "ace_mean_rotational_error": 0.025127787248574698,
+    "ace_median_translation_error": 0.09062883840321659,
+    "ace_median_rotational_error": 0.025784958627389026
+  },
+  "15": {
+    "test_name": "training_ayush_nov_14_4.json",
+    "description": "",
+    "ace_mean_translation_error": 0.16080798469709195,
+    "ace_mean_rotational_error": 0.04662683081533585,
+    "ace_median_translation_error": 0.11147358726184896,
+    "ace_median_rotational_error": 0.032285230545458926
+  },
+  "16": {
+    "test_name": "testing_DB7B5083-3DF2-4B7B-94C3-58092F11AB4D_ayush_nov_14_6.json",
+    "description": "",
+    "ace_mean_translation_error": 0.12867958096079735,
+    "ace_mean_rotational_error": 0.01880115552240958,
+    "ace_median_translation_error": 0.10081611300672813,
+    "ace_median_rotational_error": 0.017625833411156207
+  }
+}
