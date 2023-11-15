@@ -15,5 +15,7 @@ with tempfile.NamedTemporaryFile(mode="w") as tmp:
 
     firebaseDownloader = FirebaseDownloader("", "")
     firebaseDownloader.upload_file(
-        (Path("iosLoggerDemo") / "trainingLogs" / Path(model_name).stem).as_posix() + ".txt", tmp.name)
-    
+        (Path("iosLoggerDemo") / "trainingLogs" / Path(model_name).stem).as_posix()
+        + ".txt",
+        tmp.name,
+    )

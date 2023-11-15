@@ -305,3 +305,5 @@ Network Trash Folder
 Temporary Items
 .apdisk
 ###################################### MACOS GITIGNORE (https://github.com/github/gitignore/blob/main/Global/macOS.gitignore) ######################################
+
+anchor/backend/data/jsons/
