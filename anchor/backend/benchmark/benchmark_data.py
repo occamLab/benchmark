@@ -7,6 +7,7 @@ from pathlib import Path
 import os
 
 FOLDER_PATH = "iosLoggerDemo/processedJsons"
+CLOUD = False
 
 
 def convert_to_4x4(raw_list_pose):
@@ -58,8 +59,6 @@ def main(file_to_test: str):
     with open(f"{FOLDER_PATH}/{file_to_test}", "r") as rf:
         data = json.load(rf)["data"]
 
-    # print(data)
-    # print(convert_to_4x4(data[1]["ACE"]))
     aces = []
     arkits = []
     cas = []
@@ -74,8 +73,6 @@ def main(file_to_test: str):
         aces.append(ace_4x4)
         arkit_4x4 = convert_to_4x4(frame["ARKIT"])
         arkits.append(arkit_4x4)
-        ca_4x4 = convert_to_4x4(frame["CLOUD_ANCHOR"])
-        cas.append(ca_4x4)
 
         ace_translation_error = compute_translation_error(
             ace_4x4[:3, 3], arkit_4x4[:3, 3]
@@ -86,39 +83,67 @@ def main(file_to_test: str):
         )
         ace_rotational_errors.append(ace_rotational_error)
 
-        ca_translation_error = compute_translation_error(
-            ca_4x4[:3, 3], arkit_4x4[:3, 3]
-        )
-        ca_translation_errors.append(ca_translation_error)
-        ca_rotational_error = compute_rotational_error(
-            ca_4x4[:3, :3], arkit_4x4[:3, :3]
-        )
-        ca_rotational_errors.append(ca_rotational_error)
-    print(file_to_test)
+        if CLOUD:
+            ca_4x4 = convert_to_4x4(frame["CLOUD_ANCHOR"])
+            cas.append(ca_4x4)
+            ca_translation_error = compute_translation_error(
+                ca_4x4[:3, 3], arkit_4x4[:3, 3]
+            )
+            ca_translation_errors.append(ca_translation_error)
+            ca_rotational_error = compute_rotational_error(
+                ca_4x4[:3, :3], arkit_4x4[:3, :3]
+            )
+            ca_rotational_errors.append(ca_rotational_error)
+
+    errors = {
+        "test_name": file,
+        "description": "",
+        "ace_mean_translation_error": np.mean(ace_translation_errors),
+        "ace_mean_rotational_error": np.mean(ace_rotational_errors),
+        "ace_median_translation_error": np.median(ace_translation_errors),
+        "ace_median_rotational_error": np.median(ace_rotational_errors),
+    }
+
     print(
         f"ACE MEAN ERRORS {np.mean(ace_translation_errors)}, {np.mean(ace_rotational_errors)}"
-    )
-    print(
-        f"CA MEAN ERRORS {np.mean(ca_translation_errors)}, {np.mean(ca_rotational_errors)}"
     )
     print(
         f"ACE MEDIAN ERRORS {np.median(ace_translation_errors)}, {np.mean(ace_rotational_errors)}"
     )
 
-    print(
-        f"CA MEDIAN ERRORS {np.median(ca_translation_errors)}, {np.mean(ca_rotational_errors)}"
-    )
+    if CLOUD:
+        print(
+            f"CA MEAN ERRORS {np.mean(ca_translation_errors)}, {np.mean(ca_rotational_errors)}"
+        )
+        print(
+            f"CA MEDIAN ERRORS {np.median(ca_translation_errors)}, {np.mean(ca_rotational_errors)}"
+        )
     print("________________________")
     # visualize_simd4x4(aces, arkits)
     # visualize_simd4x4(cas, arkits)
+    return errors
 
 
 if __name__ == "__main__":
+    # main("training_ua-91d440c72710fb46f9ee32fe7744e1f6_ayush_nov_14_2.json")
+
     file_list = os.listdir(FOLDER_PATH)
-    print(file_list)
+    pprint(file_list)
+    big_boy = {}
+    i = 0
     for file in file_list:
-        try:
-            main(file)
-        except Exception as e:
-            # print(f"file {file} threw {e.__class__.__name__}: {e} while running")
-            pass
+        if "ayush_nov_14" in file:
+            print(file)
+            try:
+                errors = main(file)
+                big_boy[i] = errors
+
+            except Exception as e:
+                # print(f"file {file} threw {e.__class__.__name__}: {e} while running")
+                pass
+            i += 1
+        else:
+            print(f"skipping {file}")
+
+    with open("dump.json", "w") as write_json:
+        json.dump(big_boy, write_json, indent=2)
