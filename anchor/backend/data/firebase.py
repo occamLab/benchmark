@@ -28,9 +28,7 @@ def list_tars():
 
     for tar in tars:
         print(tar.name)
-        if tar.name.endswith(".tar") and tar.name.endswith(
-            "testing_EED31DB7-F1C3-489E-96DA-DCF2C04EEB45_test2_oct_19.tar"
-        ):
+        if tar.name.endswith(".tar"):
             tar_names.append(tar.name)
 
     return tar_names
@@ -105,11 +103,11 @@ class FirebaseDownloader:
                 f"[INFO]: Downloaded tar {self.tar_name} as it has not been found locally"
             )
 
-        # unpack the tar itself and cleanup and previous extractions
-        shutil.rmtree(self.local_extraction_location, ignore_errors=True)
-        shutil.unpack_archive(
-            self.local_tar_location, extract_dir=self.local_extraction_location
-        )
+        # # unpack the tar itself and cleanup and previous extractions
+        # shutil.rmtree(self.local_extraction_location, ignore_errors=True)
+        # shutil.unpack_archive(
+        #     self.local_tar_location, extract_dir=self.local_extraction_location
+        # )
 
         # extract the videos by phase (test videos will not have mapping data so they need to be handled separately)
         if (self.local_extraction_location / "mapping-video.mp4").exists():

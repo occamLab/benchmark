@@ -137,7 +137,10 @@ def run_ace_evaluator(
 
 
 def process_localization_phase(
-    combined_path: str, downloader: FirebaseDownloader, ace_test_pose_file: str
+    combined_path: str,
+    downloader: FirebaseDownloader,
+    ace_test_pose_file: str,
+    from_mapping: bool = False,
 ):
     poses = []
     header = [
@@ -221,7 +224,7 @@ def process_localization_phase(
 
     tmp_pose_path = Path(__file__).parent / "jsons/temp_pose_data.json"
     with open(tmp_pose_path, "w") as file:
-        json.dump({"data": poses}, file)
+        json.dump({"data": poses}, file, indent=4)
 
     print("[INFO]: Uploading processed JSON to firebase")
     firebase_processed_json_path: str = (
@@ -230,7 +233,7 @@ def process_localization_phase(
     )
     downloader.upload_file(firebase_processed_json_path.as_posix(), tmp_pose_path)
 
-    if len(sys.argv) != 2:
+    if len(sys.argv) != 2 and not from_mapping:
         firebase_tar_queue_path: str = Path(combined_path).parent
         firebase_processed_tar_path: str = str(
             Path(combined_path).parent.parent / f"processedTestTars/{tar_name}"
@@ -315,7 +318,7 @@ def process_training_data(combined_path: str, downloader: FirebaseDownloader):
         Path(tempfile.gettempdir())
         / f"benchmark/{Path(tar_name).stem}/ace/poses_ace_.txt"
     )
-    process_localization_phase(combined_path, downloader, ace_test_pose_file)
+    process_localization_phase(combined_path, downloader, ace_test_pose_file, True)
 
     if visualizer_enabled:
         subprocess.run(
@@ -368,6 +371,7 @@ def process_testing_data(combined_path: str, downloader: FirebaseDownloader):
     os.chdir(Path(__file__).parent.parent.parent / "third_party/ace")
     extracted_ace_folder = downloader.local_extraction_location / "ace"
     model_name = Path(combined_path).stem.split("training_")[-1]
+    model_name = "_".join(model_name.split("_")[2:])
     model_data_folder = (
         Path(tempfile.gettempdir()) / f"benchmark/training_{model_name}/ace"
     )
@@ -412,6 +416,7 @@ if __name__ == "__main__":
         downloader: FirebaseDownloader = FirebaseDownloader(
             firebase_tar_queue_path, tar_name
         )
+
         downloader.extract_ios_logger_tar()
 
         if Path(combined_path).parts[-1].startswith("training"):
