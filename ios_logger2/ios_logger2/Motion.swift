@@ -33,7 +33,24 @@ class Motion: NSObject, ARSessionDelegate {
     public var motionUpdateQueue = OperationQueue()
     public var disabledCollection: Bool = true
     
-
+    var videoSensor: Video? {
+        for sensor in sensors {
+            if let video = sensor as? Video {
+                return video
+            }
+        }
+        return nil
+    }
+    
+    var googleCloudAnchor: GoogleCloudAnchor? {
+        for sensor in sensors {
+            if let cloudAnchor = sensor as? GoogleCloudAnchor {
+                return cloudAnchor
+            }
+        }
+        return nil
+    }
+    
     // all of our loggers go here
     private let sensors: [any SensorProtocol & Sensor] = [
         Accelerometer(),
