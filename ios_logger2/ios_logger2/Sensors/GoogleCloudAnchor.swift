@@ -19,11 +19,21 @@ class GoogleCloudAnchor: Sensor, SensorProtocol {
     var startedResolvingAnchors: Bool = false
 
      override init() {
-         var error: NSError?
-         let configuration = GARSessionConfiguration()
-         configuration.cloudAnchorMode = .enabled
-         garSession = try? GARSession(apiKey: Secrets.garAPIKey, bundleIdentifier: nil)
-         garSession?.setConfiguration(configuration, error: &error)
+         super.init()
+         resetGARSession()
+    }
+    
+    func resetGARSession() {
+        do {
+            var error: NSError?
+            let configuration = GARSessionConfiguration()
+            configuration.cloudAnchorMode = .enabled
+            garSession = try GARSession(apiKey: Secrets.garAPIKey, bundleIdentifier: nil)
+            garSession?.setConfiguration(configuration, error: &error)
+        } catch {
+            print("failed to create GARSession")
+            AnnouncementManager.shared.announce(announcement: "failed to reset session")
+        }
     }
     
     func collectData(motion: CMDeviceMotion?, frame: ARFrame?, arView: ARSCNView) {
@@ -38,22 +48,26 @@ class GoogleCloudAnchor: Sensor, SensorProtocol {
             return
         }
         // Starts resolving cloud anchor is not already started
-        if(!self.startedResolvingAnchors) {
+        if !self.startedResolvingAnchors {
+            // make sure to forget the cloud anchor if we already resolved it
+            // first wipe out old anchors
             self.startedResolvingAnchors = true
             do {
+                AnnouncementManager.shared.announce(announcement: "trying to resolve")
                 print("resolving \(series.mappingPhase.cloudAnchorHost.cloudAnchorName)")
                 try garSession?.resolveCloudAnchor(series.mappingPhase.cloudAnchorHost.cloudAnchorName) { garAnchor, cloudState in
                     guard let garAnchor = garAnchor else {
                         print("[ERROR]: Unable to resolve anchor")
                         return
                     }
+                    AnnouncementManager.shared.announce(announcement: "Cloud anchor resolved")
                     print("[INFO]: Resolved anchor \(garAnchor.identifier)")
                     self.resolvedAnchorIdentifier = garAnchor.identifier
                 }
             } catch {
                 // NOTE: this is not being reloaded properly when localizing
                 print(series.mappingPhase.cloudAnchorHost.cloudAnchorName)
-                print("resolving error \(error.localizedDescription)")
+                AnnouncementManager.shared.announce(announcement: "resolving error \(error.localizedDescription)")
             }
         }
         
