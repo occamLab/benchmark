@@ -8,11 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		612F51122A3B8F4700E32A6D /* AprilTag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 612F51112A3B8F4700E32A6D /* AprilTag.swift */; };
-		612F51142A3B8FE200E32A6D /* april_tag.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 612F51132A3B8FE200E32A6D /* april_tag.pb.swift */; };
 		613B110B2A3775EF002CA4DD /* GoogleCloudAnchor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 613B110A2A3775EF002CA4DD /* GoogleCloudAnchor.swift */; };
 		613B110E2A378E75002CA4DD /* Secrets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 613B110D2A378E75002CA4DD /* Secrets.swift */; };
 		613B11132A379104002CA4DD /* google_cloud_anchor.proto in Sources */ = {isa = PBXBuildFile; fileRef = 613B11122A379104002CA4DD /* google_cloud_anchor.proto */; };
-		613B11152A37913D002CA4DD /* google_cloud_anchor.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 613B11142A37913D002CA4DD /* google_cloud_anchor.pb.swift */; };
 		61500B182A2FBAB7001FE294 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61500B172A2FBAB7001FE294 /* ContentView.swift */; };
 		61500B1A2A2FBAB8001FE294 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 61500B192A2FBAB8001FE294 /* Assets.xcassets */; };
 		61500B1D2A2FBAB8001FE294 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 61500B1C2A2FBAB8001FE294 /* Preview Assets.xcassets */; };
@@ -49,15 +47,7 @@
 		61500BE52A375FDB001FE294 /* light.proto in Sources */ = {isa = PBXBuildFile; fileRef = 61500BDD2A375FDB001FE294 /* light.proto */; };
 		61500BE62A375FDB001FE294 /* point_cloud.proto in Sources */ = {isa = PBXBuildFile; fileRef = 61500BDE2A375FDB001FE294 /* point_cloud.proto */; };
 		61500BE72A375FDB001FE294 /* pose.proto in Sources */ = {isa = PBXBuildFile; fileRef = 61500BDF2A375FDB001FE294 /* pose.proto */; };
-		61500BF02A376100001FE294 /* gyro.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61500BE82A376100001FE294 /* gyro.pb.swift */; };
-		61500BF12A376100001FE294 /* light.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61500BE92A376100001FE294 /* light.pb.swift */; };
-		61500BF22A376100001FE294 /* accelerometer.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61500BEA2A376100001FE294 /* accelerometer.pb.swift */; };
-		61500BF32A376100001FE294 /* pose.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61500BEB2A376100001FE294 /* pose.pb.swift */; };
-		61500BF42A376100001FE294 /* lidar.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61500BEC2A376100001FE294 /* lidar.pb.swift */; };
-		61500BF62A376100001FE294 /* intrinsics.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61500BEE2A376100001FE294 /* intrinsics.pb.swift */; };
-		61500BF72A376100001FE294 /* point_cloud.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61500BEF2A376100001FE294 /* point_cloud.pb.swift */; };
 		61500BF92A37645E001FE294 /* video.proto in Sources */ = {isa = PBXBuildFile; fileRef = 61500BF82A37645E001FE294 /* video.proto */; };
-		61500BFB2A37650E001FE294 /* video.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61500BFA2A37650E001FE294 /* video.pb.swift */; };
 		61500BFE2A376C1C001FE294 /* ARCoreCloudAnchors in Frameworks */ = {isa = PBXBuildFile; productRef = 61500BFD2A376C1C001FE294 /* ARCoreCloudAnchors */; };
 		617703452A6709A4000413CE /* Collections in Frameworks */ = {isa = PBXBuildFile; productRef = 617703442A6709A4000413CE /* Collections */; };
 		617703472A6709A4000413CE /* DequeModule in Frameworks */ = {isa = PBXBuildFile; productRef = 617703462A6709A4000413CE /* DequeModule */; };
@@ -68,6 +58,7 @@
 		821C17732B06AC4A003503AF /* AnnouncementManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 821C17722B06AC4A003503AF /* AnnouncementManager.swift */; };
 		8244890C2ABCCE410065D686 /* lowPolyPaulTexture.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 8244890A2ABCCE410065D686 /* lowPolyPaulTexture.jpg */; };
 		8244890D2ABCCE410065D686 /* lowPolyPaul.dae in Resources */ = {isa = PBXBuildFile; fileRef = 8244890B2ABCCE410065D686 /* lowPolyPaul.dae */; };
+		98D091712B3C03FD008AD8F9 /* codegen in Resources */ = {isa = PBXBuildFile; fileRef = 98D091702B3C03FD008AD8F9 /* codegen */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -89,12 +80,10 @@
 
 /* Begin PBXFileReference section */
 		612F51112A3B8F4700E32A6D /* AprilTag.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AprilTag.swift; sourceTree = "<group>"; };
-		612F51132A3B8FE200E32A6D /* april_tag.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = april_tag.pb.swift; sourceTree = "<group>"; };
 		613B110A2A3775EF002CA4DD /* GoogleCloudAnchor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleCloudAnchor.swift; sourceTree = "<group>"; };
 		613B110D2A378E75002CA4DD /* Secrets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Secrets.swift; sourceTree = "<group>"; };
 		613B110F2A379015002CA4DD /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		613B11122A379104002CA4DD /* google_cloud_anchor.proto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.protobuf; path = google_cloud_anchor.proto; sourceTree = "<group>"; };
-		613B11142A37913D002CA4DD /* google_cloud_anchor.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = google_cloud_anchor.pb.swift; sourceTree = "<group>"; };
 		61500B122A2FBAB7001FE294 /* ios_logger2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ios_logger2.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		61500B172A2FBAB7001FE294 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		61500B192A2FBAB8001FE294 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -125,21 +114,14 @@
 		61500BDD2A375FDB001FE294 /* light.proto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.protobuf; name = light.proto; path = ios_logger2/protos/light.proto; sourceTree = SOURCE_ROOT; };
 		61500BDE2A375FDB001FE294 /* point_cloud.proto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.protobuf; name = point_cloud.proto; path = ios_logger2/protos/point_cloud.proto; sourceTree = SOURCE_ROOT; };
 		61500BDF2A375FDB001FE294 /* pose.proto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.protobuf; name = pose.proto; path = ios_logger2/protos/pose.proto; sourceTree = SOURCE_ROOT; };
-		61500BE82A376100001FE294 /* gyro.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = gyro.pb.swift; sourceTree = "<group>"; };
-		61500BE92A376100001FE294 /* light.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = light.pb.swift; sourceTree = "<group>"; };
-		61500BEA2A376100001FE294 /* accelerometer.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = accelerometer.pb.swift; sourceTree = "<group>"; };
-		61500BEB2A376100001FE294 /* pose.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = pose.pb.swift; sourceTree = "<group>"; };
-		61500BEC2A376100001FE294 /* lidar.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = lidar.pb.swift; sourceTree = "<group>"; };
-		61500BEE2A376100001FE294 /* intrinsics.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = intrinsics.pb.swift; sourceTree = "<group>"; };
-		61500BEF2A376100001FE294 /* point_cloud.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = point_cloud.pb.swift; sourceTree = "<group>"; };
 		61500BF82A37645E001FE294 /* video.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; path = video.proto; sourceTree = "<group>"; };
-		61500BFA2A37650E001FE294 /* video.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = video.pb.swift; sourceTree = "<group>"; };
 		61C6D7E72A3C9EC100FF9349 /* opencv2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = opencv2.framework; sourceTree = "<group>"; };
 		61CEADA02A696E3D00BFEA6F /* InteractiveLocalizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractiveLocalizer.swift; sourceTree = "<group>"; };
 		61CEADA22A69703100BFEA6F /* LocalizerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizerManager.swift; sourceTree = "<group>"; };
 		821C17722B06AC4A003503AF /* AnnouncementManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnouncementManager.swift; sourceTree = "<group>"; };
 		8244890A2ABCCE410065D686 /* lowPolyPaulTexture.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = lowPolyPaulTexture.jpg; sourceTree = "<group>"; };
 		8244890B2ABCCE410065D686 /* lowPolyPaul.dae */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml.dae; path = lowPolyPaul.dae; sourceTree = "<group>"; };
+		98D091702B3C03FD008AD8F9 /* codegen */ = {isa = PBXFileReference; lastKnownFileType = folder; path = codegen; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -261,7 +243,7 @@
 		61500B5A2A30CC76001FE294 /* protos */ = {
 			isa = PBXGroup;
 			children = (
-				61500BD72A375F51001FE294 /* codegen */,
+				98D091702B3C03FD008AD8F9 /* codegen */,
 				61500BDB2A375FDB001FE294 /* accelerometer.proto */,
 				61500BF82A37645E001FE294 /* video.proto */,
 				61500BD82A375FDB001FE294 /* gyro.proto */,
@@ -300,23 +282,6 @@
 				613B110A2A3775EF002CA4DD /* GoogleCloudAnchor.swift */,
 			);
 			path = Sensors;
-			sourceTree = "<group>";
-		};
-		61500BD72A375F51001FE294 /* codegen */ = {
-			isa = PBXGroup;
-			children = (
-				61500BFA2A37650E001FE294 /* video.pb.swift */,
-				612F51132A3B8FE200E32A6D /* april_tag.pb.swift */,
-				61500BEA2A376100001FE294 /* accelerometer.pb.swift */,
-				61500BE82A376100001FE294 /* gyro.pb.swift */,
-				61500BEE2A376100001FE294 /* intrinsics.pb.swift */,
-				61500BEC2A376100001FE294 /* lidar.pb.swift */,
-				61500BE92A376100001FE294 /* light.pb.swift */,
-				61500BEF2A376100001FE294 /* point_cloud.pb.swift */,
-				61500BEB2A376100001FE294 /* pose.pb.swift */,
-				613B11142A37913D002CA4DD /* google_cloud_anchor.pb.swift */,
-			);
-			path = codegen;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -445,6 +410,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				98D091712B3C03FD008AD8F9 /* codegen in Resources */,
 				61500B1D2A2FBAB8001FE294 /* Preview Assets.xcassets in Resources */,
 				61500B832A3252B5001FE294 /* GoogleService-Info.plist in Resources */,
 				8244890C2ABCCE410065D686 /* lowPolyPaulTexture.jpg in Resources */,
@@ -475,10 +441,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				61CEADA12A696E3D00BFEA6F /* InteractiveLocalizer.swift in Sources */,
-				61500BF62A376100001FE294 /* intrinsics.pb.swift in Sources */,
 				613B110E2A378E75002CA4DD /* Secrets.swift in Sources */,
 				613B110B2A3775EF002CA4DD /* GoogleCloudAnchor.swift in Sources */,
-				61500BF72A376100001FE294 /* point_cloud.pb.swift in Sources */,
 				61500BE62A375FDB001FE294 /* point_cloud.proto in Sources */,
 				61500BD12A375F06001FE294 /* Light.swift in Sources */,
 				61500BE52A375FDB001FE294 /* light.proto in Sources */,
@@ -490,28 +454,20 @@
 				613B11132A379104002CA4DD /* google_cloud_anchor.proto in Sources */,
 				61500BD42A375F06001FE294 /* Intrinsics.swift in Sources */,
 				61500B862A325629001FE294 /* InternetConnectionUtil.swift in Sources */,
-				61500BF02A376100001FE294 /* gyro.pb.swift in Sources */,
 				61500BCF2A375F06001FE294 /* Accelerometer.swift in Sources */,
 				61500BE32A375FDB001FE294 /* accelerometer.proto in Sources */,
-				61500BF42A376100001FE294 /* lidar.pb.swift in Sources */,
 				61500B182A2FBAB7001FE294 /* ContentView.swift in Sources */,
-				61500BF32A376100001FE294 /* pose.pb.swift in Sources */,
 				61500BE12A375FDB001FE294 /* lidar.proto in Sources */,
 				61500BD62A375F06001FE294 /* Video.swift in Sources */,
 				61500BE22A375FDB001FE294 /* intrinsics.proto in Sources */,
 				612F51122A3B8F4700E32A6D /* AprilTag.swift in Sources */,
 				61500BB32A375CF1001FE294 /* ios_logger2App.swift in Sources */,
-				61500BFB2A37650E001FE294 /* video.pb.swift in Sources */,
-				61500BF12A376100001FE294 /* light.pb.swift in Sources */,
-				612F51142A3B8FE200E32A6D /* april_tag.pb.swift in Sources */,
 				61500BD22A375F06001FE294 /* Pose.swift in Sources */,
-				613B11152A37913D002CA4DD /* google_cloud_anchor.pb.swift in Sources */,
 				61500BE72A375FDB001FE294 /* pose.proto in Sources */,
 				61500B442A2FCC83001FE294 /* Motion.swift in Sources */,
 				821C17732B06AC4A003503AF /* AnnouncementManager.swift in Sources */,
 				61500BD52A375F06001FE294 /* Gyro.swift in Sources */,
 				61CEADA32A69703100BFEA6F /* LocalizerManager.swift in Sources */,
-				61500BF22A376100001FE294 /* accelerometer.pb.swift in Sources */,
 				61500BE02A375FDB001FE294 /* gyro.proto in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
