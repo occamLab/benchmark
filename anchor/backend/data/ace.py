@@ -248,7 +248,12 @@ def process_localization_phase(
         )
 
 
-def process_training_data(combined_path: str, downloader: FirebaseDownloader):
+def process_training_data(
+    combined_path: str,
+    downloader: FirebaseDownloader,
+    run_tests=True,
+    output_model_name=None,
+):
     prepare_ace_data(downloader.extracted_data)
 
     # TODO: fix cloud anchor analysis
@@ -287,17 +292,44 @@ def process_training_data(combined_path: str, downloader: FirebaseDownloader):
         ]
     )
 
-    print("[INFO]: Running ace evaluation on dataset path: ", extracted_ace_folder)
-    run_ace_evaluator(
-        extracted_ace_folder, model_output, False, True, extracted_ace_folder
-    )
+    if run_tests:
+        print("[INFO]: Running ace evaluation on dataset path: ", extracted_ace_folder)
+        run_ace_evaluator(
+            extracted_ace_folder, model_output, False, True, extracted_ace_folder
+        )
+        ace_test_pose_file = (
+            downloader.root_download_dir / f"{Path(tar_name).stem}/ace/poses_ace_.txt"
+        )
+        process_localization_phase(combined_path, downloader, ace_test_pose_file, True)
+
+        if visualizer_enabled:
+            subprocess.run(
+                [
+                    "/usr/bin/ffmpeg",
+                    "-framerate",
+                    "30",
+                    "-pattern_type",
+                    "glob",
+                    "-i",
+                    f"{render_target_path.as_posix()}/**/*.png",
+                    "-c:v",
+                    "libx264",
+                    "-pix_fmt",
+                    "yuv420p",
+                    f"{render_target_path.as_posix()}/out.mp4",
+                ]
+            )
 
     print("[INFO]: Converting ACE model for mobile use")
     save_model_for_mobile(pretrained_model, model_output)
 
     firebase_upload_dir = "iosLoggerDemo/trainedModels/"
-    vid_name = Path(tar_name)
-    vid_name = vid_name.stem.split("training_")[-1] + ".pt"
+    if not output_model_name:
+        vid_name = Path(tar_name)
+        vid_name = vid_name.stem.split("training_")[-1] + ".pt"
+    else:
+        vid_name = output_model_name
+
     firebase_upload_path = Path(firebase_upload_dir) / Path(vid_name)
     print("[INFO]: Saving model to firebase as {}".format(firebase_upload_path))
     downloader.upload_file(firebase_upload_path.as_posix(), model_output)
@@ -313,29 +345,6 @@ def process_training_data(combined_path: str, downloader: FirebaseDownloader):
             local_location=downloader.local_tar_location,
         )
         print("[INFO]: Moved tar from tarQueue to processedTars directory in firebase")
-
-    ace_test_pose_file = (
-        downloader.root_download_dir / f"{Path(tar_name).stem}/ace/poses_ace_.txt"
-    )
-    process_localization_phase(combined_path, downloader, ace_test_pose_file, True)
-
-    if visualizer_enabled:
-        subprocess.run(
-            [
-                "/usr/bin/ffmpeg",
-                "-framerate",
-                "30",
-                "-pattern_type",
-                "glob",
-                "-i",
-                f"{render_target_path.as_posix()}/**/*.png",
-                "-c:v",
-                "libx264",
-                "-pix_fmt",
-                "yuv420p",
-                f"{render_target_path.as_posix()}/out.mp4",
-            ]
-        )
 
 
 @dataclass
@@ -372,9 +381,11 @@ def process_testing_data(combined_path: str, downloader: FirebaseDownloader):
     model_name = Path(combined_path).stem.split("training_")[-1]
     model_name = "_".join(model_name.split("_")[2:])
 
-    for (dir, _, _) in os.walk(downloader.root_download_dir):
+    for dir, _, _ in os.walk(downloader.root_download_dir):
         dir_path = Path(dir)
-        if str(dir_path).endswith(model_name) and dir_path.parts[-1].startswith("training_"):
+        if str(dir_path).endswith(model_name) and dir_path.parts[-1].startswith(
+            "training_"
+        ):
             model_data_folder = Path(dir) / "ace"
             model_weights_path = model_data_folder / "model.pt"
             break
