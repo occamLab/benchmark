@@ -126,4 +126,19 @@ def test_dataset_e2e(model_name: str, partial_ace_data_set: Path):
         )
 
 
-test_dataset_e2e("Library_circle.pt", Path("/tmp/repro/batch1"))
+def test_create_anchor_request(firebase_path, anchor_name):
+    server_url = "http://10.26.26.130:8000/create_anchor"
+    headers = {"Content-type": "application/json", "Accept": "application/json"}
+    request_body = {"tar_path": firebase_path, "anchor_name": anchor_name}
+    response = requests.post(server_url, json=request_body, headers=headers)
+    response_body = response.json()
+
+    assert response_body["status"] == "200"
+
+
+if __name__ == "__main__":
+    test_create_anchor_request(
+        "iosLoggerDemo/processedTrainingTars/training_ua-073988bd422fc1a8e5b759762eb2b133_ayush_nov30_2.tar",
+        "debug_anchor",
+    )
+    # test_dataset_e2e("Library_circle.pt", Path("/tmp/repro/batch1"))

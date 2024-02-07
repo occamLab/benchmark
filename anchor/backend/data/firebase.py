@@ -74,6 +74,11 @@ class FirebaseDownloader:
             given_proto, "mappingPhase" if mapping_phase else "localizationPhase"
         )
 
+    def check_file_exists(self, remote_location: str):
+        bucket = storage.bucket(FirebaseDownloader.firebase_bucket_name)
+        blob = bucket.blob(remote_location)
+        return blob.exists()
+
     def download_file(self, remote_location: str, local_location: str):
         bucket = storage.bucket(FirebaseDownloader.firebase_bucket_name)
         blob = bucket.blob(remote_location)
