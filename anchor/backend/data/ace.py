@@ -389,7 +389,7 @@ def process_testing_data(combined_path: str, downloader: FirebaseDownloader):
     run_ace_evaluator(
         extracted_ace_folder, model_weights_path, False, True, extracted_ace_folder
     )
-
+    breakpoint()
     process_localization_phase(combined_path, downloader, ace_test_pose_file)
 
 

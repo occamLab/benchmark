@@ -1,18 +1,23 @@
 from typing import Union
-from fastapi import FastAPI
+from fastapi import FastAPI, BackgroundTasks
 from pydantic import BaseModel
 from pathlib import Path
-from anchor.third_party.ace.ace_network import Regressor
-from anchor.backend.server.loaders import ModelLoader
+from anchor.backend.server.loaders import ModelLoader, MultiHeadedModelLoader
 from typing import List
 import torch
 
 from anchor.backend.data.firebase import FirebaseDownloader
 
 # you can start the server by running:
-#   uvicorn anchor.backend.server.localizer:app --reload --host 10.26.26.130 --port 8000
+#   uvicorn anchor.backend.server.localizer:app --reload --host 10.76.135.81 --port 8000
 app = FastAPI()
-modelLoader = ModelLoader()
+
+MULTI_HEADED_LOCALIZATION = True
+
+if MULTI_HEADED_LOCALIZATION:
+    modelLoader = MultiHeadedModelLoader()
+else:
+    modelLoader = ModelLoader()
 
 
 @app.get("/")
@@ -28,10 +33,14 @@ class LocalizeImageReq(BaseModel):
     optical_y: float
     arkit_pose: List[float]
 
+class GenerateAnchorReq(BaseModel):
+    videoFilePath: str
+    modelName: str
+
 
 @app.post("/localize/")
 def localizeImage(req: LocalizeImageReq):
-    out_pose, inlier_count = modelLoader.localize_image(
+    out_pose, inlier_count, model_name = modelLoader.localize_image(
         req.modelName,
         req.base64Jpg,
         req.focal_length,
@@ -42,5 +51,10 @@ def localizeImage(req: LocalizeImageReq):
     return {
         "pose": out_pose.flatten().tolist(),
         "inlier_count": inlier_count,
+        "model": model_name,
         "status": "ok",
     }
+
+@app.post("/generate_anchor/")
+async def generateAnchor(req: GenerateAnchorReq, background_tasks: BackgroundTasks):
+    pass
