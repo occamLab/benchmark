@@ -130,7 +130,6 @@ class ModelLoader:
             with autocast(enabled=True):
                 scene_coordinates = model(tensor_image).float().cpu()
                 t = self.test(tensor_image).float().cpu()
-            breakpoint()
             # Allocate output variable.
             out_pose = torch.zeros((4, 4))
             print(scene_coordinates.size())
@@ -193,7 +192,7 @@ class MultiHeadedModelLoader:
             if model_name not in self.model_head_cache:
                 if not (target_loc := self.model_cache_dir / model_name).exists():
                     self.downloader.download_file(
-                        remote_location=f"iosLoggerDemo/trainedModels/{model_name}",
+                        remote_location=f"iosLoggerDemo/trainedModels/{model_name}.pt",
                         local_location=target_loc,
                     )
 
@@ -216,12 +215,13 @@ class MultiHeadedModelLoader:
         focal_length: float,
         optical_x: float,
         optical_y: float,
-        arkit_pose: List[float],
     ):
         if not isinstance(model_names, List):
             model_names = [model_names]
-        model_names = [m.split("training_")[-1].split("test_")[-1] for m in model_names]
-
+        model_names = [
+            m.split("training_")[-1].split("test_")[-1].split(".tar")[0]
+            for m in model_names
+        ]
         with torch.no_grad():
             self.load_ace_models_if_needed(model_names)
 
@@ -273,7 +273,6 @@ class MultiHeadedModelLoader:
 
                 # Allocate output variable.
                 out_pose = torch.zeros((4, 4))
-                print(scene_coordinates.size())
                 with nostdout():
                     inlier_count: int = dsacstar.forward_rgb(
                         scene_coordinates,
@@ -307,7 +306,4 @@ class MultiHeadedModelLoader:
             #         fmt="%f",
             #     )
 
-            print(inlier_count)
             return best_pose, inlier_count, best_model
-
-class ModelGenerator:
