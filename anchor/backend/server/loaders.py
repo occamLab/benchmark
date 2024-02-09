@@ -160,8 +160,6 @@ class ModelLoader:
             #         np.reshape(arkit_pose, (4, 4)).transpose(),
             #         fmt="%f",
             #     )
-
-            print(inlier_count)
             return out_pose, inlier_count
 
 
