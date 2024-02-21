@@ -27,7 +27,7 @@ def list_tars():
     tar_names = []
 
     for tar in tars:
-        if tar.name.endswith(".tar") and "nov30_4" in tar.name:
+        if tar.name.endswith(".tar") and "testing_8E1E9222-15B0-4BDD-B9B1-3922F88E2B4B_ayush_nov30_1.tar" in tar.name:
             tar_names.append(tar.name)
 
     return tar_names

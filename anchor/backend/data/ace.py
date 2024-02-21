@@ -14,6 +14,7 @@ from dataclasses import dataclass
 from scipy.spatial.transform import Rotation as R
 import numpy as np
 import json
+from datetime import datetime
 
 
 def prepare_ace_data(extracted_data: Extracted):
@@ -115,7 +116,7 @@ def run_ace_evaluator(
     visualizer_enabled: bool,
     render_flipped_portrait: bool,
     render_target_path: Path,
-    frame_exclusion=400,
+    frame_exclusion=0,
 ):
     print("[INFO]: Running ace evaluater on dataset path: ", extracted_ace_folder)
     # TODO: thsi doesn't handle spaces properly
@@ -154,7 +155,7 @@ def process_localization_phase(
         "t_z",
         "r_err",
         "t_err",
-        "inlier_counter",
+        "inlier_count",
     ]
 
     current_cloud_anchor_idx = 0
@@ -202,9 +203,7 @@ def process_localization_phase(
         for line in file.readlines():
             data = line.strip("\n").split(" ")
             data[0] = int(data[0].split(".")[0])
-            ace_pose = PoseData(
-                **{header[i]: data[i] for i in range(len(header))}
-            ).as_matrix
+            ace_pose_data = PoseData(**{header[i]: data[i] for i in range(len(header))})
             timestamp = downloader.extracted_data.sensors_extracted[
                 "localization_phase"
             ]["poses"][data[0]]["timestamp"]
@@ -216,22 +215,30 @@ def process_localization_phase(
                 {
                     "frame_num": data[0],
                     "timestamp": timestamp,
-                    "ACE": list(ace_pose),
+                    "ACE": list(ace_pose_data.as_matrix),
+                    "ACE_INLIER_COUNT": ace_pose_data.inlier_count,
                     "ARKIT": list(arkit_pose),
                     "CLOUD_ANCHOR": list(ca_pose) if ca_pose is not None else [],
                 }
             )
+    test_data_dir = (
+        downloader.local_extraction_location
+        / f"ace/test/{datetime.now().strftime('%m:%d:%Y_%H:%M:%S')}"
+    )
+    os.mkdir(test_data_dir)
+    pose_data_path = test_data_dir / "mapped_poses.json"
+    ace_results_path = test_data_dir / "ace_poses.txt"
 
-    tmp_pose_path = Path(__file__).parent / ".cache/jsons/temp_pose_data.json"
-    with open(tmp_pose_path, "w") as file:
+    with open(pose_data_path, "w") as file:
         json.dump({"data": poses}, file, indent=4)
+    shutil.move(ace_test_pose_file, ace_results_path)
 
     print("[INFO]: Uploading processed JSON to firebase")
     firebase_processed_json_path: str = (
         Path(combined_path).parent.parent
         / f"processedJsons/{Path(downloader.tar_name).stem}.json"
     )
-    downloader.upload_file(firebase_processed_json_path.as_posix(), tmp_pose_path)
+    downloader.upload_file(firebase_processed_json_path.as_posix(), pose_data_path)
 
     if len(sys.argv) != 2 and not from_mapping:
         firebase_tar_queue_path: str = Path(combined_path).parent
@@ -359,7 +366,7 @@ class PoseData:
     t_z: float
     r_err: float
     t_err: float
-    inlier_counter: int
+    inlier_count: int
 
     @property
     def as_matrix(self):

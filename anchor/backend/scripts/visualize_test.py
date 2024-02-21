@@ -11,7 +11,7 @@ from scipy import ndimage
 from matplotlib.image import imread
 import shutil
 
-TEST_NAME = "testing_F6183FC7-FA99-4DE8-9D3B-E04F6431BE5D_ayush_nov30_4"
+TEST_NAME = "testing_8E1E9222-15B0-4BDD-B9B1-3922F88E2B4B_ayush_nov30_1"
 TEST_TIME = None
 DATA_DIR = Path(__file__).parent.parent / "data/.cache/firebase_data"
 TEST_DIR = DATA_DIR / f"{TEST_NAME}/ace/test"
@@ -179,7 +179,7 @@ def step_graph(inlier_thresh: int = 0, step_fps: int = 1, save=True):
             shutil.rmtree(save_dir)
         os.mkdir(save_dir)
 
-    for (idx, viz_datum) in enumerate(viz_datums):
+    for idx, viz_datum in enumerate(viz_datums):
         plt.suptitle(
             f"Frame: {viz_datum.frame_num}, Inlier Count: {viz_datum.inlier_count}"
         )
@@ -189,7 +189,7 @@ def step_graph(inlier_thresh: int = 0, step_fps: int = 1, save=True):
             plt.savefig(save_dir / f"{viz_datum.frame_num}.jpg")
             print(f"Generated Image {idx+1}/{len(viz_datums)}")
         else:
-             plt.show()
+            plt.show()
 
 
 def counts_splitter(arg):
@@ -235,14 +235,16 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.v:
-        if args.in_count and args.in_counts:
+        if args.in_count is not None and args.in_counts is not None:
             raise ValueError(
                 "Cannot specify 'in_count' and 'in_counts' at the same time."
             )
-        if args.in_count:
+        if args.in_count is not None:
             inliers = [args.in_count]
-        else:
+        elif args.in_counts is not None:
             inliers = args.in_counts
+        else:
+            raise ValueError("Must specify either 'in_count' or 'in_counts'")
         visualize_graph(inlier_thresholds=inliers)
     if args.step:
         if args.in_counts:
