@@ -49,6 +49,10 @@ class FrameData:
             ret = "0" + ret
         return f"{ret}.color.jpg"
 
+    @property
+    def annotated_image_file_name(self) -> str:
+        return f"annotated_{self.frame_num}.png"
+
 
 @dataclass
 class VizDatum:
@@ -92,15 +96,23 @@ class TestInstance:
     def get_ace_translations_with_inlier_thresh(self, inlier_threshold: int):
         return self.ace_translations[self.inliers > inlier_threshold]
 
-    def get_viz_frames(self, step_fps) -> List[VizDatum]:
+    def get_viz_frames(self, step_fps: int, annotated_frames: bool) -> List[VizDatum]:
         idx_step = int(self.RECORDING_FPS // step_fps)
+        if annotated_frames:
+            img_dir = self.root_dir.parent / "annotated_rgb"
+        else:
+            img_dir = self.root_dir.parent / "rgb"
         return [
             VizDatum(
                 frame_num=frame.frame_num,
                 t_err=self.get_translational_err_at_idx(idx * idx_step),
                 inlier_count=frame.ACE_INLIER_COUNT,
                 img_rgb=np.rot90(
-                    imread(self.root_dir.parent / f"rgb/{frame.image_file_name}"), 3
+                    imread(
+                        img_dir
+                        / f"{frame.annotated_image_file_name if annotated_frames else frame.image_file_name}"
+                    ),
+                    3,
                 ),
             )
             for (idx, frame) in enumerate(self.frames[0 : len(self.frames) : idx_step])
@@ -108,7 +120,7 @@ class TestInstance:
 
 
 def load_cache_data() -> TestInstance:
-    exclusion_dirs = ["calibration", "poses", "rgb"]
+    exclusion_dirs = ["calibration", "poses", "rgb", "annotated_rgb"]
     if TEST_TIME:
         curr_test_inst_dir = TEST_DIR / TEST_TIME
     else:
@@ -170,9 +182,14 @@ def visualize_graph(inlier_thresholds: List[int]):
         plt.show()
 
 
-def step_graph(inlier_thresh: int = 0, step_fps: int = 1, save=True):
+def step_graph(
+    inlier_thresh: int = 0,
+    step_fps: int = 1,
+    annotated_frames=False,
+    save=True,
+):
     test_data = load_cache_data()
-    viz_datums = test_data.get_viz_frames(step_fps)
+    viz_datums = test_data.get_viz_frames(step_fps, annotated_frames)
     if save:
         save_dir = test_data.root_dir / "step_images"
         if save_dir.exists():
@@ -232,6 +249,12 @@ if __name__ == "__main__":
         help="Frames per second while stepping through a test",
         default=1,
     )
+    parser.add_argument(
+        "-ann_frames",
+        help="Use images annotated with inliers when stepping through a dataset",
+        action="store_true",
+        default=False,
+    )
     args = parser.parse_args()
 
     if args.v:
@@ -252,5 +275,8 @@ if __name__ == "__main__":
                 "Cannot step through a test with multiple inliers, please choose one."
             )
         step_graph(
-            inlier_thresh=args.in_count, step_fps=args.step_size, save=args.save_step
+            inlier_thresh=args.in_count,
+            step_fps=args.step_size,
+            save=args.save_step,
+            annotated_frames=args.ann_frames,
         )

@@ -135,7 +135,6 @@ def test_create_anchor_request(firebase_path, anchor_name):
     server_url = "http://10.76.135.81:8000/create_anchor"
     headers = {"Content-type": "application/json", "Accept": "application/json"}
     request_body = {"tar_path": firebase_path, "anchor_name": anchor_name}
-    breakpoint()
     response = requests.post(server_url, json=request_body, headers=headers)
     response_body = response.json()
 
