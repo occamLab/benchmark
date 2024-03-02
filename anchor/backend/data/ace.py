@@ -23,6 +23,7 @@ def prepare_ace_data(extracted_data: Extracted):
     for phase in extracted_data.sensors_extracted:
         if not extracted_data.sensors_extracted[phase]["video"]:
             continue
+
         for data in extracted_data.sensors_extracted[phase]["video"]:
             ace_input = extracted_data.extract_root / "ace"
             write_location = ace_input / map_phase_to_ace_folder[phase]
@@ -418,6 +419,8 @@ if __name__ == "__main__":
     else:
         tars = list_tars()
 
+    print("Processing: \n" + "\n".join(tars))
+
     for combined_path in tars:
         firebase_tar_queue_path: str = Path(
             combined_path
@@ -425,9 +428,6 @@ if __name__ == "__main__":
         tar_name: str = Path(combined_path).parts[
             -1
         ]  # ex: 6B62493C-45C8-43F3-A540-41B5216429EC.tar
-        print(
-            combined_path
-        )  # logger will use this to know that new log needs to be uploaded
 
         print(
             "[INFO]: Running e2e benchmark on tar with path: ",

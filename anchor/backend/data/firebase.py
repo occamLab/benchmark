@@ -21,13 +21,13 @@ def list_tars():
         initialize_app(cred)
         FirebaseDownloader.initialized = True
     bucket = storage.bucket(FirebaseDownloader.firebase_bucket_name)
-    tar_queue = "iosLoggerDemo/processedTestTars/"
+    tar_queue = "iosLoggerDemo/tarQueue/"
     tars = bucket.list_blobs(prefix=tar_queue)
 
     tar_names = []
 
     for tar in tars:
-        if tar.name.endswith(".tar") and "testing_8E1E9222-15B0-4BDD-B9B1-3922F88E2B4B_ayush_nov30_1.tar" in tar.name:
+        if tar.name.endswith(".tar") and "ayush_mar_" in tar.name:
             tar_names.append(tar.name)
 
     return tar_names
@@ -122,9 +122,9 @@ class FirebaseDownloader:
             self.extract_google_cloud_anchors(self.local_extraction_location, True)
 
         if (self.local_extraction_location / "localization-video.mp4").exists():
-            # self.extract_ios_logger_video(
-            #     self.local_extraction_location / "localization-video.mp4", False
-            # )
+            self.extract_ios_logger_video(
+                self.local_extraction_location / "localization-video.mp4", False
+            )
             self.extract_intrinsics(self.local_extraction_location, False)
             self.extract_pose(self.local_extraction_location, False)
             self.extract_april_tags(self.local_extraction_location, False)
@@ -158,6 +158,8 @@ class FirebaseDownloader:
             image_timestamp = video_start + float(frame.pts * frame.time_base)
             frame_path: Path = video_folder_path / f"{frame.index}.jpg"
             frame = frame
+            if frame_path.exists():
+                continue
             all_frames += [(image_timestamp, frame_path, frame)]
 
         def write_frame(frame_info):
@@ -168,6 +170,9 @@ class FirebaseDownloader:
             self.extracted_data.append_video_timestamp(
                 image_timestamp, frame_path, frame.index, mapping_phase
             )
+
+        if len(all_frames) == 0:
+            return
 
         with Pool(36) as pool:
             pool.map(write_frame, all_frames)

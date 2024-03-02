@@ -1,14 +1,12 @@
 import argparse
 from pathlib import Path
 import os
-from dataclasses import dataclass
 import json
 from typing import List
 import numpy as np
 import matplotlib.pyplot as plt
-from functools import cached_property
-from scipy import ndimage
-from matplotlib.image import imread
+from eval.utils.data_models import FrameData, TestDatum
+
 import shutil
 
 TEST_NAME = "testing_8E1E9222-15B0-4BDD-B9B1-3922F88E2B4B_ayush_nov30_1"
@@ -17,109 +15,7 @@ DATA_DIR = Path(__file__).parent.parent / "data/.cache/firebase_data"
 TEST_DIR = DATA_DIR / f"{TEST_NAME}/ace/test"
 
 
-@dataclass
-class FrameData:
-    frame_num: int
-    timestamp: float
-    ACE: List[float]
-    ACE_INLIER_COUNT: str
-    ARKIT: List[float]
-    CLOUD_ANCHOR: List[float]
-
-    @property
-    def homogeneous_ace_pose(self) -> np.ndarray:
-        return np.reshape(self.ACE, [4, 4], order="F")
-
-    @property
-    def translation_ace(self) -> np.ndarray:
-        return self.homogeneous_ace_pose[0:3, 3]
-
-    @property
-    def homogeneous_arkit_pose(self) -> np.ndarray:
-        return np.reshape(self.ARKIT, [4, 4], order="F")
-
-    @property
-    def translation_arkit(self) -> np.ndarray:
-        return self.homogeneous_arkit_pose[0:3, 3]
-
-    @property
-    def image_file_name(self) -> str:
-        ret = str(self.frame_num)
-        while len(ret) < 5:
-            ret = "0" + ret
-        return f"{ret}.color.jpg"
-
-    @property
-    def annotated_image_file_name(self) -> str:
-        return f"annotated_{self.frame_num}.png"
-
-
-@dataclass
-class VizDatum:
-    frame_num: int
-    t_err: float
-    inlier_count: int
-    img_rgb: np.ndarray
-
-
-@dataclass
-class TestInstance:
-    frames: List[FrameData]
-    root_dir: Path
-    RECORDING_FPS: int = 60
-
-    @cached_property
-    def ace_poses(self) -> List[np.ndarray]:
-        return np.array([frame.homogeneous_ace_pose for frame in self.frames])
-
-    @cached_property
-    def ace_translations(self) -> List[np.ndarray]:
-        return np.array([frame.translation_ace for frame in self.frames])
-
-    @cached_property
-    def arkit_poses(self) -> List[np.ndarray]:
-        return np.array([frame.homogeneous_arkit_pose for frame in self.frames])
-
-    @cached_property
-    def arkit_translations(self) -> List[np.ndarray]:
-        return np.array([frame.translation_arkit for frame in self.frames])
-
-    @property
-    def inliers(self) -> List[int]:
-        return np.array([int(frame.ACE_INLIER_COUNT) for frame in self.frames])
-
-    def get_translational_err_at_idx(self, frame_idx: int):
-        return np.linalg.norm(
-            self.ace_translations[frame_idx] - self.arkit_translations[frame_idx]
-        )
-
-    def get_ace_translations_with_inlier_thresh(self, inlier_threshold: int):
-        return self.ace_translations[self.inliers > inlier_threshold]
-
-    def get_viz_frames(self, step_fps: int, annotated_frames: bool) -> List[VizDatum]:
-        idx_step = int(self.RECORDING_FPS // step_fps)
-        if annotated_frames:
-            img_dir = self.root_dir.parent / "annotated_rgb"
-        else:
-            img_dir = self.root_dir.parent / "rgb"
-        return [
-            VizDatum(
-                frame_num=frame.frame_num,
-                t_err=self.get_translational_err_at_idx(idx * idx_step),
-                inlier_count=frame.ACE_INLIER_COUNT,
-                img_rgb=np.rot90(
-                    imread(
-                        img_dir
-                        / f"{frame.annotated_image_file_name if annotated_frames else frame.image_file_name}"
-                    ),
-                    3,
-                ),
-            )
-            for (idx, frame) in enumerate(self.frames[0 : len(self.frames) : idx_step])
-        ]
-
-
-def load_cache_data() -> TestInstance:
+def load_cache_data() -> TestDatum:
     exclusion_dirs = ["calibration", "poses", "rgb", "annotated_rgb"]
     if TEST_TIME:
         curr_test_inst_dir = TEST_DIR / TEST_TIME
@@ -141,7 +37,7 @@ def load_cache_data() -> TestInstance:
         data = json.load(file)["data"]
 
     frames = [FrameData(**frame) for frame in data]
-    test_data = TestInstance(frames=frames, root_dir=curr_test_inst_dir)
+    test_data = TestDatum(frames=frames, root_dir=curr_test_inst_dir)
     return test_data
 
 
