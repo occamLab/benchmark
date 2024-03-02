@@ -27,7 +27,7 @@ def list_tars():
     tar_names = []
 
     for tar in tars:
-        if tar.name.endswith(".tar") and "nov30" in tar.name:
+        if tar.name.endswith(".tar") and "ayush_mar_" in tar.name:
             tar_names.append(tar.name)
 
     return tar_names
@@ -158,6 +158,8 @@ class FirebaseDownloader:
             image_timestamp = video_start + float(frame.pts * frame.time_base)
             frame_path: Path = video_folder_path / f"{frame.index}.jpg"
             frame = frame
+            if frame_path.exists():
+                continue
             all_frames += [(image_timestamp, frame_path, frame)]
 
         def write_frame(frame_info):
@@ -168,6 +170,9 @@ class FirebaseDownloader:
             self.extracted_data.append_video_timestamp(
                 image_timestamp, frame_path, frame.index, mapping_phase
             )
+
+        if len(all_frames) == 0:
+            return
 
         with Pool(36) as pool:
             pool.map(write_frame, all_frames)

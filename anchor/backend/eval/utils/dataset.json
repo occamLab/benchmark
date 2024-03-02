@@ -1,0 +1,54 @@
+{
+    "ayush_mar_1": {
+        "metadata": "Basic Circles of the area outside Paul's Lab",
+        "mapping_time": "4:30 PM",
+        "tests": [
+            {
+                "time": "4:30",
+                "tar_name": "training_ua-db75386d140cced387fa91aa309ac2c3_ayush_mar_1"
+            },
+            {
+                "time": "9:30",
+                "tar_name": "testing_9B01FCA8-EF76-409B-81A6-F6ABCA71C4FD_ayush_mar_1.tar"
+            }
+        ]
+    },
+    "ayush_mar_2": {
+        "metadata": "Basic Loop of MAC Hallway directly outside of Paul's Lab",
+        "mapping_time": "4:30 PM",
+        "tests": [
+            {
+                "time": "4:30",
+                "tar_name": "training_ua-f584a6b982002daea7dc765592cd17f1_ayush_mar_2.tar"
+            },
+            {
+                "time": "9:30",
+                "tar_name": "testing_B48D7133-B67B-4DB9-9F2E-D25FCADDFD51_ayush_mar_2.tar"
+            }
+        ]
+    },
+    "ayush_mar_3": {
+        "metadata": "Basic Circles of the area outside Paul's Lab",
+        "mapping_time": "4:30 PM",
+        "tests": [
+            {
+                "time": "4:30",
+                "tar_name": "training_ua-90ff6414f8f3669b1d685adc3f651e3d_ayush_mar_3.tar"
+            },
+            {
+                "time": "9:30",
+                "tar_name": "testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3.tar"
+            }
+        ]
+    },
+    "ayush_mar_4": {
+        "metadata": "Basic Circles of the area outside Paul's Lab",
+        "mapping_time": "9:30 PM",
+        "tests": [
+            {
+                "time": "9:30",
+                "tar_name": "training_ua-db75386d140cced387fa91aa309ac2c3_ayush_mar_1"
+            }
+        ]
+    }
+}
