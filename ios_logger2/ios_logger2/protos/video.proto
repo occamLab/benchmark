@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+message VideoAttributes {
+    double videoStartUnixTimestamp = 1;
+}
+
+message VideoData {
+    message MappingPhase {
+        VideoAttributes videoAttributes = 1;
+    }
+    message LocalizationPhase {
+        VideoAttributes videoAttributes = 1;
+    }
+    MappingPhase mappingPhase = 1;
+    LocalizationPhase localizationPhase = 2;
+}

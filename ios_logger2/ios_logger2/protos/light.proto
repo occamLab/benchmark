@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+message LightTimestamp {
+    double timestamp = 1;
+    double lightIntensity = 2;
+}
+
+message LightData {
+    message MappingPhase {
+        repeated LightTimestamp measurements = 1;
+    }
+    message LocalizationPhase {
+        repeated LightTimestamp measurements = 1;
+    }
+    MappingPhase mappingPhase = 1;
+    LocalizationPhase localizationPhase = 2;
+}

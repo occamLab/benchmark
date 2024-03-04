@@ -1,0 +1,3 @@
+[submodule "anchor/third_party/ace"]
+	path = anchor/third_party/ace
+	url = https://github.com/Mickmcginnis/ace

@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+message IntrinsicsTimestamp {
+    double timestamp = 1;
+    repeated float cameraIntrinsics = 2;
+}
+
+message IntrinsicsData {
+    message MappingPhase {
+        repeated IntrinsicsTimestamp measurements = 1;
+    }
+    message LocalizationPhase {
+        repeated IntrinsicsTimestamp measurements = 1;
+
+    }
+    MappingPhase mappingPhase = 1;
+    LocalizationPhase localizationPhase = 2;
+}

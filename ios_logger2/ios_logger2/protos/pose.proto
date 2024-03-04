@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+message PoseTimestamp {
+    double timestamp = 1;
+    repeated float poseTranslation = 2;
+    repeated float rotMatrix = 3;
+    repeated float quatImag = 4;
+    float quatReal = 5;
+}
+
+message PoseData {
+    message MappingPhase {
+        repeated PoseTimestamp measurements = 1;
+    }
+    message LocalizationPhase {
+        repeated PoseTimestamp measurements = 1;
+    }
+    MappingPhase mappingPhase = 1;
+    LocalizationPhase localizationPhase = 2;
+}

@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+message LidarTimestamp {
+    double timestamp = 1;
+    repeated float lidar = 2;
+    repeated uint32 conf = 3;
+}
+
+message LidarData {
+    message MappingPhase {
+        repeated LidarTimestamp measurements = 1;
+    }
+    message LocalizationPhase {
+        repeated LidarTimestamp measurements = 1;
+    }
+    MappingPhase mappingPhase = 1;
+    LocalizationPhase localizationPhase = 2;
+}

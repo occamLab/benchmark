@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+message AccelerometerTimestamp {
+    double timestamp = 1;
+    double xAcceleration = 2;
+    double yAcceleration = 3;
+    double zAcceleration = 4;
+}
+
+
+message AccelerometerData {
+    message MappingPhase {
+        repeated AccelerometerTimestamp measurements = 1;
+    }
+    message LocalizationPhase {
+        repeated AccelerometerTimestamp measurements = 1;
+
+    }
+    MappingPhase mappingPhase = 1;
+    LocalizationPhase localizationPhase = 2;
+}

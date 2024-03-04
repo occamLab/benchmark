@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+message PointCloudTimestamp {
+    double timestamp = 1;
+    uint32 pointsInCloud = 2;
+}
+
+message PointCloudData {
+    message MappingPhase {
+        repeated PointCloudTimestamp measurements = 1;
+    }
+    message LocalizationPhase {
+        repeated PointCloudTimestamp measurements = 1;
+    }
+    MappingPhase mappingPhase = 1;
+    LocalizationPhase localizationPhase = 2;
+}
