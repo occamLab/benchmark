@@ -95,7 +95,7 @@ def write_localization_from_dataset(model_name: str, partial_ace_data_set: Path)
         np.savetxt(
             (partial_ace_data_set / "poses" / f"{sequence_number}.pose.txt").as_posix(),
             pose,
-            fmt="%f",   
+            fmt="%f",
         )
         with open(
             (partial_ace_data_set / "inlier_count" / f"{sequence_number}.inliers.txt"),

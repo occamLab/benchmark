@@ -8,8 +8,11 @@ from matplotlib.image import imread
 import numpy as np
 import json
 from matplotlib.figure import Figure
+from slugify import slugify
 
 DATA_DIR = Path(__file__).parent.parent.parent / "data/.cache/firebase_data"
+
+ARBITRARY_INLIERS = [0, 100, 200, 500, 1000]
 
 
 @dataclass
@@ -106,6 +109,10 @@ class TestDatum:
             ]
         )
 
+    @property
+    def num_cloud_anchor_poses(self) -> int:
+        return len(self.cloud_anchor_poses)
+
     @cached_property
     def cloud_anchor_translations(self) -> List[np.ndarray]:
         return np.array(
@@ -138,6 +145,10 @@ class TestDatum:
     def get_ace_translations_with_inlier_thresh(self, inlier_threshold: int):
         return self.ace_translations[self.inliers > inlier_threshold]
 
+    @property
+    def num_ace_frames_by_inliers(self) -> Dict[int, int]:
+        return {inlier: int(sum(self.inliers > inlier)) for inlier in ARBITRARY_INLIERS}
+
     def get_viz_frames(self, step_fps: int, annotated_frames: bool) -> List[VizDatum]:
         idx_step = int(self.RECORDING_FPS // step_fps)
         if annotated_frames:
@@ -167,13 +178,57 @@ class TestDatum:
         return np.mean(self.cloud_anchor_translational_errors)
 
     def get_ace_avg_translation_errs(self) -> Dict[int, float]:
-        inliers = [0, 100, 200, 500, 1000]
         return {
             inlier: self.get_ace_avg_translation_err_for_inlier_count(inlier)
-            for inlier in inliers
+            for inlier in ARBITRARY_INLIERS
         }
 
-    def plot_data(self, fig: Figure) -> None:
+    def plot_2d_data(self, fig: Figure) -> None:
+        ax = fig.add_subplot(2, 3, 1)
+
+        ax.scatter(
+            self.arkit_translations[:, 0],
+            self.arkit_translations[:, 2],
+            label="ARKIT",
+            marker="o",
+        )
+
+        ax.scatter(
+            self.cloud_anchor_translations[:, 0],
+            self.cloud_anchor_translations[:, 2],
+            label=f"CA",
+            marker="x",
+        )
+
+        ax.set_title(
+            f"CA Trans. Err: {self.get_cloud_anchor_avg_translation_err():.4f}", y=0.97
+        )
+        ax.legend()
+
+        for idx, (num_inlier, trans_err) in enumerate(
+            self.get_ace_avg_translation_errs().items()
+        ):
+            ace_poses_filt = self.get_ace_translations_with_inlier_thresh(num_inlier)
+
+            ax = fig.add_subplot(2, 3, idx + 2)
+            ax.scatter(
+                self.arkit_translations[:, 0],
+                self.arkit_translations[:, 2],
+                label="ARKIT",
+                marker="o",
+            )
+
+            ax.scatter(
+                ace_poses_filt[:, 0],
+                ace_poses_filt[:, 2],
+                label=f"ACE",
+                marker="x",
+            )
+
+            ax.set_title(f"ACE:{num_inlier} Trans. Err: {trans_err:.4f}", y=0.97)
+            ax.legend()
+
+    def plot_3d_data(self, fig: Figure) -> None:
         ax = fig.add_subplot(2, 3, 1, projection="3d")
 
         ax.scatter(
@@ -188,16 +243,13 @@ class TestDatum:
             self.cloud_anchor_translations[:, 0],
             self.cloud_anchor_translations[:, 1],
             self.cloud_anchor_translations[:, 2],
-            label=f"CLOUD ANCHOR",
+            label=f"CA",
             marker="x",
         )
 
         ax.set_ylim([-0.5, 0.5])
-        ax.set_xlabel("X")
-        ax.set_ylabel("Y")
-        ax.set_zlabel("Z")
         ax.set_title(
-            f"CA (Avg Trans. Err: {self.get_cloud_anchor_avg_translation_err():.4f}, {len(self.cloud_anchor_translations)}/{len(self.arkit_translations)} Frames)"
+            f"CA Trans. Err: {self.get_cloud_anchor_avg_translation_err():.4f}", y=0.97
         )
         ax.legend()
 
@@ -219,18 +271,12 @@ class TestDatum:
                 ace_poses_filt[:, 0],
                 ace_poses_filt[:, 1],
                 ace_poses_filt[:, 2],
-                label=f"ACE ({num_inlier} Inliers)",
+                label=f"ACE",
                 marker="x",
             )
 
             ax.set_ylim([-0.5, 0.5])
-            ax.set_xlabel("X")
-            ax.set_ylabel("Y")
-            ax.set_zlabel("Z")
-
-            ax.set_title(
-                f"ACE (Avg Trans. Err: {trans_err:.4f}, {len(ace_poses_filt)}/{len(self.arkit_translations)} Frames)"
-            )
+            ax.set_title(f"ACE:{num_inlier} Trans. Err: {trans_err:.4f}")
             ax.legend()
 
 
@@ -239,6 +285,8 @@ class TestInfo:
     tar_name: str
     time: str
     data: TestDatum
+    error: Dict
+    num_frames: Dict
 
     @property
     def tar_path(self) -> Path:
@@ -275,6 +323,10 @@ class TestInfo:
 
     def __repr__(self) -> str:
         return f"{self.tar_name} @ {self.time}"
+
+    @property
+    def time_clean(self) -> str:
+        return slugify(self.time)
 
 
 @dataclass
