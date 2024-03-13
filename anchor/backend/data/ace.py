@@ -9,7 +9,6 @@ import sys
 import subprocess
 import os
 import torch
-import tempfile
 from dataclasses import dataclass
 from scipy.spatial.transform import Rotation as R
 import numpy as np
@@ -246,14 +245,19 @@ def process_localization_phase(
         firebase_processed_tar_path: str = str(
             Path(combined_path).parent.parent / f"processedTestTars/{tar_name}"
         )
-        downloader.delete_file((Path(firebase_tar_queue_path) / tar_name).as_posix())
-        downloader.upload_file(
-            remote_location=firebase_processed_tar_path,
-            local_location=downloader.local_tar_location,
-        )
-        print(
-            "[INFO]: Moved tar from tarQueue to processedTestTars directory in firebase"
-        )
+        try:
+            downloader.delete_file(
+                (Path(firebase_tar_queue_path) / tar_name).as_posix()
+            )
+            downloader.upload_file(
+                remote_location=firebase_processed_tar_path,
+                local_location=downloader.local_tar_location,
+            )
+            print(
+                "[INFO]: Moved tar from tarQueue to processedTestTars directory in firebase"
+            )
+        except:
+            print("[WARNING] Unable to Move tar")
 
 
 def process_training_data(
@@ -389,20 +393,24 @@ def process_testing_data(combined_path: str, downloader: FirebaseDownloader):
     model_name = Path(combined_path).stem.split("training_")[-1]
     model_name = "_".join(model_name.split("_")[2:])
 
-    for dir, _, _ in os.walk(downloader.root_download_dir):
-        dir_path = Path(dir)
-        if str(dir_path).endswith(model_name) and dir_path.parts[-1].startswith(
-            "training_"
-        ):
-            model_data_folder = Path(dir) / "ace"
-            model_weights_path = model_data_folder / "model.pt"
-            break
-    else:
-        raise NotImplementedError
-        # if not model_weights_path.exists():
-        #     downloader.download_file(
-        #         f"iosLoggerDemo/trainedModels/{model_name}.pt", model_weights_path
-        #     )
+    model_data_folder = Path(
+        "/home/powerhorse/Desktop/daniel_tmp/benchmark/anchor/backend/data/.cache/firebase_data/training_ua-7c140933b99a14568ee768781fb5c9b2_ayush_mar_4_5_combined/ace"
+    )
+    model_weights_path = model_data_folder / "model.pt"
+    # for dir, _, _ in os.walk(downloader.root_download_dir):
+    #     dir_path = Path(dir)
+    #     if str(dir_path).endswith(model_name) and dir_path.parts[-1].startswith(
+    #         "training_"
+    #     ):
+    #         model_data_folder = Path(dir) / "ace"
+    #         model_weights_path = model_data_folder / "model.pt"
+    #         break
+    # else:
+    #     raise NotImplementedError
+    #     # if not model_weights_path.exists():
+    #     #     downloader.download_file(
+    #     #         f"iosLoggerDemo/trainedModels/{model_name}.pt", model_weights_path
+    #     #     )
 
     ace_test_pose_file = model_data_folder / "poses_ace_.txt"
     run_ace_evaluator(
@@ -418,6 +426,16 @@ if __name__ == "__main__":
 
     else:
         tars = list_tars()
+
+    # tars = ["training_ua-7c140933b99a14568ee768781fb5c9b2_ayush_mar_4_5_combined"]
+    tars = [
+        # 9:30
+        "testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3.tar",
+        # 12:00
+        "testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3.tar",
+        # Days later
+        "testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3.tar",
+    ]
 
     print("Processing: \n" + "\n".join(tars))
 

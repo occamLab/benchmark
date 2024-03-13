@@ -14,6 +14,7 @@ DATASET_MAPPINGS = {
     4: "ayush_mar_4",
     5: "ayush_mar_5",
     6: "ayush_mar_6",
+    7: "ayush_mar_4_5_combined"
 }
 FIGURE_DIR = Path(__file__).parent / "imgs"
 
@@ -27,15 +28,21 @@ def append_test_stats():
             try:
                 if "error" in test:
                     del test["error"]
-                test_info = TestInfo(data=None, **test)
+                test_info = TestInfo(data=None, error=None, **test)
                 test_info.load_data()
                 error = {
                     "ca_error": test_info.data.get_cloud_anchor_avg_translation_err(),
-                    "ace_error": test_info.data.get_ace_avg_translation_errs(),
+                    "ace_error": {
+                        "raw": test_info.data.get_ace_avg_translation_errs(),
+                        "smooth": test_info.data.get_ace_avg_translation_errs_smooth(),
+                    },
                 }
                 num_frames = {
                     "ca_frames": test_info.data.num_cloud_anchor_poses,
-                    "ace_frames": test_info.data.num_ace_frames_by_inliers,
+                    "ace_frames": {
+                        "raw": test_info.data.num_ace_frames_by_inliers,
+                        "smooth": test_info.data.num_ace_frames_by_inliers_smooth,
+                    },
                 }
                 json_data[map_name]["tests"][idx]["error"] = error
                 json_data[map_name]["tests"][idx]["num_frames"] = num_frames
@@ -47,7 +54,9 @@ def append_test_stats():
         json.dump(json_data, file, indent=4)
 
 
-def pose_comp(dataset_name: str, visualize: bool, save: bool, two_d: bool):
+def pose_comp(
+    dataset_name: str, visualize: bool, save: bool, two_d: bool, smooth_ace: bool
+):
     with open(DATASET_INFO_PATH, "r") as file:
         json_data = json.load(file)
 
@@ -58,6 +67,38 @@ def pose_comp(dataset_name: str, visualize: bool, save: bool, two_d: bool):
     map_data["tests"] = [TestInfo(data=None, **test) for test in map_data["tests"]]
     test_info = MapTestInfo(name=dataset_name, **map_data)
     test_info.load_all_data()
+
+    inliers = 3000
+    extrap = test_info.tests[0].data.get_ace_poses_extrap_by_inlier(inliers)
+
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1, projection="3d")
+    ax.set_ylim([-0.5, 0.5])
+
+    ax.scatter(extrap[:, 0, 3], extrap[:, 1, 3], extrap[:, 2, 3])
+    ax.scatter(
+        test_info.tests[0].data.arkit_poses[:, 0, 3],
+        test_info.tests[0].data.arkit_poses[:, 1, 3],
+        test_info.tests[0].data.arkit_poses[:, 2, 3],
+    )
+    if smooth_ace:
+        ax.scatter(
+            test_info.tests[0].data.get_ace_poses_extrap_by_inlier(inliers)[:, 0],
+            test_info.tests[0].data.get_ace_poses_extrap_by_inlier(inliers)[:, 1],
+            test_info.tests[0].data.get_ace_poses_extrap_by_inlier(inliers)[:, 2],
+        )
+    else:
+        ax.scatter(
+            test_info.tests[0].data.get_ace_translations_with_inlier_thresh(inliers)[
+                :, 0
+            ],
+            test_info.tests[0].data.get_ace_translations_with_inlier_thresh(inliers)[
+                :, 1
+            ],
+            test_info.tests[0].data.get_ace_translations_with_inlier_thresh(inliers)[
+                :, 2
+            ],
+        )
 
     plt.rcParams.update({"font.size": 7})
 
@@ -77,12 +118,14 @@ def pose_comp(dataset_name: str, visualize: bool, save: bool, two_d: bool):
         if save:
             plt.savefig(
                 FIGURE_DIR
-                / f"{dataset_name}/{'2d' if two_d else '3d'}_pose_viz_{test.time_clean}"
+                / f"{dataset_name}/{'2d' if two_d else '3d'}_pose_viz_{test.time_clean}{'_smooth' if smooth_ace else ''}"
             )
     plt.close()
 
 
-def translational_bar_chart(dataset_name: str, visualize: bool, save: bool):
+def translational_bar_chart(
+    dataset_name: str, visualize: bool, save: bool, smooth_ace: bool
+):
     with open(DATASET_INFO_PATH, "r") as file:
         json_data = json.load(file)
 
@@ -96,10 +139,17 @@ def translational_bar_chart(dataset_name: str, visualize: bool, save: bool):
     plt.rcParams.update({"font.size": 8})
     for idx, test in enumerate(map_data["tests"]):
         labels = ["CA"]
-        labels.extend([f"{inlier}" for inlier in test["error"]["ace_error"]])
         heights = [test["error"]["ca_error"]]
-
-        heights.extend([err for err in test["error"]["ace_error"].values()])
+        if smooth_ace:
+            labels.extend(
+                [f"{inlier}" for inlier in test["error"]["ace_error"]["smooth"]]
+            )
+            heights.extend(
+                [err for err in test["error"]["ace_error"]["smooth"].values()]
+            )
+        else:
+            labels.extend([f"{inlier}" for inlier in test["error"]["ace_error"]["raw"]])
+            heights.extend([err for err in test["error"]["ace_error"]["raw"].values()])
 
         ax = fig.add_subplot(2, 2, idx + 1)
         ax.bar(labels, heights)
@@ -113,12 +163,15 @@ def translational_bar_chart(dataset_name: str, visualize: bool, save: bool):
         plt.show()
 
     if save:
-        plt.savefig(FIGURE_DIR / f"{dataset_name}/trans_err_bar")
+        plt.savefig(
+            FIGURE_DIR
+            / f"{dataset_name}/trans_err_bar{'_smooth' if smooth_ace else ''}"
+        )
 
     plt.close()
 
 
-def frame_bar_chart(dataset_name: str, visualize: bool, save: bool):
+def frame_bar_chart(dataset_name: str, visualize: bool, save: bool, smooth_ace: bool):
     with open(DATASET_INFO_PATH, "r") as file:
         json_data = json.load(file)
 
@@ -132,10 +185,22 @@ def frame_bar_chart(dataset_name: str, visualize: bool, save: bool):
     plt.rcParams.update({"font.size": 8})
     for idx, test in enumerate(map_data["tests"]):
         labels = ["CA"]
-        labels.extend([f"{inlier}" for inlier in test["num_frames"]["ace_frames"]])
         heights = [test["num_frames"]["ca_frames"]]
 
-        heights.extend([err for err in test["num_frames"]["ace_frames"].values()])
+        if smooth_ace:
+            labels.extend(
+                [f"{inlier}" for inlier in test["num_frames"]["ace_frames"]["smooth"]]
+            )
+            heights.extend(
+                [err for err in test["num_frames"]["ace_frames"]["smooth"].values()]
+            )
+        else:
+            labels.extend(
+                [f"{inlier}" for inlier in test["num_frames"]["ace_frames"]["raw"]]
+            )
+            heights.extend(
+                [err for err in test["num_frames"]["ace_frames"]["raw"].values()]
+            )
 
         ax = fig.add_subplot(2, 2, idx + 1)
         ax.bar(labels, heights)
@@ -149,7 +214,10 @@ def frame_bar_chart(dataset_name: str, visualize: bool, save: bool):
         plt.show()
 
     if save:
-        plt.savefig(FIGURE_DIR / f"{dataset_name}/num_frames_bar")
+        plt.savefig(
+            FIGURE_DIR
+            / f"{dataset_name}/num_frames_bar{'_smooth' if smooth_ace else ''}"
+        )
 
     plt.close()
 
@@ -194,6 +262,12 @@ if __name__ == "__main__":
     parser.add_argument(
         "-twod", help="Plot 2D Mapping of Poses", action="store_true", default=True
     )
+    parser.add_argument(
+        "-smooth",
+        help="Run Smoothing algorithm on ACE poses to better compare against cloud anchors",
+        action="store_true",
+        default=False,
+    )
 
     args = parser.parse_args()
 
@@ -216,10 +290,19 @@ if __name__ == "__main__":
                 visualize=args.v,
                 save=args.s,
                 two_d=args.twod,
+                smooth_ace=args.smooth,
             )
         if args.bar_t:
             translational_bar_chart(
-                dataset_name=dataset_name, visualize=args.v, save=args.s
+                dataset_name=dataset_name,
+                visualize=args.v,
+                save=args.s,
+                smooth_ace=args.smooth,
             )
         if args.bar_f:
-            frame_bar_chart(dataset_name=dataset_name, visualize=args.v, save=args.s)
+            frame_bar_chart(
+                dataset_name=dataset_name,
+                visualize=args.v,
+                save=args.s,
+                smooth_ace=args.smooth,
+            )

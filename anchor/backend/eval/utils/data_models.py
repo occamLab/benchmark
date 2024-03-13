@@ -79,19 +79,19 @@ class TestDatum:
     RECORDING_FPS: int = 60
 
     @cached_property
-    def ace_poses(self) -> List[np.ndarray]:
+    def ace_poses(self) -> np.ndarray:
         return np.array([frame.homogeneous_ace_pose for frame in self.frames])
 
     @cached_property
-    def ace_translations(self) -> List[np.ndarray]:
+    def ace_translations(self) -> np.ndarray:
         return np.array([frame.translation_ace for frame in self.frames])
 
     @cached_property
-    def arkit_poses(self) -> List[np.ndarray]:
+    def arkit_poses(self) -> np.ndarray:
         return np.array([frame.homogeneous_arkit_pose for frame in self.frames])
 
     @cached_property
-    def arkit_translations(self) -> List[np.ndarray]:
+    def arkit_translations(self) -> np.ndarray:
         return np.array([frame.translation_arkit for frame in self.frames])
 
     @cached_property
@@ -101,7 +101,7 @@ class TestDatum:
                 return idx
 
     @cached_property
-    def cloud_anchor_poses(self) -> List[np.ndarray]:
+    def cloud_anchor_poses(self) -> np.ndarray:
         return np.array(
             [
                 frame.homogeneous_cloud_anchor_pose
@@ -114,7 +114,7 @@ class TestDatum:
         return len(self.cloud_anchor_poses)
 
     @cached_property
-    def cloud_anchor_translations(self) -> List[np.ndarray]:
+    def cloud_anchor_translations(self) -> np.ndarray:
         return np.array(
             [
                 frame.translation_cloud_anchor
@@ -123,12 +123,12 @@ class TestDatum:
         )
 
     @cached_property
-    def ace_translational_errors(self) -> List[np.ndarray]:
+    def ace_translational_errors(self) -> np.ndarray:
         diff = self.ace_translations - self.arkit_translations
         return np.linalg.norm(diff, axis=1)
 
     @cached_property
-    def cloud_anchor_translational_errors(self) -> List[np.ndarray]:
+    def cloud_anchor_translational_errors(self) -> np.ndarray:
         diff = (
             self.cloud_anchor_translations
             - self.arkit_translations[self.cloud_anchor_start_idx :]
@@ -136,7 +136,7 @@ class TestDatum:
         return np.linalg.norm(diff, axis=1)
 
     @property
-    def inliers(self) -> List[int]:
+    def inliers(self) -> np.ndarray:
         return np.array([int(frame.ACE_INLIER_COUNT) for frame in self.frames])
 
     def get_ace_translational_err_at_idx(self, frame_idx: int):
@@ -148,6 +148,13 @@ class TestDatum:
     @property
     def num_ace_frames_by_inliers(self) -> Dict[int, int]:
         return {inlier: int(sum(self.inliers > inlier)) for inlier in ARBITRARY_INLIERS}
+
+    @property
+    def num_ace_frames_by_inliers_smooth(self) -> Dict[int, int]:
+        return {
+            inlier: len(self.get_ace_poses_extrap_by_inlier(inlier))
+            for inlier in ARBITRARY_INLIERS
+        }
 
     def get_viz_frames(self, step_fps: int, annotated_frames: bool) -> List[VizDatum]:
         idx_step = int(self.RECORDING_FPS // step_fps)
@@ -182,6 +189,47 @@ class TestDatum:
             inlier: self.get_ace_avg_translation_err_for_inlier_count(inlier)
             for inlier in ARBITRARY_INLIERS
         }
+
+    def get_ace_avg_translation_errs_smooth(self) -> Dict[int, float]:
+        return {
+            inlier: np.mean(
+                np.linalg.norm(
+                    self.get_ace_poses_extrap_by_inlier(inlier)[:, 0:3, 3]
+                    - self.arkit_translations[
+                        len(self.arkit_translations)
+                        - len(self.get_ace_poses_extrap_by_inlier(inlier)) :
+                    ],
+                    axis=1,
+                )
+            )
+            if len(self.get_ace_poses_extrap_by_inlier(inlier)) > 0
+            else float("NaN")
+            for inlier in ARBITRARY_INLIERS
+        }
+
+    def get_ace_poses_extrap_by_inlier(self, inlier_thresh: int) -> np.ndarray:
+        assert len(self.ace_poses) == len(
+            self.arkit_poses
+        ), "This function assumes ACE and ARKIT have the same length"
+
+        base_anchor = None
+        poses = []
+
+        for idx, (ace_pose, inlier_count) in enumerate(
+            zip(self.ace_poses, self.inliers)
+        ):
+            if inlier_count >= inlier_thresh:
+                base_anchor = ace_pose
+                poses.append(ace_pose)
+            else:
+                if base_anchor is None:
+                    continue
+                curr_arkit_pose = self.arkit_poses[idx]
+                prev_arkit_pose = self.arkit_poses[idx - 1]
+                delta = np.linalg.inv(prev_arkit_pose) @ curr_arkit_pose
+                new_pose = poses[-1] @ delta
+                poses.append(new_pose)
+        return np.array(poses)
 
     def plot_2d_data(self, fig: Figure) -> None:
         ax = fig.add_subplot(2, 3, 1)
