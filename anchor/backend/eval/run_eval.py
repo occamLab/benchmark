@@ -1,7 +1,8 @@
 from pathlib import Path
 import json
 from utils.error import compute_rotational_error, compute_translation_error
-from utils.data_models import TestInfo, MapTestInfo
+from utils.data_models import TestInfo, MapTestInfo, FrameData, TestDatum
+
 import matplotlib.pyplot as plt
 import argparse
 import os
@@ -220,6 +221,18 @@ def frame_bar_chart(dataset_name: str, visualize: bool, save: bool, smooth_ace: 
         )
 
     plt.close()
+
+
+def analyze_multi_model_datasets(test_name, visualize: bool, save: bool):
+    data_file = Path(__file__).parent.parent / "data/.cache/multi_model_results" / test_name / "results.json"
+    with open(data_file, "r") as file:
+        results = json.load(file)
+
+    for model_name, data in results.items():
+        results[model_name] = TestDatum(
+            frames=[FrameData(**args) for args in data],
+            root_dir = Path(__file__).parent.parent / "data/.cache/firebase_data" / model_name
+        )
 
 
 if __name__ == "__main__":
