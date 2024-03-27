@@ -400,9 +400,6 @@ def process_testing_data(
     model_name = "_".join(model_name.split("_")[2:])
 
     if model_data_folder:
-        # model_data_folder = Path(
-        #     "/home/powerhorse/Desktop/daniel_tmp/benchmark/anchor/backend/data/.cache/firebase_data/training_ua-7c140933b99a14568ee768781fb5c9b2_ayush_mar_4_5_combined/ace"
-        # )
         model_weights_path = model_data_folder / "model.pt"
     else:
         for dir, _, _ in os.walk(downloader.root_download_dir):
