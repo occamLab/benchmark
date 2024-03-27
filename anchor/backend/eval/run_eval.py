@@ -1,7 +1,13 @@
 from pathlib import Path
 import json
 from utils.error import compute_rotational_error, compute_translation_error
-from utils.data_models import TestInfo, MapTestInfo, FrameData, TestDatum
+from utils.data_models import (
+    TestInfo,
+    MapTestInfo,
+    FrameData,
+    TestDatum,
+    MultiModelAnalysis,
+)
 
 import matplotlib.pyplot as plt
 import argparse
@@ -15,7 +21,20 @@ DATASET_MAPPINGS = {
     4: "ayush_mar_4",
     5: "ayush_mar_5",
     6: "ayush_mar_6",
-    7: "ayush_mar_4_5_combined"
+    7: "ayush_mar_4_5_combined",
+}
+MULTI_MODEL_TEST_MAPPINGS = {
+    # 9:30
+    1: "testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3",
+    # 12:00
+    2: "testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3",
+    # Days later
+    3: "testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3",
+}
+MULTI_MODEL_TEST_METADATA_MAPPINGS = {
+    "testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3": "9:30 PM",
+    "testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3": "12:00 PM",
+    "testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3": "9:30 PM (Days Later)",
 }
 FIGURE_DIR = Path(__file__).parent / "imgs"
 
@@ -223,16 +242,167 @@ def frame_bar_chart(dataset_name: str, visualize: bool, save: bool, smooth_ace: 
     plt.close()
 
 
-def analyze_multi_model_datasets(test_name, visualize: bool, save: bool):
-    data_file = Path(__file__).parent.parent / "data/.cache/multi_model_results" / test_name / "results.json"
+def analyze_multi_model_datasets(dataset_name, visualize: bool, save: bool):
+    data_file = (
+        Path(__file__).parent.parent
+        / "data/.cache/multi_model_results"
+        / dataset_name
+        / "results.json"
+    )
     with open(data_file, "r") as file:
         results = json.load(file)
 
     for model_name, data in results.items():
         results[model_name] = TestDatum(
             frames=[FrameData(**args) for args in data],
-            root_dir = Path(__file__).parent.parent / "data/.cache/firebase_data" / model_name
+            root_dir=Path(__file__).parent.parent
+            / "data/.cache/firebase_data"
+            / model_name,
         )
+
+    mm_analyzer = MultiModelAnalysis(results)
+
+    fig = plt.figure()
+
+    plt.rcParams.update({"font.size": 8})
+    ax = fig.add_subplot(2, 2, 1)
+    independent_trans_errs = mm_analyzer.independent_avg_translation_errs
+    ax.bar(
+        [str(int(x)) for x in independent_trans_errs[:, 0]],
+        independent_trans_errs[:, 1],
+    )
+    ax.set_title("Independent Models Stitched Together", y=0.97)
+    ax.set_ylim(0, 2)
+    ax.set_ylabel("Error (m)")
+    # ax.set_xlabel("Inlier Count")
+
+    labels = []
+    heights = []
+    ax = fig.add_subplot(2, 2, 2)
+    independent_trans_errs = mm_analyzer.combined_avg_translation_errs
+    labels.extend([str(int(x)) for x in independent_trans_errs.keys()])
+    heights.extend(independent_trans_errs.values())
+    ax.bar(
+        labels,
+        heights,
+    )
+    ax.set_title("Combined Model", y=0.97)
+    ax.set_ylim(0, 2)
+    ax.set_ylabel("Error (m)")
+    # ax.set_xlabel("Inlier Count")
+
+    labels = []
+    heights = []
+    ax = fig.add_subplot(2, 2, 3)
+    independent_trans_errs = mm_analyzer.model0_avg_translation_errs
+    labels.extend([str(int(x)) for x in independent_trans_errs.keys()])
+    heights.extend(independent_trans_errs.values())
+    ax.bar(
+        labels,
+        heights,
+    )
+    ax.set_title("Model 0 (Recorded 9:30 PM)", y=0.97)
+    ax.set_ylim(0, 2)
+    ax.set_ylabel("Error (m)")
+    # ax.set_xlabel("Inlier Count")
+
+    labels = []
+    heights = []
+    ax = fig.add_subplot(2, 2, 4)
+    independent_trans_errs = mm_analyzer.model1_avg_translation_errs
+    labels.extend([str(int(x)) for x in independent_trans_errs.keys()])
+    heights.extend(independent_trans_errs.values())
+    ax.bar(
+        labels,
+        heights,
+    )
+    ax.set_title("Model 1 (Recorded 12:00 PM)", y=0.97)
+    ax.set_ylim(0, 2)
+    ax.set_ylabel("Error (m)")
+    # ax.set_xlabel("Inlier Count")
+
+    plt.suptitle(
+        f"Translational Error of Various Multi-Time Models\nTest: {MULTI_MODEL_TEST_METADATA_MAPPINGS[dataset_name]}",
+        fontsize=12,
+        y=0.99,
+    )
+
+    if save:
+        plt.savefig(
+            FIGURE_DIR / f"multimodel/{dataset_name.split('_')[1]}/trans_err_bar"
+        )
+
+    if visualize:
+        plt.show()
+
+    plt.close()
+
+    fig = plt.figure()
+
+    plt.rcParams.update({"font.size": 8})
+    ax = fig.add_subplot(2, 2, 1)
+    independent_trans_errs = mm_analyzer.independent_num_frames
+    ax.bar(
+        [str(int(x)) for x in independent_trans_errs[:, 0]],
+        independent_trans_errs[:, 1],
+    )
+    ax.set_title("Independent Models Stitched Together", y=0.97)
+    ax.set_ylabel("Num Frames")
+    # ax.set_xlabel("Inlier Count")
+
+    labels = []
+    heights = []
+    ax = fig.add_subplot(2, 2, 2)
+    independent_trans_errs = mm_analyzer.combined_num_frames
+    labels.extend([str(int(x)) for x in independent_trans_errs.keys()])
+    heights.extend(independent_trans_errs.values())
+    ax.bar(
+        labels,
+        heights,
+    )
+    ax.set_title("Combined Model", y=0.97)
+    ax.set_ylabel("Num Frames")
+    # ax.set_xlabel("Inlier Count")
+
+    labels = []
+    heights = []
+    ax = fig.add_subplot(2, 2, 3)
+    independent_trans_errs = mm_analyzer.model0_num_frames
+    labels.extend([str(int(x)) for x in independent_trans_errs.keys()])
+    heights.extend(independent_trans_errs.values())
+    ax.bar(
+        labels,
+        heights,
+    )
+    ax.set_title("Model 0 (Recorded 9:30 PM)", y=0.97)
+    ax.set_ylabel("Num Frames")
+    # ax.set_xlabel("Inlier Count")
+
+    labels = []
+    heights = []
+    ax = fig.add_subplot(2, 2, 4)
+    independent_trans_errs = mm_analyzer.model1_num_frames
+    labels.extend([str(int(x)) for x in independent_trans_errs.keys()])
+    heights.extend(independent_trans_errs.values())
+    ax.bar(
+        labels,
+        heights,
+    )
+    ax.set_title("Model 1 (Recorded 12:00 PM)", y=0.97)
+    ax.set_ylabel("Num Frames")
+    # ax.set_xlabel("Inlier Count")
+
+    plt.suptitle(
+        f"Translational Error of Various Multi-Time Models\nTest: {MULTI_MODEL_TEST_METADATA_MAPPINGS[dataset_name]}",
+        fontsize=12,
+        y=0.99,
+    )
+
+    if save:
+        plt.savefig(FIGURE_DIR / f"multimodel/{dataset_name.split('_')[1]}/frame_bar")
+
+    if visualize:
+        plt.show()
 
 
 if __name__ == "__main__":
@@ -281,21 +451,37 @@ if __name__ == "__main__":
         action="store_true",
         default=False,
     )
+    parser.add_argument(
+        "-mm", help="Run multi-model comparisons", action="store_true", default=False
+    )
 
     args = parser.parse_args()
 
-    if not (dataset_name := DATASET_MAPPINGS.get(args.map_num)):
+    if not (dataset_name := DATASET_MAPPINGS.get(args.map_num)) or not (
+        dataset_name := MULTI_MODEL_TEST_MAPPINGS.get(args.map_num)
+    ):
         raise ValueError(f"Invalid Map Number: {args.map_num}")
     datasets = [dataset_name]
     if args.all_maps:
-        datasets = DATASET_MAPPINGS.values()
+        if args.mm:
+            datasets = MULTI_MODEL_TEST_MAPPINGS.values()
+        else:
+            datasets = DATASET_MAPPINGS.values()
 
     if args.um:
         append_test_stats()
 
     for dataset_name in datasets:
-        if args.s and not (FIGURE_DIR / dataset_name).exists():
+        if args.s and not (FIGURE_DIR / dataset_name).exists() and not args.mm:
             os.mkdir(FIGURE_DIR / dataset_name)
+        if (
+            args.s
+            and args.mm
+            and not (
+                dir := FIGURE_DIR / f"multimodel/{dataset_name.split('_')[1]}"
+            ).exists()
+        ):
+            os.mkdir(dir)
 
         if args.pose:
             pose_comp(
@@ -318,4 +504,11 @@ if __name__ == "__main__":
                 visualize=args.v,
                 save=args.s,
                 smooth_ace=args.smooth,
+            )
+
+        if args.mm:
+            analyze_multi_model_datasets(
+                dataset_name=dataset_name,
+                visualize=args.v,
+                save=args.s,
             )
