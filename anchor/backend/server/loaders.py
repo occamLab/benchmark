@@ -12,6 +12,8 @@ import torch, tempfile, base64, dsacstar, time, numpy as np
 from typing import List, Dict
 import re
 
+TMP_FILE = tempfile.NamedTemporaryFile()
+    
 
 class ModelLoader:
     def __init__(self) -> None:
@@ -105,6 +107,7 @@ class ModelLoader:
                 scale_factor = train_resolution / sk_image.shape[0]
                 pil_image = TF.to_pil_image(sk_image)
                 pil_image = TF.resize(pil_image, train_resolution)
+            tmp.close()
 
             image_transform = transforms.Compose(
                 [
@@ -132,7 +135,6 @@ class ModelLoader:
                 t = self.test(tensor_image).float().cpu()
             # Allocate output variable.
             out_pose = torch.zeros((4, 4))
-            print(scene_coordinates.size())
             with nostdout():
                 inlier_count: int = dsacstar.forward_rgb(
                     scene_coordinates,
@@ -229,12 +231,11 @@ class MultiHeadedModelLoader:
             pil_image: Image
             scale_factor: int
 
-            with tempfile.NamedTemporaryFile() as tmp:
-                tmp.write(img_bytes)
-                sk_image = io.imread(tmp.name)
-                scale_factor = train_resolution / sk_image.shape[0]
-                pil_image = TF.to_pil_image(sk_image)
-                pil_image = TF.resize(pil_image, train_resolution)
+            TMP_FILE.write(img_bytes)
+            sk_image = io.imread(TMP_FILE.name)
+            scale_factor = train_resolution / sk_image.shape[0]
+            pil_image = TF.to_pil_image(sk_image)
+            pil_image = TF.resize(pil_image, train_resolution)
 
             image_transform = transforms.Compose(
                 [
@@ -271,20 +272,21 @@ class MultiHeadedModelLoader:
 
                 # Allocate output variable.
                 out_pose = torch.zeros((4, 4))
-                with nostdout():
-                    inlier_count: int = dsacstar.forward_rgb(
-                        scene_coordinates,
-                        out_pose,
-                        64,  # ransack hypothesis
-                        10,  # inlier threshold
-                        focal_length * scale_factor,  # focal length
-                        optical_x * scale_factor,  # ox
-                        optical_y * scale_factor,  # oy
-                        100,  # inlier alpha
-                        100,  # max pixel error
-                        8,  # OUTPUT_SUBSAMPLE copied from Regressor Class in ace_network.py
-                    )
+                inlier_map = torch.zeros(scene_coordinates.size()[2:])
 
+                inlier_count: int = dsacstar.forward_rgb(
+                    scene_coordinates,
+                    out_pose,
+                    64,  # ransack hypothesis
+                    10,  # inlier threshold
+                    focal_length * scale_factor,  # focal length
+                    optical_x * scale_factor,  # ox
+                    optical_y * scale_factor,  # oy
+                    100,  # inlier alpha
+                    100,  # max pixel error
+                    8,  # OUTPUT_SUBSAMPLE copied from Regressor Class in ace_network.py
+                    inlier_map,
+                )
                 if inlier_count > max_inlier_count:
                     max_inlier_count = inlier_count
                     best_pose = out_pose

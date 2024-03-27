@@ -192,18 +192,20 @@ class TestDatum:
 
     def get_ace_avg_translation_errs_smooth(self) -> Dict[int, float]:
         return {
-            inlier: np.mean(
-                np.linalg.norm(
-                    self.get_ace_poses_extrap_by_inlier(inlier)[:, 0:3, 3]
-                    - self.arkit_translations[
-                        len(self.arkit_translations)
-                        - len(self.get_ace_poses_extrap_by_inlier(inlier)) :
-                    ],
-                    axis=1,
+            inlier: (
+                np.mean(
+                    np.linalg.norm(
+                        self.get_ace_poses_extrap_by_inlier(inlier)[:, 0:3, 3]
+                        - self.arkit_translations[
+                            len(self.arkit_translations)
+                            - len(self.get_ace_poses_extrap_by_inlier(inlier)) :
+                        ],
+                        axis=1,
+                    )
                 )
+                if len(self.get_ace_poses_extrap_by_inlier(inlier)) > 0
+                else float("NaN")
             )
-            if len(self.get_ace_poses_extrap_by_inlier(inlier)) > 0
-            else float("NaN")
             for inlier in ARBITRARY_INLIERS
         }
 
@@ -387,3 +389,121 @@ class MapTestInfo:
     def load_all_data(self) -> None:
         for test in self.tests:
             test.load_data()
+
+
+class MultiModelAnalysis:
+    def __init__(self, results: Dict[str, TestDatum]):
+        self.independent_models: List[TestDatum] = []
+        self.combined_model = None
+        for model_name, test_datum in results.items():
+            if "combined" in model_name:
+                self.combined_model = test_datum
+            else:
+                self.independent_models.append(test_datum)
+
+    def get_stitched_model_poses(self, inlier_thresh: int) -> TestDatum:
+        arkit_poses = self.combined_model.arkit_poses
+        poses: FrameData = []
+        base_anchor = None
+
+        for idx, (model1_pose, model1_inlier, model0_pose, model0_inlier) in enumerate(
+            zip(
+                self.independent_models[1].ace_poses,
+                self.independent_models[1].inliers,
+                self.independent_models[0].ace_poses,
+                self.independent_models[0].inliers,
+            )
+        ):
+            best_ace_pose = (
+                model1_pose if model1_inlier > model0_inlier else model0_pose
+            )
+            num_inlier = max(model0_inlier, model1_inlier)
+
+            if num_inlier > inlier_thresh:
+                base_anchor = best_ace_pose
+                poses.append(
+                    FrameData(
+                        frame_num=idx,
+                        timestamp=None,
+                        ACE=best_ace_pose,
+                        ACE_INLIER_COUNT=num_inlier,
+                        ARKIT=arkit_poses[idx],
+                        CLOUD_ANCHOR=None,
+                    )
+                )
+            else:
+                if base_anchor is None:
+                    continue
+                curr_arkit_pose = arkit_poses[idx]
+                prev_arkit_pose = arkit_poses[idx - 1]
+                delta = np.linalg.inv(prev_arkit_pose) @ curr_arkit_pose
+                new_pose = poses[-1].ACE @ delta
+                poses.append(
+                    FrameData(
+                        frame_num=idx,
+                        timestamp=None,
+                        ACE=new_pose,
+                        ACE_INLIER_COUNT=num_inlier,
+                        ARKIT=arkit_poses[idx],
+                        CLOUD_ANCHOR=None,
+                    )
+                )
+
+        return TestDatum(frames=poses, root_dir=None)
+
+    @property
+    def independent_avg_translation_errs(self):
+        return np.array(
+            [
+                np.array(
+                    [
+                        inlier_count,
+                        self.get_stitched_model_poses(
+                            inlier_count
+                        ).get_ace_avg_translation_err_for_inlier_count(-1),
+                    ]
+                )
+                for inlier_count in ARBITRARY_INLIERS
+            ]
+        )
+
+    @property
+    def combined_avg_translation_errs(self):
+        return self.combined_model.get_ace_avg_translation_errs_smooth()
+
+    @property
+    def model0_avg_translation_errs(self):
+        return self.independent_models[0].get_ace_avg_translation_errs_smooth()
+
+    @property
+    def model1_avg_translation_errs(self):
+        return self.independent_models[1].get_ace_avg_translation_errs_smooth()
+
+    @property
+    def independent_num_frames(self):
+        return np.array(
+            [
+                np.array(
+                    [
+                        inlier_count,
+                        sum(
+                            self.get_stitched_model_poses(inlier_count).inliers
+                            > inlier_count
+                        ),
+                    ]
+                )
+                for inlier_count in ARBITRARY_INLIERS
+            ]
+        )
+
+    @property
+    def combined_num_frames(self):
+        return self.combined_model.num_ace_frames_by_inliers_smooth
+
+    @property
+    def model0_num_frames(self):
+        return self.independent_models[0].num_ace_frames_by_inliers_smooth
+
+    @property
+    def model1_num_frames(self):
+        return self.independent_models[1].num_ace_frames_by_inliers_smooth
