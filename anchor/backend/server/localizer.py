@@ -39,6 +39,7 @@ class LocalizeImageReq(BaseModel):
     optical_y: float
     arkit_pose: List[float]
 
+
 class GenerateAnchorReq(BaseModel):
     videoFilePath: str
     modelName: str

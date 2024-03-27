@@ -1,7 +1,6 @@
-#!/bin/bash
 
 echo "---------------------NOTICE--------------------------------"
-echo "start_localizer_server.sh assumes that install.sh has already been run"
+echo "multi_model_test_runner.sh assumes that install.sh has already been run"
 echo "---------------------NOTICE--------------------------------"
 
 
@@ -14,6 +13,4 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 cd ../../../
 
 export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
-uvicorn anchor.backend.server.localizer:app --host 0.0.0.0 --port 8000 "$@"
-
-# --log-level critical
+python -m anchor.backend.data.multi_model_ace
