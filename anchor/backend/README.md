@@ -1,4 +1,46 @@
-    # November 14 Dataset Documentation
+# March 1 Dataset Documentation
+(All datasets recorded with the lab iPhone 12 Pro on March 1st)
+
+Maps:
+ayush_mar_1 - Basic Circles of area outside Paul's lab (Recorded around 4:30 PM)
+- start point: Ayush ACE # 2
+- test: mimics path
+- testing_E6976416-D279-4FDE-AF31-23F5FF189F5F_ayush_mar_1.tar: started facing paul's lab (Recorded around 5PM)
+- testing_9B01FCA8-EF76-409B-81A6-F6ABCA71C4FD_ayush_mar_1.tar: started facing away fom paul's lab (Recorded around 9:30 PM)
+- testing_9E07BDC7-0E65-4BE2-831C-33D9FDED0AC8_ayush_mar_1.tar: started facing away from paul's lab (Recorded around 12:00 PM)
+- testing_745ACCF8-870E-4335-AC0C-AEE145033063_ayush_mar_1.tar
+
+ayush_mar_2 - Basic Circles of Paul's Lab (Recorded around 4:30 PM)
+- start point: Ayush ACE # 1
+- test: mimics path
+- testing_B48D7133-B67B-4DB9-9F2E-D25FCADDFD51_ayush_mar_2.tar: started just behind the table (Recorded around 9:30 PM)
+- testing_07F21954-32D2-486C-97A3-97FA85774828_ayush_mar_2.tar: started just in front of table (Recorded aroun 12:00 PM)
+- testing_8EA24034-7695-4BC9-BAF6-C380625CB16A_ayush_mar_2.tar
+
+ayush_mar_3 - Basic Loop of MAC Hallway directly outside of Paul's Lab (Recorded around 4:30 PM)
+- start point: Glass display to the left of pauls lab when exiting, phone case aligned to corner, facing left
+- test: mimics path
+- testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3.tar: started in the middle (Recorded around 9:30 PM)
+- testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3.tar: started to the left (Recorded around 12:00 PM)
+- testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3.tar
+
+ayush_mar_4 - Same as mar_3 (Recorded around 9:30 PM)
+- start point: same as mar_3
+- test: mimics path
+- testing_B582B599-085C-4DE7-964B-9D8D6A8728E5_ayush_mar_4.tar: started to the left, facing left (Recorded around 12:00 PM)
+- testing_4F656037-54E8-4C0F-B790-1D728ADB2B13_ayush_mar_4.tar
+
+ayush_mar_5 - Same as mar_4 (Recorded around 12:00 PM)
+- start point: same as mar_4
+- test: mimics path
+- testing_BD70874A-9982-4C86-8C6B-8D5BE396590B_ayush_mar_5.tar
+
+ayush_mar_6 - Outside test, just beyond front MAC Doors (Recorded around 12:00 PM)
+- start point: Right door when leaving the MAC, phone aligned in the door handle facing the left side of the MAC towards Babson
+- test: mimics path
+- testing_800649EE-D5BC-4225-82F7-EE2122E19D92_ayush_mar_6.tar
+
+# November 14 Dataset Documentation
 (All datasets recorded with the lab iPhone 12 Pro)
 
 All maps recorded with half on lights in Paul's lab at night

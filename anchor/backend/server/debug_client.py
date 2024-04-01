@@ -3,6 +3,7 @@ import numpy as np
 import requests, base64, os, shutil, tempfile
 from anchor.backend.data.firebase import FirebaseDownloader
 from anchor.backend.data.ace import run_ace_evaluator
+from time import perf_counter
 
 """
     We are trying to debug why the inlier counts seem very low/wrong when sending images to the server
@@ -20,7 +21,7 @@ def send_localization_request(
     optical_x: float,
     optical_y: float,
 ):
-    server_url = "http://10.26.26.130:8000/localize"
+    server_url = "http://10.76.135.81:8000/localize"
     headers = {"Content-type": "application/json", "Accept": "application/json"}
     request_body = {
         "base64Jpg": base64_image,
@@ -28,14 +29,15 @@ def send_localization_request(
         "focal_length": focal_length,
         "optical_x": optical_x,
         "optical_y": optical_y,
+        "arkit_pose": [0.0],
     }
     response = requests.post(server_url, json=request_body, headers=headers)
     response_body = response.json()
 
     pose = np.array(response_body["pose"]).reshape(4, 4)
     inlier_counts = response_body["inlier_count"]
-
-    return pose, inlier_counts
+    best_model = response_body["model"]
+    return pose, inlier_counts, best_model
 
 
 """
@@ -77,9 +79,12 @@ def write_localization_from_dataset(model_name: str, partial_ace_data_set: Path)
     assert len(images) == len(intrinsics)
 
     for idx, _ in enumerate(images):
-        pose, inlier_counts = send_localization_from_path(
+        start = perf_counter()
+        pose, inlier_counts, model_name = send_localization_from_path(
             model_name, Path(images[idx]), Path(intrinsics[idx])
         )
+        end = perf_counter()
+        print(f"Localization Time: {end-start}")
         item_prefix = Path(images[idx])
         sequence_number = os.path.splitext(item_prefix.stem)[0]
 
@@ -127,7 +132,7 @@ def test_dataset_e2e(model_name: str, partial_ace_data_set: Path):
 
 
 def test_create_anchor_request(firebase_path, anchor_name):
-    server_url = "http://10.26.26.130:8000/create_anchor"
+    server_url = "http://10.76.135.81:8000/create_anchor"
     headers = {"Content-type": "application/json", "Accept": "application/json"}
     request_body = {"tar_path": firebase_path, "anchor_name": anchor_name}
     response = requests.post(server_url, json=request_body, headers=headers)
@@ -141,4 +146,9 @@ if __name__ == "__main__":
         "iosLoggerDemo/processedTrainingTars/training_ua-073988bd422fc1a8e5b759762eb2b133_ayush_nov30_2.tar",
         "debug_anchor",
     )
-    # test_dataset_e2e("Library_circle.pt", Path("/tmp/repro/batch1"))
+    # test_dataset_e2e(
+    #     "training_ua-f20318dcd0459d2f418b3fd4519bb8ab_ayush_nov28_1.pt",
+    #     Path(
+    #         "/home/powerhorse/Desktop/daniel_tmp/benchmark/anchor/backend/data/.cache/firebase_data/training_ua-f20318dcd0459d2f418b3fd4519bb8ab_ayush_nov28_1/ace"
+    #     ),
+    # )

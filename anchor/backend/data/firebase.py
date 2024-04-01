@@ -1,4 +1,4 @@
-from firebase_admin import credentials, storage, initialize_app
+from firebase_admin import credentials, storage, initialize_app, db
 import anchor.backend.data.extracted
 import anchor.backend.data.proto.pose_pb2 as Pose
 import anchor.backend.data.proto.intrinsics_pb2 as Intrinsics
@@ -7,12 +7,12 @@ import anchor.backend.data.proto.april_tag_pb2 as AprilTag
 import anchor.backend.data.proto.google_cloud_anchor_pb2 as GCloudAnchor
 from multiprocessing.pool import ThreadPool as Pool
 
-
 from pathlib import Path
 import shutil
 import tempfile
 import av
 import copy
+import os
 
 
 def list_tars():
@@ -21,13 +21,21 @@ def list_tars():
         initialize_app(cred)
         FirebaseDownloader.initialized = True
     bucket = storage.bucket(FirebaseDownloader.firebase_bucket_name)
-    tar_queue = "iosLoggerDemo/tarQueue/"
+    # database = db.reference(url="https://stepnavigation-default-rtdb.firebaseio.com/")
+    # breakpoint()
+    tar_queue = "iosLoggerDemo/processedTrainingTars/"
     tars = bucket.list_blobs(prefix=tar_queue)
 
     tar_names = []
 
     for tar in tars:
-        if tar.name.endswith(".tar") and "nov30" in tar.name:
+        if tar.name.endswith(".tar") and "ayush_mar_" in tar.name:
+            tar_names.append(tar.name)
+
+    tar_queue = "iosLoggerDemo/processedTestTars/"
+    tars = bucket.list_blobs(prefix=tar_queue)
+    for tar in tars:
+        if tar.name.endswith(".tar") and "ayush_mar_" in tar.name:
             tar_names.append(tar.name)
 
     return tar_names
@@ -112,28 +120,106 @@ class FirebaseDownloader:
             )
 
         # extract the videos by phase (test videos will not have mapping data so they need to be handled separately)
-        if (self.local_extraction_location / "mapping-video.mp4").exists():
-            self.extract_ios_logger_video(
-                self.local_extraction_location / "mapping-video.mp4", True
-            )
-            self.extract_intrinsics(self.local_extraction_location, True)
-            self.extract_pose(self.local_extraction_location, True)
-            self.extract_april_tags(self.local_extraction_location, True)
-            self.extract_google_cloud_anchors(self.local_extraction_location, True)
+        if str(self.local_tar_location).endswith("_combined"):
+            self.combine_extract_ios_logger_video(mapping_phase=False)
+            self.combine_extract_ios_logger_video(mapping_phase=True)
+            self.combine_extract_intrinsics(mapping_phase=False)
+            self.combine_extract_intrinsics(mapping_phase=True)
+            self.combine_extract_pose(mapping_phase=True)
+            self.combine_extract_pose(mapping_phase=False)
+            self.combine_extract_google_cloud_anchors(mapping_phase=True)
+            self.combine_extract_google_cloud_anchors(mapping_phase=False)
+        else:
+            if (self.local_extraction_location / "mapping-video.mp4").exists():
+                self.extract_ios_logger_video(
+                    self.local_extraction_location / "mapping-video.mp4", True
+                )
+                self.extract_intrinsics(self.local_extraction_location, True)
+                self.extract_pose(self.local_extraction_location, True)
+                self.extract_april_tags(self.local_extraction_location, True)
+                self.extract_google_cloud_anchors(self.local_extraction_location, True)
 
-        if (self.local_extraction_location / "localization-video.mp4").exists():
-            self.extract_ios_logger_video(
-                self.local_extraction_location / "localization-video.mp4", False
-            )
-            self.extract_intrinsics(self.local_extraction_location, False)
-            self.extract_pose(self.local_extraction_location, False)
-            self.extract_april_tags(self.local_extraction_location, False)
-            self.extract_google_cloud_anchors(self.local_extraction_location, False)
+            if (self.local_extraction_location / "localization-video.mp4").exists():
+                self.extract_ios_logger_video(
+                    self.local_extraction_location / "localization-video.mp4", False
+                )
+                self.extract_intrinsics(self.local_extraction_location, False)
+                self.extract_pose(self.local_extraction_location, False)
+                self.extract_april_tags(self.local_extraction_location, False)
+                self.extract_google_cloud_anchors(self.local_extraction_location, False)
 
         self.extracted_data.transform_poses_in_global_frame()
         self.extracted_data.match_all_sensor()
 
         return self.local_extraction_location / "extracted"
+
+    def combine_extract_ios_logger_video(self, mapping_phase: bool):
+        all_frames = []
+        offset = 0
+
+        for idx in range(
+            len([x for x in os.walk(self.local_extraction_location)][0]) - 1
+        ):
+            dir = f"map_{idx}"
+            metadata_path = self.local_extraction_location / f"{dir}/video.proto"
+            print(f"[INFO]: Extracting video {metadata_path} to frames")
+            video_metadata = video_pb2.VideoData()
+
+            with open(metadata_path, "rb") as fd:
+                video_metadata.ParseFromString(fd.read())
+
+            video_start = FirebaseDownloader.proto_with_phase(
+                video_metadata, mapping_phase
+            ).videoAttributes.videoStartUnixTimestamp
+
+            if mapping_phase:
+                container = av.open(
+                    (
+                        self.local_extraction_location / f"{dir}/mapping-video.mp4"
+                    ).as_posix()
+                )
+                video_folder_path: Path = (
+                    self.local_extraction_location / "extracted/mapping-video"
+                )
+            else:
+                container = av.open(
+                    (
+                        self.local_extraction_location / f"{dir}/localization-video.mp4"
+                    ).as_posix()
+                )
+                video_folder_path: Path = (
+                    self.local_extraction_location / "extracted/localization-video"
+                )
+
+            container.streams.video[0].thread_type = "AUTO"
+            video_folder_path.mkdir(parents=True, exist_ok=True)
+
+            for frame in container.decode():
+                image_timestamp = video_start + float(frame.pts * frame.time_base)
+                frame_idx = frame.index + offset
+                frame_path: Path = video_folder_path / f"{frame_idx}.jpg"
+                frame = frame
+                if frame_path.exists():
+                    continue
+                all_frames += [(image_timestamp, frame_path, frame_idx, frame)]
+
+            offset = len(all_frames)
+
+        def write_frame(frame_info):
+            image_timestamp = frame_info[0]
+            frame_path = frame_info[1]
+            frame_idx = frame_info[2]
+            frame = frame_info[3]
+            frame.to_image().save(frame_path.as_posix())
+            self.extracted_data.append_video_timestamp(
+                image_timestamp, frame_path, frame_idx, mapping_phase
+            )
+
+        if len(all_frames) == 0:
+            return
+
+        with Pool(36) as pool:
+            pool.map(write_frame, all_frames)
 
     def extract_ios_logger_video(self, video_path: Path, mapping_phase: bool):
         print(f"[INFO]: Extracting video {video_path} to frames")
@@ -158,6 +244,8 @@ class FirebaseDownloader:
             image_timestamp = video_start + float(frame.pts * frame.time_base)
             frame_path: Path = video_folder_path / f"{frame.index}.jpg"
             frame = frame
+            if frame_path.exists():
+                continue
             all_frames += [(image_timestamp, frame_path, frame)]
 
         def write_frame(frame_info):
@@ -169,8 +257,30 @@ class FirebaseDownloader:
                 image_timestamp, frame_path, frame.index, mapping_phase
             )
 
+        if len(all_frames) == 0:
+            return
+
         with Pool(36) as pool:
             pool.map(write_frame, all_frames)
+
+    def combine_extract_intrinsics(self, mapping_phase: bool):
+        for idx in range(
+            len([x for x in os.walk(self.local_extraction_location)][0]) - 1
+        ):
+            dir = f"map_{idx}"
+            intrinsics_path = self.local_extraction_location / f"{dir}/intrinsics.proto"
+            intrinsics_data = Intrinsics.IntrinsicsData()
+            with open(intrinsics_path, "rb") as fd:
+                intrinsics_data.ParseFromString(fd.read())
+                for value in FirebaseDownloader.proto_with_phase(
+                    intrinsics_data, mapping_phase
+                ).measurements:
+                    t = value.timestamp
+                    k = value.cameraIntrinsics
+                    fx, fy, cx, cy = k[0], k[4], k[6], k[7]
+                    self.extracted_data.append_intrinsics_data(
+                        t, fx, fy, cx, cy, mapping_phase
+                    )
 
     def extract_intrinsics(self, extract_path: Path, mapping_phase: bool):
         """
@@ -200,6 +310,33 @@ class FirebaseDownloader:
                 self.extracted_data.append_intrinsics_data(
                     t, fx, fy, cx, cy, mapping_phase
                 )
+
+    def combine_extract_pose(self, mapping_phase: bool):
+        for idx in range(
+            len([x for x in os.walk(self.local_extraction_location)][0]) - 1
+        ):
+            dir = f"map_{idx}"
+            pose_path = self.local_extraction_location / f"{dir}/pose.proto"
+            pose_data = Pose.PoseData()
+            print(f"[INFO]: Reading pose protobuf {pose_path}")
+            with open(pose_path, "rb") as fd:
+                pose_data.ParseFromString(fd.read())
+                for value in FirebaseDownloader.proto_with_phase(
+                    pose_data, mapping_phase
+                ).measurements:
+                    t = value.timestamp
+                    translation = value.poseTranslation
+                    rotation_matrix = value.rotMatrix
+                    quat_imag = value.quatImag
+                    quat_real = value.quatReal
+                    pose = {
+                        "timestamp": t,
+                        "translation": translation,
+                        "rotation_matrix": rotation_matrix,
+                        "quat_imag": quat_imag,
+                        "quat_real": quat_real,
+                    }
+                    self.extracted_data.append_pose_data(pose, mapping_phase)
 
     def extract_pose(self, extract_path: Path, mapping_phase: bool):
         """
@@ -273,6 +410,35 @@ class FirebaseDownloader:
                 self.extracted_data.append_april_tag(
                     value.timestamp, value.tagCenterPose, mapping_phase
                 )
+
+    def combine_extract_google_cloud_anchors(self, mapping_phase: bool):
+        for idx in range(
+            len([x for x in os.walk(self.local_extraction_location)][0]) - 1
+        ):
+            dir = f"map_{idx}"
+            google_cloud_anchor_path = (
+                self.local_extraction_location / f"{dir}/google_cloud_anchor.proto"
+            )
+            google_cloud_anchor_data = GCloudAnchor.GoogleCloudAnchorData()
+            print(
+                f"[INFO]: Reading google cloud anchor protobuf {google_cloud_anchor_path}"
+            )
+
+            with open(google_cloud_anchor_path, "rb") as fd:
+                google_cloud_anchor_data.ParseFromString(fd.read())
+                anchor_read_phase = FirebaseDownloader.proto_with_phase(
+                    google_cloud_anchor_data, mapping_phase
+                )
+
+                if not mapping_phase:
+                    for value in anchor_read_phase.cloudAnchorResolve:
+                        self.extracted_data.append_google_cloud_anchor_localization(
+                            value.timestamp, value.anchorRotMatrix, value.arkitRotMatrix
+                        )
+                else:
+                    self.extracted_data.set_google_cloud_anchor_host(
+                        anchor_read_phase.cloudAnchorHost.anchorHostRotationMatrix
+                    )
 
     def extract_google_cloud_anchors(self, extract_path: Path, mapping_phase: bool):
         """
