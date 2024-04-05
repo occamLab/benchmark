@@ -25,16 +25,16 @@ DATASET_MAPPINGS = {
 }
 MULTI_MODEL_TEST_MAPPINGS = {
     # 9:30
-    1: "testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3",
+    1: "testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3_enhanced",
     # 12:00
-    2: "testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3",
+    2: "testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3_enhanced",
     # Days later
-    3: "testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3",
+    3: "testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3_enhanced",
 }
 MULTI_MODEL_TEST_METADATA_MAPPINGS = {
-    "testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3": "9:30 PM",
-    "testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3": "12:00 PM",
-    "testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3": "9:30 PM (Days Later)",
+    "testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3_enhanced": "9:30 PM",
+    "testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3_enhanced": "12:00 PM",
+    "testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3_enhanced": "9:30 PM (Days Later)",
 }
 FIGURE_DIR = Path(__file__).parent / "imgs"
 
@@ -245,7 +245,7 @@ def frame_bar_chart(dataset_name: str, visualize: bool, save: bool, smooth_ace: 
 def analyze_multi_model_datasets(dataset_name, visualize: bool, save: bool):
     data_file = (
         Path(__file__).parent.parent
-        / "data/.cache/multi_model_results"
+        / "data/.cache/enhanced_multi_model_results"
         / dataset_name
         / "results.json"
     )
@@ -329,7 +329,7 @@ def analyze_multi_model_datasets(dataset_name, visualize: bool, save: bool):
 
     if save:
         plt.savefig(
-            FIGURE_DIR / f"multimodel/{dataset_name.split('_')[1]}/trans_err_bar"
+            FIGURE_DIR / f"enhanced_multimodel/{dataset_name.split('_')[1]}/trans_err_bar"
         )
 
     if visualize:
@@ -399,7 +399,7 @@ def analyze_multi_model_datasets(dataset_name, visualize: bool, save: bool):
     )
 
     if save:
-        plt.savefig(FIGURE_DIR / f"multimodel/{dataset_name.split('_')[1]}/frame_bar")
+        plt.savefig(FIGURE_DIR / f"enhanced_multimodel/{dataset_name.split('_')[1]}/frame_bar")
 
     if visualize:
         plt.show()
@@ -478,7 +478,7 @@ if __name__ == "__main__":
             args.s
             and args.mm
             and not (
-                dir := FIGURE_DIR / f"multimodel/{dataset_name.split('_')[1]}"
+                dir := FIGURE_DIR / f"enhanced_multimodel/{dataset_name.split('_')[1]}"
             ).exists()
         ):
             os.mkdir(dir)
