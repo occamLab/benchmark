@@ -353,12 +353,15 @@ def process_training_data(
         firebase_processed_tar_path: str = str(
             Path(combined_path).parent.parent / f"processedTrainingTars/{tar_name}"
         )
-        downloader.delete_file((Path(firebase_tar_queue_path) / tar_name).as_posix())
-        downloader.upload_file(
-            remote_location=firebase_processed_tar_path,
-            local_location=downloader.local_tar_location,
-        )
-        print("[INFO]: Moved tar from tarQueue to processedTars directory in firebase")
+        try:
+            downloader.delete_file((Path(firebase_tar_queue_path) / tar_name).as_posix())
+            downloader.upload_file(
+                remote_location=firebase_processed_tar_path,
+                local_location=downloader.local_tar_location,
+            )
+            print("[INFO]: Moved tar from tarQueue to processedTars directory in firebase")
+        except:
+            print("[WARNING] Unable to Move tar")
 
 
 @dataclass
@@ -396,12 +399,12 @@ def process_testing_data(
     prepare_ace_data(downloader.extracted_data)
     os.chdir(Path(__file__).parent.parent.parent / "third_party/ace")
     extracted_ace_folder = downloader.local_extraction_location / "ace"
-    model_name = Path(combined_path).stem.split("training_")[-1]
-    model_name = "_".join(model_name.split("_")[2:])
 
     if model_data_folder:
         model_weights_path = model_data_folder / "model.pt"
     else:
+        model_name = Path(combined_path).stem.split("training_")[-1]
+        model_name = "_".join(model_name.split("_")[2:])
         for dir, _, _ in os.walk(downloader.root_download_dir):
             dir_path = Path(dir)
             if str(dir_path).endswith(model_name) and dir_path.parts[-1].startswith(
@@ -435,12 +438,15 @@ if __name__ == "__main__":
 
     # tars = ["training_ua-7c140933b99a14568ee768781fb5c9b2_ayush_mar_4_5_combined"]
     tars = [
-        # 9:30
-        "testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3.tar",
-        # 12:00
-        "testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3.tar",
-        # Days later
-        "testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3.tar",
+        "training_ua-7c140933b99a14568ee768781fb5c9b2_ayush_mar_4_5_combined_rotated",
+        "training_ua-7c140933b99a14568ee768781fb5c9b2_ayush_mar_4_rotated",
+        "training_ua-1bab71c5f9279e0777539be4abd6ae2b_ayush_mar_5_rotated",
+        # # 9:30
+        # "testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3",
+        # # 12:00
+        # "testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3",
+        # # Days later
+        # "testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3",
     ]
 
     print("Processing: \n" + "\n".join(tars))

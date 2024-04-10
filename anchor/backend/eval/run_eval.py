@@ -262,6 +262,48 @@ def analyze_multi_model_datasets(dataset_name, visualize: bool, save: bool):
 
     mm_analyzer = MultiModelAnalysis(results)
 
+    data_file = (
+        Path(__file__).parent.parent
+        / "data/.cache/multi_model_results"
+        / dataset_name.strip("_enhanced")
+        / "results.json"
+    )
+    with open(data_file, "r") as file:
+        results = json.load(file)
+
+    for model_name, data in results.items():
+        results[model_name] = TestDatum(
+            frames=[FrameData(**args) for args in data],
+            root_dir=Path(__file__).parent.parent
+            / "data/.cache/firebase_data"
+            / model_name.strip("_enhanced"),
+        )
+
+    other_analyzer = MultiModelAnalysis(results)
+    delta_trans_model0 = {}
+    delta_trans_model1 = {}
+    delta_num_model0 = {}
+    delta_num_model1 = {}
+    for key in mm_analyzer.model0_avg_translation_errs:
+        delta_trans_model0[key] = mm_analyzer.model0_avg_translation_errs[key] - other_analyzer.model0_avg_translation_errs[key]
+        delta_trans_model1[key] = mm_analyzer.model1_avg_translation_errs[key] - other_analyzer.model1_avg_translation_errs[key]
+        delta_num_model0[key] = mm_analyzer.model0_num_frames[key]- other_analyzer.model0_num_frames[key]
+        delta_num_model1[key] = mm_analyzer.model1_num_frames[key] - other_analyzer.model1_num_frames[key]
+
+    print(f"Test Time: {MULTI_MODEL_TEST_METADATA_MAPPINGS[dataset_name]}")
+    print("All Calculations are Enhanced Results minus Original Results")
+    import pprint
+    print("Results of Model Trained on Night Dataset (9:30 PM)")
+    print("Delta Translational Error:")
+    pprint.pp(delta_trans_model0)
+    print("Delta Number of Frames:")
+    pprint.pp(delta_num_model0)
+    print("Results of Model Trained on Day Dataset (12:00 PM)")
+    print("Delta Translational Error:")
+    pprint.pp(delta_trans_model1)
+    print("Delta Number of Frames:")
+    pprint.pp(delta_num_model1)
+    print("\n\n\n")
     fig = plt.figure()
 
     plt.rcParams.update({"font.size": 8})

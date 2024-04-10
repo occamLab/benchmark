@@ -120,7 +120,7 @@ class FirebaseDownloader:
             )
 
         # extract the videos by phase (test videos will not have mapping data so they need to be handled separately)
-        if str(self.local_tar_location).endswith("_combined"):
+        if "combined" in str(self.local_tar_location):
             self.combine_extract_ios_logger_video(mapping_phase=False)
             self.combine_extract_ios_logger_video(mapping_phase=True)
             self.combine_extract_intrinsics(mapping_phase=False)

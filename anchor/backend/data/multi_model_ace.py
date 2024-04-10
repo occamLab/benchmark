@@ -10,21 +10,21 @@ from tqdm import tqdm
 import google
 
 combined_model_name = (
-    "training_ua-7c140933b99a14568ee768781fb5c9b2_ayush_mar_4_5_combined"
+    "training_ua-7c140933b99a14568ee768781fb5c9b2_ayush_mar_4_5_combined_rotated"
 )
 individual_model_names = [
-    "training_ua-7c140933b99a14568ee768781fb5c9b2_ayush_mar_4",
-    "training_ua-1bab71c5f9279e0777539be4abd6ae2b_ayush_mar_5",
+    "training_ua-7c140933b99a14568ee768781fb5c9b2_ayush_mar_4_rotated",
+    "training_ua-1bab71c5f9279e0777539be4abd6ae2b_ayush_mar_5_rotated",
 ]
 test_datasets = [
     # 9:30
-    "testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3.tar",
+    "testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3_rotated",
     # 12:00
-    "testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3.tar",
+    "testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3_rotated",
     # Days later
-    "testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3.tar",
+    "testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3_rotated",
 ]
-OUTPUT_BASE_DIR = Path(__file__).parent / ".cache/multi_model_results"
+OUTPUT_BASE_DIR = Path(__file__).parent / ".cache/rotated_multi_model_results"
 
 
 def send_localization_request(
@@ -151,6 +151,9 @@ def main2():
                 downloader,
                 Path(__file__).parent / f".cache/firebase_data/{model_name}/ace",
             )
+
+        if not OUTPUT_BASE_DIR.exists():
+            os.mkdir(OUTPUT_BASE_DIR)
 
         output_dir = OUTPUT_BASE_DIR / test_name.rstrip(".tar")
         if not output_dir.exists():
