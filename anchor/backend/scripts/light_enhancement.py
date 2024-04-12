@@ -118,7 +118,7 @@ def main2():
 
 
 def rotate_image():
-    rot = 3 * np.pi / 2
+    rot = -np.pi / 2
     pose_transform = np.array(
         [
             [np.cos(rot), -np.sin(rot), 0, 0],
@@ -142,7 +142,9 @@ def rotate_image():
         model_counter += 1
         for img_name in [x for x in os.walk(test_dir / "rgb")][0][2]:
             img_counter += 1
-            print(f"{model_counter}/{num_models} models {img_counter}/{num_images} images")
+            print(
+                f"{model_counter}/{num_models} models {img_counter}/{num_images} images"
+            )
             img_num = img_name.split(".")[0]
             img_path = test_dir / "rgb" / img_name
             pose_path = test_dir / "poses" / f"{img_num}.pose.txt"
@@ -158,7 +160,7 @@ def rotate_image():
                     data = np.array(
                         [[float(num) for num in d.strip("\n").split(" ")] for d in data]
                     )
-                new_pose = pose_transform @ data
+                new_pose = data @ pose_transform
                 with open(pose_path, "w") as pose_file:
                     pose_file.write(
                         f"{new_pose[0,0]} {new_pose[0,1]} {new_pose[0,2]} {new_pose[0,3]}\n"
@@ -207,7 +209,7 @@ def rotate_image():
                                 for d in data
                             ]
                         )
-                    new_pose = pose_transform @ data
+                    new_pose = data @ pose_transform
                     with open(pose_path, "w") as pose_file:
                         pose_file.write(
                             f"{new_pose[0,0]} {new_pose[0,1]} {new_pose[0,2]} {new_pose[0,3]}\n"
