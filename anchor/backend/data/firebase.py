@@ -22,20 +22,28 @@ def list_tars():
         FirebaseDownloader.initialized = True
     bucket = storage.bucket(FirebaseDownloader.firebase_bucket_name)
     # database = db.reference(url="https://stepnavigation-default-rtdb.firebaseio.com/")
-    # breakpoint()
-    tar_queue = "iosLoggerDemo/processedTrainingTars/"
-    tars = bucket.list_blobs(prefix=tar_queue)
-
     tar_names = []
+    # tar_queue = "iosLoggerDemo/processedTrainingTars/"
+    # tars = bucket.list_blobs(prefix=tar_queue)
 
-    for tar in tars:
-        if tar.name.endswith(".tar") and "ayush_mar_" in tar.name:
-            tar_names.append(tar.name)
 
-    tar_queue = "iosLoggerDemo/processedTestTars/"
+    # for tar in tars:
+    #     if tar.name.endswith(".tar") and "ayush_mar_" in tar.name:
+    #         tar_names.append(tar.name)
+
+    # tar_queue = "iosLoggerDemo/processedTestTars/"
+    # tars = bucket.list_blobs(prefix=tar_queue)
+    # for tar in tars:
+    #     if tar.name.endswith(".tar") and "ayush_mar_" in tar.name:
+    #         tar_names.append(tar.name)
+
+    tar_queue = "iosLoggerDemo/tarQueue/"
     tars = bucket.list_blobs(prefix=tar_queue)
     for tar in tars:
-        if tar.name.endswith(".tar") and "ayush_mar_" in tar.name:
+        if (
+            tar.name.endswith(".tar")
+            and "ayush_april_3" in tar.name
+        ):
             tar_names.append(tar.name)
 
     return tar_names
@@ -120,7 +128,7 @@ class FirebaseDownloader:
             )
 
         # extract the videos by phase (test videos will not have mapping data so they need to be handled separately)
-        if str(self.local_tar_location).endswith("_combined"):
+        if "combined" in str(self.local_tar_location):
             self.combine_extract_ios_logger_video(mapping_phase=False)
             self.combine_extract_ios_logger_video(mapping_phase=True)
             self.combine_extract_intrinsics(mapping_phase=False)

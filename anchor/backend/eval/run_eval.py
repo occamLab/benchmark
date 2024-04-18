@@ -1,7 +1,7 @@
 from pathlib import Path
 import json
-from utils.error import compute_rotational_error, compute_translation_error
-from utils.data_models import (
+from anchor.backend.eval.utils.error import compute_rotational_error, compute_translation_error
+from anchor.backend.eval.utils.data_models import (
     TestInfo,
     MapTestInfo,
     FrameData,
@@ -25,16 +25,16 @@ DATASET_MAPPINGS = {
 }
 MULTI_MODEL_TEST_MAPPINGS = {
     # 9:30
-    1: "testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3",
+    1: "testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3_better_enhancement",
     # 12:00
-    2: "testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3",
+    2: "testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3_better_enhancement",
     # Days later
-    3: "testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3",
+    3: "testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3_better_enhancement",
 }
 MULTI_MODEL_TEST_METADATA_MAPPINGS = {
-    "testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3": "9:30 PM",
-    "testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3": "12:00 PM",
-    "testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3": "9:30 PM (Days Later)",
+    "testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3_better_enhancement": "9:30 PM",
+    "testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3_better_enhancement": "12:00 PM",
+    "testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3_better_enhancement": "9:30 PM (Days Later)",
 }
 FIGURE_DIR = Path(__file__).parent / "imgs"
 
@@ -245,7 +245,7 @@ def frame_bar_chart(dataset_name: str, visualize: bool, save: bool, smooth_ace: 
 def analyze_multi_model_datasets(dataset_name, visualize: bool, save: bool):
     data_file = (
         Path(__file__).parent.parent
-        / "data/.cache/multi_model_results"
+        / "data/.cache/better_enhancement_multi_model_results"
         / dataset_name
         / "results.json"
     )
@@ -262,8 +262,50 @@ def analyze_multi_model_datasets(dataset_name, visualize: bool, save: bool):
 
     mm_analyzer = MultiModelAnalysis(results)
 
-    fig = plt.figure()
+    # data_file = (
+    #     Path(__file__).parent.parent
+    #     / "data/.cache/multi_model_results"
+    #     / dataset_name.strip("_better_enhancement")
+    #     / "results.json"
+    # )
+    # with open(data_file, "r") as file:
+    #     results = json.load(file)
 
+    # for model_name, data in results.items():
+    #     results[model_name] = TestDatum(
+    #         frames=[FrameData(**args) for args in data],
+    #         root_dir=Path(__file__).parent.parent
+    #         / "data/.cache/firebase_data"
+    #         / model_name.strip("_better_enhancement"),
+    #     )
+
+    # other_analyzer = MultiModelAnalysis(results)
+    # delta_trans_model0 = {}
+    # delta_trans_model1 = {}
+    # delta_num_model0 = {}
+    # delta_num_model1 = {}
+    # for key in mm_analyzer.model0_avg_translation_errs:
+    #     delta_trans_model0[key] = mm_analyzer.model0_avg_translation_errs[key] - other_analyzer.model0_avg_translation_errs[key]
+    #     delta_trans_model1[key] = mm_analyzer.model1_avg_translation_errs[key] - other_analyzer.model1_avg_translation_errs[key]
+    #     delta_num_model0[key] = mm_analyzer.model0_num_frames[key]- other_analyzer.model0_num_frames[key]
+    #     delta_num_model1[key] = mm_analyzer.model1_num_frames[key] - other_analyzer.model1_num_frames[key]
+
+    # print(f"Test Time: {MULTI_MODEL_TEST_METADATA_MAPPINGS[dataset_name]}")
+    # print("All Calculations are Rotated Results minus Original Results")
+    # import pprint
+    # print("Results of Model Trained on Night Dataset (9:30 PM)")
+    # print("Delta Translational Error:")
+    # pprint.pp(delta_trans_model0)
+    # print("Delta Number of Frames:")
+    # pprint.pp(delta_num_model0)
+    # print("Results of Model Trained on Day Dataset (12:00 PM)")
+    # print("Delta Translational Error:")
+    # pprint.pp(delta_trans_model1)
+    # print("Delta Number of Frames:")
+    # pprint.pp(delta_num_model1)
+    # print("\n\n\n")
+
+    fig = plt.figure()
     plt.rcParams.update({"font.size": 8})
     ax = fig.add_subplot(2, 2, 1)
     independent_trans_errs = mm_analyzer.independent_avg_translation_errs
@@ -329,7 +371,7 @@ def analyze_multi_model_datasets(dataset_name, visualize: bool, save: bool):
 
     if save:
         plt.savefig(
-            FIGURE_DIR / f"multimodel/{dataset_name.split('_')[1]}/trans_err_bar"
+            FIGURE_DIR / f"better_enhancement_multimodel/{dataset_name.split('_')[1]}/trans_err_bar"
         )
 
     if visualize:
@@ -399,7 +441,7 @@ def analyze_multi_model_datasets(dataset_name, visualize: bool, save: bool):
     )
 
     if save:
-        plt.savefig(FIGURE_DIR / f"multimodel/{dataset_name.split('_')[1]}/frame_bar")
+        plt.savefig(FIGURE_DIR / f"better_enhancement_multimodel/{dataset_name.split('_')[1]}/frame_bar")
 
     if visualize:
         plt.show()
@@ -478,7 +520,7 @@ if __name__ == "__main__":
             args.s
             and args.mm
             and not (
-                dir := FIGURE_DIR / f"multimodel/{dataset_name.split('_')[1]}"
+                dir := FIGURE_DIR / f"better_enhancement_multimodel/{dataset_name.split('_')[1]}"
             ).exists()
         ):
             os.mkdir(dir)

@@ -1,3 +1,9 @@
 [submodule "anchor/third_party/ace"]
 	path = anchor/third_party/ace
 	url = https://github.com/Mickmcginnis/ace
+[submodule "anchor/third_party/Zero-DCE"]
+	path = anchor/third_party/Zero-DCE
+	url = git@github.com:Li-Chongyi/Zero-DCE.git
+[submodule "anchor/third_party/zero_dce"]
+	path = anchor/third_party/zero_dce
+	url = git@github.com:ayushchakra/zero_dce.git

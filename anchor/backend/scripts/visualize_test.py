@@ -5,11 +5,11 @@ import json
 from typing import List
 import numpy as np
 import matplotlib.pyplot as plt
-from eval.utils.data_models import FrameData, TestDatum
+from anchor.backend.eval.utils.data_models import FrameData, TestDatum
 
 import shutil
 
-TEST_NAME = "testing_8E1E9222-15B0-4BDD-B9B1-3922F88E2B4B_ayush_nov30_1"
+TEST_NAME = "training_ua-b84b3ed01c436a568a3a2e3415394fa2_ayush_april_3"
 TEST_TIME = None
 DATA_DIR = Path(__file__).parent.parent / "data/.cache/firebase_data"
 TEST_DIR = DATA_DIR / f"{TEST_NAME}/ace/test"
@@ -105,11 +105,33 @@ def step_graph(
             plt.show()
 
 
+def translational_bar_chart(
+    dataset_name: str, visualize: bool, save: bool
+):
+    data = load_cache_data()
+    trans_err = data.get_ace_avg_translation_errs_smooth()
+    labels = [str(int(x)) for x in trans_err]
+    heights = []
+    heights.extend(trans_err.values())
+    plt.bar(labels, heights)
+    plt.savefig(Path(__file__).parent.parent / "eval/imgs/hor_phone/trans.png")
+
+    num_frames = data.num_ace_frames_by_inliers_smooth
+    labels = [str(int(x)) for x in num_frames]
+    heights = []
+    heights.extend(num_frames.values())
+    plt.bar(labels, heights)
+    plt.savefig(Path(__file__).parent.parent / "eval/imgs/hor_phone/frame.png")
+
+
 def counts_splitter(arg):
     return [int(x) for x in arg.split(",")]
-
+    
 
 if __name__ == "__main__":
+    translational_bar_chart(
+        TEST_NAME, False, False
+    )
     parser = argparse.ArgumentParser(
         description="Visualize ACE Data results",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,

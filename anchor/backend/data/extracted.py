@@ -141,6 +141,7 @@ class Extracted:
         for phase in self.sensors_extracted:
             for sensor in self.sensors_extracted[phase]:
                 if sensor not in ["video", "april_tags", "google_cloud_anchor"]:
+                    breakpoint()
                     self.match_given_sensor(phase, sensor)
 
     def transform_poses_in_global_frame(self):
