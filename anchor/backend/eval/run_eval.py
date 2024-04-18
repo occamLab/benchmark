@@ -1,7 +1,7 @@
 from pathlib import Path
 import json
-from utils.error import compute_rotational_error, compute_translation_error
-from utils.data_models import (
+from anchor.backend.eval.utils.error import compute_rotational_error, compute_translation_error
+from anchor.backend.eval.utils.data_models import (
     TestInfo,
     MapTestInfo,
     FrameData,
@@ -25,16 +25,16 @@ DATASET_MAPPINGS = {
 }
 MULTI_MODEL_TEST_MAPPINGS = {
     # 9:30
-    1: "testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3_rotated",
+    1: "testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3_better_enhancement",
     # 12:00
-    2: "testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3_rotated",
+    2: "testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3_better_enhancement",
     # Days later
-    3: "testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3_rotated",
+    3: "testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3_better_enhancement",
 }
 MULTI_MODEL_TEST_METADATA_MAPPINGS = {
-    "testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3_rotated": "9:30 PM",
-    "testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3_rotated": "12:00 PM",
-    "testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3_rotated": "9:30 PM (Days Later)",
+    "testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3_better_enhancement": "9:30 PM",
+    "testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3_better_enhancement": "12:00 PM",
+    "testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3_better_enhancement": "9:30 PM (Days Later)",
 }
 FIGURE_DIR = Path(__file__).parent / "imgs"
 
@@ -245,7 +245,7 @@ def frame_bar_chart(dataset_name: str, visualize: bool, save: bool, smooth_ace: 
 def analyze_multi_model_datasets(dataset_name, visualize: bool, save: bool):
     data_file = (
         Path(__file__).parent.parent
-        / "data/.cache/rotated_multi_model_results"
+        / "data/.cache/better_enhancement_multi_model_results"
         / dataset_name
         / "results.json"
     )
@@ -265,7 +265,7 @@ def analyze_multi_model_datasets(dataset_name, visualize: bool, save: bool):
     # data_file = (
     #     Path(__file__).parent.parent
     #     / "data/.cache/multi_model_results"
-    #     / dataset_name.strip("_rotated")
+    #     / dataset_name.strip("_better_enhancement")
     #     / "results.json"
     # )
     # with open(data_file, "r") as file:
@@ -276,7 +276,7 @@ def analyze_multi_model_datasets(dataset_name, visualize: bool, save: bool):
     #         frames=[FrameData(**args) for args in data],
     #         root_dir=Path(__file__).parent.parent
     #         / "data/.cache/firebase_data"
-    #         / model_name.strip("_rotated"),
+    #         / model_name.strip("_better_enhancement"),
     #     )
 
     # other_analyzer = MultiModelAnalysis(results)
@@ -306,17 +306,17 @@ def analyze_multi_model_datasets(dataset_name, visualize: bool, save: bool):
     # print("\n\n\n")
 
     fig = plt.figure()
-    # plt.rcParams.update({"font.size": 8})
-    # ax = fig.add_subplot(2, 2, 1)
-    # independent_trans_errs = mm_analyzer.independent_avg_translation_errs
-    # ax.bar(
-    #     [str(int(x)) for x in independent_trans_errs[:, 0]],
-    #     independent_trans_errs[:, 1],
-    # )
-    # ax.set_title("Independent Models Stitched Together", y=0.97)
-    # ax.set_ylim(0, 2)
-    # ax.set_ylabel("Error (m)")
-    # # ax.set_xlabel("Inlier Count")
+    plt.rcParams.update({"font.size": 8})
+    ax = fig.add_subplot(2, 2, 1)
+    independent_trans_errs = mm_analyzer.independent_avg_translation_errs
+    ax.bar(
+        [str(int(x)) for x in independent_trans_errs[:, 0]],
+        independent_trans_errs[:, 1],
+    )
+    ax.set_title("Independent Models Stitched Together", y=0.97)
+    ax.set_ylim(0, 2)
+    ax.set_ylabel("Error (m)")
+    # ax.set_xlabel("Inlier Count")
 
     labels = []
     heights = []
@@ -371,7 +371,7 @@ def analyze_multi_model_datasets(dataset_name, visualize: bool, save: bool):
 
     if save:
         plt.savefig(
-            FIGURE_DIR / f"rotated_multimodel/{dataset_name.split('_')[1]}/trans_err_bar"
+            FIGURE_DIR / f"better_enhancement_multimodel/{dataset_name.split('_')[1]}/trans_err_bar"
         )
 
     if visualize:
@@ -441,7 +441,7 @@ def analyze_multi_model_datasets(dataset_name, visualize: bool, save: bool):
     )
 
     if save:
-        plt.savefig(FIGURE_DIR / f"rotated_multimodel/{dataset_name.split('_')[1]}/frame_bar")
+        plt.savefig(FIGURE_DIR / f"better_enhancement_multimodel/{dataset_name.split('_')[1]}/frame_bar")
 
     if visualize:
         plt.show()
@@ -520,7 +520,7 @@ if __name__ == "__main__":
             args.s
             and args.mm
             and not (
-                dir := FIGURE_DIR / f"rotated_multimodel/{dataset_name.split('_')[1]}"
+                dir := FIGURE_DIR / f"better_enhancement_multimodel/{dataset_name.split('_')[1]}"
             ).exists()
         ):
             os.mkdir(dir)

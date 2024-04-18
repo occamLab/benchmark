@@ -1,4 +1,3 @@
-
 from pathlib import Path
 from anchor.backend.data.extracted import Extracted
 from anchor.backend.data.firebase import FirebaseDownloader, list_tars
@@ -355,12 +354,16 @@ def process_training_data(
             Path(combined_path).parent.parent / f"processedTrainingTars/{tar_name}"
         )
         try:
-            downloader.delete_file((Path(firebase_tar_queue_path) / tar_name).as_posix())
+            downloader.delete_file(
+                (Path(firebase_tar_queue_path) / tar_name).as_posix()
+            )
             downloader.upload_file(
                 remote_location=firebase_processed_tar_path,
                 local_location=downloader.local_tar_location,
             )
-            print("[INFO]: Moved tar from tarQueue to processedTars directory in firebase")
+            print(
+                "[INFO]: Moved tar from tarQueue to processedTars directory in firebase"
+            )
         except:
             print("[WARNING] Unable to Move tar")
 
@@ -438,17 +441,17 @@ if __name__ == "__main__":
         tars = list_tars()
 
     # tars = ["training_ua-7c140933b99a14568ee768781fb5c9b2_ayush_mar_4_5_combined"]
-    tars = [
-        "training_ua-7c140933b99a14568ee768781fb5c9b2_ayush_mar_4_5_combined_rotated",
-        "training_ua-7c140933b99a14568ee768781fb5c9b2_ayush_mar_4_rotated",
-        "training_ua-1bab71c5f9279e0777539be4abd6ae2b_ayush_mar_5_rotated",
-        # # 9:30
-        # "testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3",
-        # # 12:00
-        # "testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3",
-        # # Days later
-        # "testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3",
-    ]
+    # tars = [
+    #     "training_ua-7c140933b99a14568ee768781fb5c9b2_ayush_mar_4_5_combined_better_enhancement",
+    #     "training_ua-7c140933b99a14568ee768781fb5c9b2_ayush_mar_4_better_enhancement",
+    #     "training_ua-1bab71c5f9279e0777539be4abd6ae2b_ayush_mar_5_better_enhancement",
+    #     # # 9:30
+    #     # "testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3",
+    #     # # 12:00
+    #     # "testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3",
+    #     # # Days later
+    #     # "testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3",
+    # ]
 
     print("Processing: \n" + "\n".join(tars))
 

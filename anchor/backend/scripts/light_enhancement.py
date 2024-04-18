@@ -6,10 +6,12 @@ from PIL import Image  # Image processing
 from pathlib import Path
 import os
 import shutil
-from tensorflow.python.ops.numpy_ops import np_config
-from copy import deepcopy
 
-np_config.enable_numpy_behavior()
+# from tensorflow.python.ops.numpy_ops import np_config
+from copy import deepcopy
+from anchor.third_party.zero_dce.zero_dce_code.lowlight_test import lowlight
+
+# np_config.enable_numpy_behavior()
 
 
 FB_DATA_DIR = Path(__file__).parent.parent / "data/.cache/firebase_data"
@@ -239,7 +241,37 @@ def rotate_image():
                         )
 
 
+def main3():
+    num_models = len(test_datasets + all_models)
+    model_counter = 0
+    for dir_name in test_datasets + all_models:
+        data_dir = FB_DATA_DIR / dir_name
+        better_le_dir = FB_DATA_DIR / f"{dir_name}_better_enhancement"
+        if better_le_dir.exists():
+            shutil.rmtree(better_le_dir)
+        shutil.copytree(data_dir, better_le_dir)
+
+        test_dir = better_le_dir / "ace/test"
+        num_images = len([x for x in os.walk(test_dir / "rgb")][0][2])
+        img_counter = 0
+        model_counter += 1
+        for img_name in [x for x in os.walk(test_dir / "rgb")][0][2]:
+            img_counter += 1
+            print(
+                f"{model_counter}/{num_models} models {img_counter}/{num_images} images"
+            )
+            img_path = test_dir / "rgb" / img_name
+            lowlight(img_path)
+
+        if "training" in dir_name:
+            train_dir = better_le_dir / "ace/train"
+            for img_name in [x for x in os.walk(train_dir / "rgb")][0][2]:
+                img_path = train_dir / "rgb" / img_name
+                lowlight(img_path)
+
+
 if __name__ == "__main__":
     # main()
     # main2()
-    rotate_image()
+    # rotate_image()
+    main3()

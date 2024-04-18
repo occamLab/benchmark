@@ -3,6 +3,10 @@ import numpy as np
 from pathlib import Path
 from PIL import Image
 import matplotlib.pyplot as plt
+from enlighten_inference import EnlightenOnnxModel
+import cv2
+from time import perf_counter
+from anchor.third_party.Zero_DCE.Zero_DCE_code.lowlight_test import lowlight
 
 FB_DATA_DIR = Path(__file__).parent.parent / "data/.cache/firebase_data"
 IMG_ZERO = (
@@ -15,18 +19,10 @@ IMG_ONE = (
 )
 IMGS_DIR = Path(__file__).parent / "imgs"
 
-
-def rgb2ii(img, alpha):
-    """Convert RGB image to illumination invariant image."""
-    ii_image = (
-        0.5
-        + np.log(img[:, :, 1] / float(255))
-        - alpha * np.log(img[:, :, 2] / float(255))
-        - (1 - alpha) * np.log(img[:, :, 0] / float(255))
-    )
-
-    return ii_image
-
+# by default, CUDAExecutionProvider is used
+model = EnlightenOnnxModel()
+# however, one can choose the providers priority, e.g.: 
+model = EnlightenOnnxModel(providers = ["CPUExecutionProvider"])
 
 def main():
     img_zero = Image.open(IMG_ZERO)
@@ -35,11 +31,17 @@ def main():
     img_zero.save(IMGS_DIR / "night.jpg")
     img_one.save(IMGS_DIR / "day.jpg")
 
-    img_zero_ii = rgb2ii(np.array(img_zero), 0.333)
-    img_one_ii = rgb2ii(np.array(img_one), 0.333)
+    start = perf_counter()
+    img_zero_ii = model.predict(np.array(img_zero))
+    print(perf_counter() - start)
+    start = perf_counter()
+    img_one_ii = model.predict(np.array(img_one))
+    print(perf_counter() - start)
 
-    plt.imsave(str(IMGS_DIR / "night_ii.jpg"), img_zero_ii, cmap='gray')
-    # plt.imsave(str(IMGS_DIR / "night_ii.jpg"), img_zero_ii)
+    # plt.imshow(img_zero_ii)
+    # plt.show()
+    plt.imsave(str(IMGS_DIR / "night_ii.jpg"), img_zero_ii)
+    plt.imsave(str(IMGS_DIR / "day_ii.jpg"), img_one_ii)
     # plt.savefig(str(IMGS_DIR / "night_ii.jpg"))
 
     # cv2.imwrite(str(IMGS_DIR / "night_ii.jpg"), img_zero_ii)
