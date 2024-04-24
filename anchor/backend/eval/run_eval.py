@@ -1,17 +1,19 @@
 from pathlib import Path
 import json
-from utils.error import compute_rotational_error, compute_translation_error
-from utils.data_models import (
+from anchor.backend.eval.utils.data_models import (
     TestInfo,
     MapTestInfo,
     FrameData,
     TestDatum,
     MultiModelAnalysis,
 )
+from anchor.backend.data.firebase import FirebaseDownloader
 
 import matplotlib.pyplot as plt
 import argparse
 import os
+import math
+import numpy as np
 
 DATASET_INFO_PATH = Path(__file__).parent / "utils/dataset.json"
 DATASET_MAPPINGS = {
@@ -30,10 +32,13 @@ MULTI_MODEL_TEST_MAPPINGS = {
     2: "testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3",
     # Days later
     3: "testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3",
+    # 4:30
+    4: "training_ua-90ff6414f8f3669b1d685adc3f651e3d_ayush_mar_3",
 }
 MULTI_MODEL_TEST_METADATA_MAPPINGS = {
     "testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3": "9:30 PM",
     "testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3": "12:00 PM",
+    "training_ua-90ff6414f8f3669b1d685adc3f651e3d_ayush_mar_3": "4:30 PM",
     "testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3": "9:30 PM (Days Later)",
 }
 FIGURE_DIR = Path(__file__).parent / "imgs"
@@ -72,6 +77,132 @@ def append_test_stats():
 
     with open(DATASET_INFO_PATH, "w") as file:
         json.dump(json_data, file, indent=4)
+
+
+def run_analysis():
+    model_names = [
+        # "training_ua-90ff6414f8f3669b1d685adc3f651e3d_ayush_mar_3",
+        # "training_ua-7c140933b99a14568ee768781fb5c9b2_ayush_mar_4",
+        # "training_ua-1bab71c5f9279e0777539be4abd6ae2b_ayush_mar_5",
+        # "training_ua-2e1d4e33982d950fcc727486f41ac8ed_ayush_mar_6",
+        "training_ua-fde484ecee02694ad6ee5e87e7363785_ayush_april_5",
+        "training_ua-2e324ef56fc8bb74e6c2271c4fa64870_ayush_april_7",
+    ]
+    # model_names = [
+    # "training_ua-90ff6414f8f3669b1d685adc3f651e3d_ayush_mar_3",
+    # ]
+    # test_names = MULTI_MODEL_TEST_METADATA_MAPPINGS.keys()
+    test_names = [
+        "training_ua-fde484ecee02694ad6ee5e87e7363785_ayush_april_5",
+        "training_ua-2e324ef56fc8bb74e6c2271c4fa64870_ayush_april_7",
+    ]
+
+    data = {}
+
+    for model in model_names:
+        data[model] = {}
+        for test in test_names:
+            metadata = {}
+            downloader = FirebaseDownloader(None, test)
+            downloader.extract_ios_logger_tar()
+            raw_data = downloader.extracted_data.sensors_extracted["localization_phase"]
+            ca_data = raw_data["google_cloud_anchor"]
+            results_json_path = (
+                Path(__file__).parent.parent
+                / "data/.cache/firebase_data"
+                / model
+                / "ace/test"
+                / test
+                / "results.json"
+            )
+            with open(results_json_path, "r") as file:
+                results = json.load(file)
+            if isinstance(results, dict) and "data" in results:
+                results = results["data"]
+            test_data = TestDatum(
+                frames=[FrameData(**args) for args in results],
+                root_dir=Path(__file__).parent.parent
+                / "data/.cache/firebase_data"
+                / model,
+            )
+            metadata["num_anchors"] = {
+                "ace": test_data.num_ace_frames_by_inliers,
+                "ca": len(ca_data),
+            }
+            try:
+                timestamps = [
+                    math.floor(f.timestamp * 100) / 100 for f in test_data.frames
+                ]
+                # TODO: fix cloud anchor indexing
+                ca_indices = np.array(
+                    [
+                        timestamps.index(math.floor(x * 100) / 100)
+                        for x in [x["timestamp"] for x in ca_data]
+                    ]
+                )
+                frame_errs = np.array(
+                    [
+                        test_data.get_cloud_anchor_traslational_err_at_idx(
+                            idx - test_data.cloud_anchor_start_idx
+                        )
+                        for idx in ca_indices
+                    ]
+                )
+
+                metadata["trans_err_at_anchor"] = {
+                    "ace": test_data.get_ace_avg_translation_errs(),
+                    "ca": np.mean(frame_errs),
+                }
+                metadata["first_img"] = {
+                    "ace": {
+                        num_inliers: (
+                            (
+                                Path(__file__).parent.parent
+                                / "data/.cache/firebase_data"
+                                / test
+                                / "ace/test/rgb"
+                                / f"{int(np.where(test_data.inliers > num_inliers)[0][0]):05}.color.jpg"
+                            )
+                            .relative_to(Path.cwd())
+                            .as_posix()
+                            if len(np.where(test_data.inliers > num_inliers)[0] > 0)
+                            else float("NaN")
+                        )
+                        for num_inliers in [0, 100, 200, 500, 1000]
+                    },
+                    "ca": (
+                        (
+                            Path(__file__).parent.parent
+                            / "data/.cache/firebase_data"
+                            / test
+                            / "ace/test/rgb"
+                            / f"{ca_indices[0]:05}.color.jpg"
+                        )
+                        .relative_to(Path.cwd())
+                        .as_posix()
+                    ),
+                }
+                metadata["rot_err_at_anchor"] = {
+                    "ace": test_data.get_ace_average_rotation_errs(),
+                    "ca": test_data.get_cloud_anchor_average_rotation_errs(ca_indices),
+                }
+
+                data[model][test] = metadata
+                counts, bins = np.histogram(test_data.ace_translational_errors, bins=100, range=[0.0, 1.0])
+                plt.stairs(counts, bins)
+                plt.title(f"Test: {test}, Train: {model}")
+                plt.xlabel("Error (m)")
+                plt.ylabel("Counts")
+                plt.savefig(Path(__file__).parent / f"{model}_{test}")
+                plt.clf()
+            except IndexError as e:
+                breakpoint()
+                continue
+    # with open(Path(__file__).parent / "temp2_results.json", "w") as file:
+        # json.dump(data, file, indent=4)
+
+
+run_analysis()
 
 
 def pose_comp(

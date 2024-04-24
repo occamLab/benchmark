@@ -1,0 +1,174 @@
+{
+    "training_ua-fde484ecee02694ad6ee5e87e7363785_ayush_april_5": {
+        "training_ua-fde484ecee02694ad6ee5e87e7363785_ayush_april_5": {
+            "num_anchors": {
+                "ace": {
+                    "0": 1780,
+                    "100": 1765,
+                    "200": 1705,
+                    "500": 1647,
+                    "1000": 1511
+                },
+                "ca": 8
+            },
+            "trans_err_at_anchor": {
+                "ace": {
+                    "0": 0.24707219415247247,
+                    "100": 0.20547549612429303,
+                    "200": 0.11537499897546513,
+                    "500": 0.08779351542341395,
+                    "1000": 0.07595899518350618
+                },
+                "ca": 0.06006079297521279
+            },
+            "first_img": {
+                "ace": {
+                    "0": "anchor/backend/data/.cache/firebase_data/training_ua-fde484ecee02694ad6ee5e87e7363785_ayush_april_5/ace/test/rgb/00000.color.jpg",
+                    "100": "anchor/backend/data/.cache/firebase_data/training_ua-fde484ecee02694ad6ee5e87e7363785_ayush_april_5/ace/test/rgb/00000.color.jpg",
+                    "200": "anchor/backend/data/.cache/firebase_data/training_ua-fde484ecee02694ad6ee5e87e7363785_ayush_april_5/ace/test/rgb/00000.color.jpg",
+                    "500": "anchor/backend/data/.cache/firebase_data/training_ua-fde484ecee02694ad6ee5e87e7363785_ayush_april_5/ace/test/rgb/00000.color.jpg",
+                    "1000": "anchor/backend/data/.cache/firebase_data/training_ua-fde484ecee02694ad6ee5e87e7363785_ayush_april_5/ace/test/rgb/00000.color.jpg"
+                },
+                "ca": "anchor/backend/data/.cache/firebase_data/training_ua-fde484ecee02694ad6ee5e87e7363785_ayush_april_5/ace/test/rgb/00062.color.jpg"
+            },
+            "rot_err_at_anchor": {
+                "ace": {
+                    "0": 3.3197796009983476,
+                    "100": 2.9610437301393313,
+                    "200": 2.5314982912447306,
+                    "500": 2.2029549461162192,
+                    "1000": 2.1356568187916904
+                },
+                "ca": 1.8853666983875825
+            }
+        },
+        "training_ua-2e324ef56fc8bb74e6c2271c4fa64870_ayush_april_7": {
+            "num_anchors": {
+                "ace": {
+                    "0": 1780,
+                    "100": 452,
+                    "200": 328,
+                    "500": 42,
+                    "1000": 0
+                },
+                "ca": 8
+            },
+            "trans_err_at_anchor": {
+                "ace": {
+                    "0": 6.926652048684064,
+                    "100": 0.510201866360946,
+                    "200": 0.29926250986586506,
+                    "500": 0.15878839586015053,
+                    "1000": NaN
+                },
+                "ca": 0.11830199656143009
+            },
+            "first_img": {
+                "ace": {
+                    "0": "anchor/backend/data/.cache/firebase_data/training_ua-2e324ef56fc8bb74e6c2271c4fa64870_ayush_april_7/ace/test/rgb/00000.color.jpg",
+                    "100": "anchor/backend/data/.cache/firebase_data/training_ua-2e324ef56fc8bb74e6c2271c4fa64870_ayush_april_7/ace/test/rgb/00000.color.jpg",
+                    "200": "anchor/backend/data/.cache/firebase_data/training_ua-2e324ef56fc8bb74e6c2271c4fa64870_ayush_april_7/ace/test/rgb/00000.color.jpg",
+                    "500": "anchor/backend/data/.cache/firebase_data/training_ua-2e324ef56fc8bb74e6c2271c4fa64870_ayush_april_7/ace/test/rgb/00000.color.jpg",
+                    "1000": NaN
+                },
+                "ca": "anchor/backend/data/.cache/firebase_data/training_ua-2e324ef56fc8bb74e6c2271c4fa64870_ayush_april_7/ace/test/rgb/00018.color.jpg"
+            },
+            "rot_err_at_anchor": {
+                "ace": {
+                    "0": 61.08002562413428,
+                    "100": 6.699735045130738,
+                    "200": 3.933851847395461,
+                    "500": 1.308220073659007,
+                    "1000": NaN
+                },
+                "ca": 0.7841686084780163
+            }
+        }
+    },
+    "training_ua-2e324ef56fc8bb74e6c2271c4fa64870_ayush_april_7": {
+        "training_ua-fde484ecee02694ad6ee5e87e7363785_ayush_april_5": {
+            "num_anchors": {
+                "ace": {
+                    "0": 1780,
+                    "100": 364,
+                    "200": 174,
+                    "500": 12,
+                    "1000": 0
+                },
+                "ca": 8
+            },
+            "trans_err_at_anchor": {
+                "ace": {
+                    "0": 4.951224258381826,
+                    "100": 0.7692169051584513,
+                    "200": 0.16404855069458132,
+                    "500": 0.055940417847701256,
+                    "1000": NaN
+                },
+                "ca": 0.06006079297521279
+            },
+            "first_img": {
+                "ace": {
+                    "0": "anchor/backend/data/.cache/firebase_data/training_ua-fde484ecee02694ad6ee5e87e7363785_ayush_april_5/ace/test/rgb/00000.color.jpg",
+                    "100": "anchor/backend/data/.cache/firebase_data/training_ua-fde484ecee02694ad6ee5e87e7363785_ayush_april_5/ace/test/rgb/00000.color.jpg",
+                    "200": "anchor/backend/data/.cache/firebase_data/training_ua-fde484ecee02694ad6ee5e87e7363785_ayush_april_5/ace/test/rgb/00000.color.jpg",
+                    "500": "anchor/backend/data/.cache/firebase_data/training_ua-fde484ecee02694ad6ee5e87e7363785_ayush_april_5/ace/test/rgb/00906.color.jpg",
+                    "1000": NaN
+                },
+                "ca": "anchor/backend/data/.cache/firebase_data/training_ua-fde484ecee02694ad6ee5e87e7363785_ayush_april_5/ace/test/rgb/00062.color.jpg"
+            },
+            "rot_err_at_anchor": {
+                "ace": {
+                    "0": 63.732182896478314,
+                    "100": 14.286419681777325,
+                    "200": 2.8629051955234415,
+                    "500": 0.9436011625067897,
+                    "1000": NaN
+                },
+                "ca": 1.8853666983875825
+            }
+        },
+        "training_ua-2e324ef56fc8bb74e6c2271c4fa64870_ayush_april_7": {
+            "num_anchors": {
+                "ace": {
+                    "0": 1780,
+                    "100": 1780,
+                    "200": 1778,
+                    "500": 1613,
+                    "1000": 1287
+                },
+                "ca": 8
+            },
+            "trans_err_at_anchor": {
+                "ace": {
+                    "0": 0.16405325601426463,
+                    "100": 0.16405325601426463,
+                    "200": 0.16270123113501558,
+                    "500": 0.12661066331413207,
+                    "1000": 0.09350097930752106
+                },
+                "ca": 0.11830199656143009
+            },
+            "first_img": {
+                "ace": {
+                    "0": "anchor/backend/data/.cache/firebase_data/training_ua-2e324ef56fc8bb74e6c2271c4fa64870_ayush_april_7/ace/test/rgb/00000.color.jpg",
+                    "100": "anchor/backend/data/.cache/firebase_data/training_ua-2e324ef56fc8bb74e6c2271c4fa64870_ayush_april_7/ace/test/rgb/00000.color.jpg",
+                    "200": "anchor/backend/data/.cache/firebase_data/training_ua-2e324ef56fc8bb74e6c2271c4fa64870_ayush_april_7/ace/test/rgb/00000.color.jpg",
+                    "500": "anchor/backend/data/.cache/firebase_data/training_ua-2e324ef56fc8bb74e6c2271c4fa64870_ayush_april_7/ace/test/rgb/00000.color.jpg",
+                    "1000": "anchor/backend/data/.cache/firebase_data/training_ua-2e324ef56fc8bb74e6c2271c4fa64870_ayush_april_7/ace/test/rgb/00000.color.jpg"
+                },
+                "ca": "anchor/backend/data/.cache/firebase_data/training_ua-2e324ef56fc8bb74e6c2271c4fa64870_ayush_april_7/ace/test/rgb/00018.color.jpg"
+            },
+            "rot_err_at_anchor": {
+                "ace": {
+                    "0": 1.72373381064357,
+                    "100": 1.72373381064357,
+                    "200": 1.7101428525845472,
+                    "500": 1.1945121397354528,
+                    "1000": 1.0168361412795937
+                },
+                "ca": 0.7841686084780163
+            }
+        }
+    }
+}

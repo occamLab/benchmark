@@ -9,6 +9,7 @@ import numpy as np
 import json
 from matplotlib.figure import Figure
 from slugify import slugify
+from scipy.spatial.transform import Rotation as R
 
 DATA_DIR = Path(__file__).parent.parent.parent / "data/.cache/firebase_data"
 
@@ -51,6 +52,20 @@ class FrameData:
         if not self.CLOUD_ANCHOR:
             return None
         return self.homogeneous_cloud_anchor_pose[0:3, 3]
+
+    @property
+    def ace_rotation_matrix(self) -> np.ndarray:
+        return self.homogeneous_ace_pose[0:3, 0:3]
+
+    @property
+    def arkit_rotation_matrix(self) -> np.ndarray:
+        return self.homogeneous_arkit_pose[0:3, 0:3]
+
+    @property
+    def cloud_anchor_rotation_matrix(self) -> np.ndarray:
+        if not self.CLOUD_ANCHOR:
+            return None
+        return self.homogeneous_cloud_anchor_pose[0:3, 0:3]
 
     @property
     def image_file_name(self) -> str:
@@ -109,6 +124,18 @@ class TestDatum:
             ]
         )
 
+    @cached_property
+    def ace_rotations(self) -> np.ndarray:
+        return np.array([frame.ace_rotation_matrix for frame in self.frames])
+
+    @cached_property
+    def cloud_anchor_rotations(self) -> np.ndarray:
+        return np.array([frame.cloud_anchor_rotation_matrix for frame in self.frames])
+
+    @cached_property
+    def arkit_rotations(self) -> np.ndarray:
+        return np.array([frame.arkit_rotation_matrix for frame in self.frames])
+
     @property
     def num_cloud_anchor_poses(self) -> int:
         return len(self.cloud_anchor_poses)
@@ -144,6 +171,31 @@ class TestDatum:
 
     def get_ace_translations_with_inlier_thresh(self, inlier_threshold: int):
         return self.ace_translations[self.inliers > inlier_threshold]
+
+    def get_cloud_anchor_traslational_err_at_idx(self, frame_idx: int):
+        return self.cloud_anchor_translational_errors[frame_idx]
+
+    def get_ace_average_rotation_errs(self) -> Dict[int, float]:
+        errs = {}
+        for inlier_count in ARBITRARY_INLIERS:
+            diff_matrices = self.arkit_rotations[
+                self.inliers > inlier_count
+            ] @ np.linalg.inv(self.ace_rotations[self.inliers > inlier_count])
+            trace = (
+                diff_matrices[:, 0, 0] + diff_matrices[:, 1, 1] + diff_matrices[:, 2, 2]
+            )
+            errs[inlier_count] = float(np.rad2deg(np.mean(np.arccos((trace - 1) / 2))))
+        return errs
+
+    def get_cloud_anchor_average_rotation_errs(self, ca_indices: List[int]) -> float:
+        ca_rotations = self.cloud_anchor_rotations[ca_indices]
+        temp_rotations = np.zeros([ca_rotations.shape[0], 3, 3])
+        for idx in range(ca_rotations.shape[0]):
+            temp_rotations[idx, :, :] = ca_rotations[idx]
+
+        diff_matrices = self.arkit_rotations[ca_indices] @ np.linalg.inv(temp_rotations)
+        trace = diff_matrices[:, 0, 0] + diff_matrices[:, 1, 1] + diff_matrices[:, 2, 2]
+        return float(np.rad2deg(np.mean(np.arccos((trace - 1) / 2))))
 
     @property
     def num_ace_frames_by_inliers(self) -> Dict[int, int]:

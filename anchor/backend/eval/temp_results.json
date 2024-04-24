@@ -1,0 +1,514 @@
+{
+    "training_ua-90ff6414f8f3669b1d685adc3f651e3d_ayush_mar_3": {
+        "testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3": {
+            "num_anchors": {
+                "ace": {
+                    "0": 1780,
+                    "100": 464,
+                    "200": 282,
+                    "500": 44,
+                    "1000": 0
+                },
+                "ca": 3
+            },
+            "trans_err_at_anchor": {
+                "ace": {
+                    "0": 7.441831912292223,
+                    "100": 0.43991861613691324,
+                    "200": 0.25408828046634796,
+                    "500": 0.23995406012755402,
+                    "1000": NaN
+                },
+                "ca": 0.05496846952820431
+            },
+            "first_img": {
+                "ace": {
+                    "0": "anchor/backend/data/.cache/firebase_data/testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3/ace/test/rgb/00000.color.jpg",
+                    "100": "anchor/backend/data/.cache/firebase_data/testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3/ace/test/rgb/00000.color.jpg",
+                    "200": "anchor/backend/data/.cache/firebase_data/testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3/ace/test/rgb/00000.color.jpg",
+                    "500": "anchor/backend/data/.cache/firebase_data/testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3/ace/test/rgb/01341.color.jpg",
+                    "1000": NaN
+                },
+                "ca": "anchor/backend/data/.cache/firebase_data/testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3/ace/test/rgb/00240.color.jpg"
+            },
+            "rot_err_at_anchor": {
+                "ace": {
+                    "0": 65.26831758844499,
+                    "100": 5.9832495790093745,
+                    "200": 3.6361715839196327,
+                    "500": 2.934074769031972,
+                    "1000": NaN
+                },
+                "ca": 2.6197411272294877
+            }
+        },
+        "testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3": {
+            "num_anchors": {
+                "ace": {
+                    "0": 1780,
+                    "100": 1357,
+                    "200": 1168,
+                    "500": 979,
+                    "1000": 702
+                },
+                "ca": 8
+            },
+            "trans_err_at_anchor": {
+                "ace": {
+                    "0": 1.7273728104726636,
+                    "100": 0.5977916373322945,
+                    "200": 0.3660061234730411,
+                    "500": 0.30277904112176135,
+                    "1000": 0.2914743858627784
+                },
+                "ca": 0.09748081166661754
+            },
+            "first_img": {
+                "ace": {
+                    "0": "anchor/backend/data/.cache/firebase_data/testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3/ace/test/rgb/00000.color.jpg",
+                    "100": "anchor/backend/data/.cache/firebase_data/testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3/ace/test/rgb/00000.color.jpg",
+                    "200": "anchor/backend/data/.cache/firebase_data/testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3/ace/test/rgb/00000.color.jpg",
+                    "500": "anchor/backend/data/.cache/firebase_data/testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3/ace/test/rgb/00000.color.jpg",
+                    "1000": "anchor/backend/data/.cache/firebase_data/testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3/ace/test/rgb/00000.color.jpg"
+                },
+                "ca": "anchor/backend/data/.cache/firebase_data/testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3/ace/test/rgb/00025.color.jpg"
+            },
+            "rot_err_at_anchor": {
+                "ace": {
+                    "0": 17.10628506123502,
+                    "100": 8.749546848840808,
+                    "200": 7.0605798939803766,
+                    "500": 6.916644439946804,
+                    "1000": 6.82352202186294
+                },
+                "ca": 7.206690907917314
+            }
+        },
+        "testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3": {
+            "num_anchors": {
+                "ace": {
+                    "0": 1780,
+                    "100": 512,
+                    "200": 219,
+                    "500": 0,
+                    "1000": 0
+                },
+                "ca": 4
+            },
+            "trans_err_at_anchor": {
+                "ace": {
+                    "0": 5.724268680669777,
+                    "100": 0.6400511488425005,
+                    "200": 0.2840441357025104,
+                    "500": NaN,
+                    "1000": NaN
+                },
+                "ca": 0.2093844114145555
+            },
+            "first_img": {
+                "ace": {
+                    "0": "anchor/backend/data/.cache/firebase_data/testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3/ace/test/rgb/00000.color.jpg",
+                    "100": "anchor/backend/data/.cache/firebase_data/testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3/ace/test/rgb/00000.color.jpg",
+                    "200": "anchor/backend/data/.cache/firebase_data/testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3/ace/test/rgb/00173.color.jpg",
+                    "500": NaN,
+                    "1000": NaN
+                },
+                "ca": "anchor/backend/data/.cache/firebase_data/testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3/ace/test/rgb/00070.color.jpg"
+            },
+            "rot_err_at_anchor": {
+                "ace": {
+                    "0": 52.34120541170648,
+                    "100": 9.043016845347589,
+                    "200": 6.215321523082754,
+                    "500": NaN,
+                    "1000": NaN
+                },
+                "ca": 5.618011818611864
+            }
+        }
+    },
+    "training_ua-7c140933b99a14568ee768781fb5c9b2_ayush_mar_4": {
+        "testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3": {
+            "num_anchors": {
+                "ace": {
+                    "0": 1780,
+                    "100": 1697,
+                    "200": 1670,
+                    "500": 1528,
+                    "1000": 983
+                },
+                "ca": 3
+            },
+            "trans_err_at_anchor": {
+                "ace": {
+                    "0": 0.4938578725146437,
+                    "100": 0.16555056476450059,
+                    "200": 0.1417939206300721,
+                    "500": 0.1302580650938269,
+                    "1000": 0.12429271614343516
+                },
+                "ca": 0.05496846952820431
+            },
+            "first_img": {
+                "ace": {
+                    "0": "anchor/backend/data/.cache/firebase_data/testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3/ace/test/rgb/00000.color.jpg",
+                    "100": "anchor/backend/data/.cache/firebase_data/testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3/ace/test/rgb/00000.color.jpg",
+                    "200": "anchor/backend/data/.cache/firebase_data/testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3/ace/test/rgb/00000.color.jpg",
+                    "500": "anchor/backend/data/.cache/firebase_data/testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3/ace/test/rgb/00000.color.jpg",
+                    "1000": "anchor/backend/data/.cache/firebase_data/testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3/ace/test/rgb/00000.color.jpg"
+                },
+                "ca": "anchor/backend/data/.cache/firebase_data/testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3/ace/test/rgb/00240.color.jpg"
+            },
+            "rot_err_at_anchor": {
+                "ace": {
+                    "0": 4.656152446955285,
+                    "100": 1.6790861558060708,
+                    "200": 1.359912458840621,
+                    "500": 1.0477837476969847,
+                    "1000": 0.7149491544779253
+                },
+                "ca": 2.6197411272294877
+            }
+        },
+        "testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3": {
+            "num_anchors": {
+                "ace": {
+                    "0": 1780,
+                    "100": 307,
+                    "200": 158,
+                    "500": 51,
+                    "1000": 0
+                },
+                "ca": 8
+            },
+            "trans_err_at_anchor": {
+                "ace": {
+                    "0": 6.820024533894269,
+                    "100": 0.4973119450516111,
+                    "200": 0.3120969078613948,
+                    "500": 0.26746738914103685,
+                    "1000": NaN
+                },
+                "ca": 0.09748081166661754
+            },
+            "first_img": {
+                "ace": {
+                    "0": "anchor/backend/data/.cache/firebase_data/testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3/ace/test/rgb/00000.color.jpg",
+                    "100": "anchor/backend/data/.cache/firebase_data/testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3/ace/test/rgb/00475.color.jpg",
+                    "200": "anchor/backend/data/.cache/firebase_data/testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3/ace/test/rgb/00574.color.jpg",
+                    "500": "anchor/backend/data/.cache/firebase_data/testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3/ace/test/rgb/00718.color.jpg",
+                    "1000": NaN
+                },
+                "ca": "anchor/backend/data/.cache/firebase_data/testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3/ace/test/rgb/00025.color.jpg"
+            },
+            "rot_err_at_anchor": {
+                "ace": {
+                    "0": 73.08796740386634,
+                    "100": 6.975565744501318,
+                    "200": 5.280935821566562,
+                    "500": 4.624691019956566,
+                    "1000": NaN
+                },
+                "ca": 7.206690907917314
+            }
+        },
+        "testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3": {
+            "num_anchors": {
+                "ace": {
+                    "0": 1780,
+                    "100": 1680,
+                    "200": 1616,
+                    "500": 1472,
+                    "1000": 1259
+                },
+                "ca": 4
+            },
+            "trans_err_at_anchor": {
+                "ace": {
+                    "0": 0.3321254596831726,
+                    "100": 0.17479208714838187,
+                    "200": 0.15441976310660682,
+                    "500": 0.13267229983895004,
+                    "1000": 0.13196163294070867
+                },
+                "ca": 0.2093844114145555
+            },
+            "first_img": {
+                "ace": {
+                    "0": "anchor/backend/data/.cache/firebase_data/testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3/ace/test/rgb/00000.color.jpg",
+                    "100": "anchor/backend/data/.cache/firebase_data/testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3/ace/test/rgb/00000.color.jpg",
+                    "200": "anchor/backend/data/.cache/firebase_data/testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3/ace/test/rgb/00000.color.jpg",
+                    "500": "anchor/backend/data/.cache/firebase_data/testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3/ace/test/rgb/00000.color.jpg",
+                    "1000": "anchor/backend/data/.cache/firebase_data/testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3/ace/test/rgb/00000.color.jpg"
+                },
+                "ca": "anchor/backend/data/.cache/firebase_data/testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3/ace/test/rgb/00070.color.jpg"
+            },
+            "rot_err_at_anchor": {
+                "ace": {
+                    "0": 4.403200430339776,
+                    "100": 2.269970359125516,
+                    "200": 1.9142409389368702,
+                    "500": 1.5911764257714958,
+                    "1000": 1.5591587558789848
+                },
+                "ca": 5.618011818611864
+            }
+        }
+    },
+    "training_ua-1bab71c5f9279e0777539be4abd6ae2b_ayush_mar_5": {
+        "testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3": {
+            "num_anchors": {
+                "ace": {
+                    "0": 1780,
+                    "100": 137,
+                    "200": 1,
+                    "500": 0,
+                    "1000": 0
+                },
+                "ca": 3
+            },
+            "trans_err_at_anchor": {
+                "ace": {
+                    "0": 8.432903261640833,
+                    "100": 0.9377363344027985,
+                    "200": 0.2644477318180313,
+                    "500": NaN,
+                    "1000": NaN
+                },
+                "ca": 0.05496846952820431
+            },
+            "first_img": {
+                "ace": {
+                    "0": "anchor/backend/data/.cache/firebase_data/testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3/ace/test/rgb/00000.color.jpg",
+                    "100": "anchor/backend/data/.cache/firebase_data/testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3/ace/test/rgb/00004.color.jpg",
+                    "200": "anchor/backend/data/.cache/firebase_data/testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3/ace/test/rgb/01066.color.jpg",
+                    "500": NaN,
+                    "1000": NaN
+                },
+                "ca": "anchor/backend/data/.cache/firebase_data/testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3/ace/test/rgb/00240.color.jpg"
+            },
+            "rot_err_at_anchor": {
+                "ace": {
+                    "0": 83.01896104427308,
+                    "100": 9.76982801168328,
+                    "200": 4.593761339408447,
+                    "500": NaN,
+                    "1000": NaN
+                },
+                "ca": 2.6197411272294877
+            }
+        },
+        "testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3": {
+            "num_anchors": {
+                "ace": {
+                    "0": 1780,
+                    "100": 1671,
+                    "200": 1559,
+                    "500": 1405,
+                    "1000": 1078
+                },
+                "ca": 8
+            },
+            "trans_err_at_anchor": {
+                "ace": {
+                    "0": 0.42935289079948763,
+                    "100": 0.3547589596579687,
+                    "200": 0.3092978741167715,
+                    "500": 0.27857985789093104,
+                    "1000": 0.27576091456033186
+                },
+                "ca": 0.09748081166661754
+            },
+            "first_img": {
+                "ace": {
+                    "0": "anchor/backend/data/.cache/firebase_data/testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3/ace/test/rgb/00000.color.jpg",
+                    "100": "anchor/backend/data/.cache/firebase_data/testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3/ace/test/rgb/00000.color.jpg",
+                    "200": "anchor/backend/data/.cache/firebase_data/testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3/ace/test/rgb/00000.color.jpg",
+                    "500": "anchor/backend/data/.cache/firebase_data/testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3/ace/test/rgb/00000.color.jpg",
+                    "1000": "anchor/backend/data/.cache/firebase_data/testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3/ace/test/rgb/00000.color.jpg"
+                },
+                "ca": "anchor/backend/data/.cache/firebase_data/testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3/ace/test/rgb/00025.color.jpg"
+            },
+            "rot_err_at_anchor": {
+                "ace": {
+                    "0": 7.790776450964738,
+                    "100": 6.764987464586439,
+                    "200": 6.362159024472421,
+                    "500": 6.173873163199978,
+                    "1000": 6.201255124145583
+                },
+                "ca": 7.206690907917314
+            }
+        },
+        "testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3": {
+            "num_anchors": {
+                "ace": {
+                    "0": 1780,
+                    "100": 415,
+                    "200": 123,
+                    "500": 0,
+                    "1000": 0
+                },
+                "ca": 4
+            },
+            "trans_err_at_anchor": {
+                "ace": {
+                    "0": 6.386825797346727,
+                    "100": 0.8229772818735768,
+                    "200": 0.37562095842160487,
+                    "500": NaN,
+                    "1000": NaN
+                },
+                "ca": 0.2093844114145555
+            },
+            "first_img": {
+                "ace": {
+                    "0": "anchor/backend/data/.cache/firebase_data/testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3/ace/test/rgb/00000.color.jpg",
+                    "100": "anchor/backend/data/.cache/firebase_data/testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3/ace/test/rgb/00066.color.jpg",
+                    "200": "anchor/backend/data/.cache/firebase_data/testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3/ace/test/rgb/00219.color.jpg",
+                    "500": NaN,
+                    "1000": NaN
+                },
+                "ca": "anchor/backend/data/.cache/firebase_data/testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3/ace/test/rgb/00070.color.jpg"
+            },
+            "rot_err_at_anchor": {
+                "ace": {
+                    "0": 53.04863652937807,
+                    "100": 11.075305532872958,
+                    "200": 5.825943055955636,
+                    "500": NaN,
+                    "1000": NaN
+                },
+                "ca": 5.618011818611864
+            }
+        }
+    },
+    "training_ua-2e1d4e33982d950fcc727486f41ac8ed_ayush_mar_6": {
+        "testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3": {
+            "num_anchors": {
+                "ace": {
+                    "0": 1780,
+                    "100": 0,
+                    "200": 0,
+                    "500": 0,
+                    "1000": 0
+                },
+                "ca": 3
+            },
+            "trans_err_at_anchor": {
+                "ace": {
+                    "0": 33.69004528283532,
+                    "100": NaN,
+                    "200": NaN,
+                    "500": NaN,
+                    "1000": NaN
+                },
+                "ca": 0.05496846952820431
+            },
+            "first_img": {
+                "ace": {
+                    "0": "anchor/backend/data/.cache/firebase_data/testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3/ace/test/rgb/00000.color.jpg",
+                    "100": NaN,
+                    "200": NaN,
+                    "500": NaN,
+                    "1000": NaN
+                },
+                "ca": "anchor/backend/data/.cache/firebase_data/testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3/ace/test/rgb/00240.color.jpg"
+            },
+            "rot_err_at_anchor": {
+                "ace": {
+                    "0": 109.54181997011337,
+                    "100": NaN,
+                    "200": NaN,
+                    "500": NaN,
+                    "1000": NaN
+                },
+                "ca": 2.6197411272294877
+            }
+        },
+        "testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3": {
+            "num_anchors": {
+                "ace": {
+                    "0": 1780,
+                    "100": 0,
+                    "200": 0,
+                    "500": 0,
+                    "1000": 0
+                },
+                "ca": 8
+            },
+            "trans_err_at_anchor": {
+                "ace": {
+                    "0": 30.223086372892713,
+                    "100": NaN,
+                    "200": NaN,
+                    "500": NaN,
+                    "1000": NaN
+                },
+                "ca": 0.09748081166661754
+            },
+            "first_img": {
+                "ace": {
+                    "0": "anchor/backend/data/.cache/firebase_data/testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3/ace/test/rgb/00000.color.jpg",
+                    "100": NaN,
+                    "200": NaN,
+                    "500": NaN,
+                    "1000": NaN
+                },
+                "ca": "anchor/backend/data/.cache/firebase_data/testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3/ace/test/rgb/00025.color.jpg"
+            },
+            "rot_err_at_anchor": {
+                "ace": {
+                    "0": 111.62870570574802,
+                    "100": NaN,
+                    "200": NaN,
+                    "500": NaN,
+                    "1000": NaN
+                },
+                "ca": 7.206690907917314
+            }
+        },
+        "testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3": {
+            "num_anchors": {
+                "ace": {
+                    "0": 1780,
+                    "100": 0,
+                    "200": 0,
+                    "500": 0,
+                    "1000": 0
+                },
+                "ca": 4
+            },
+            "trans_err_at_anchor": {
+                "ace": {
+                    "0": 33.07922037628198,
+                    "100": NaN,
+                    "200": NaN,
+                    "500": NaN,
+                    "1000": NaN
+                },
+                "ca": 0.2093844114145555
+            },
+            "first_img": {
+                "ace": {
+                    "0": "anchor/backend/data/.cache/firebase_data/testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3/ace/test/rgb/00000.color.jpg",
+                    "100": NaN,
+                    "200": NaN,
+                    "500": NaN,
+                    "1000": NaN
+                },
+                "ca": "anchor/backend/data/.cache/firebase_data/testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3/ace/test/rgb/00070.color.jpg"
+            },
+            "rot_err_at_anchor": {
+                "ace": {
+                    "0": 111.53980891757345,
+                    "100": NaN,
+                    "200": NaN,
+                    "500": NaN,
+                    "1000": NaN
+                },
+                "ca": 5.618011818611864
+            }
+        }
+    }
+}
