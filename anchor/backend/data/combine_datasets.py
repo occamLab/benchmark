@@ -3,6 +3,9 @@ from pathlib import Path
 import shutil
 
 
+# TODO: move this into a dataset modifier class
+
+
 DATASET_NAMES = [
     "training_ua-7c140933b99a14568ee768781fb5c9b2_ayush_mar_4",
     "training_ua-1bab71c5f9279e0777539be4abd6ae2b_ayush_mar_5"

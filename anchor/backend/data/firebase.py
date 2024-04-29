@@ -15,27 +15,21 @@ import copy
 import os
 
 
+# TODO: add parameters to this function
 def list_tars():
     if not FirebaseDownloader.initialized:
         cred = credentials.Certificate(FirebaseDownloader.service_account_path)
         initialize_app(cred)
         FirebaseDownloader.initialized = True
     bucket = storage.bucket(FirebaseDownloader.firebase_bucket_name)
-    # database = db.reference(url="https://stepnavigation-default-rtdb.firebaseio.com/")
-    # breakpoint()
+
     tar_queue = "iosLoggerDemo/processedTrainingTars/"
     tars = bucket.list_blobs(prefix=tar_queue)
 
     tar_names = []
 
     for tar in tars:
-        if tar.name.endswith(".tar") and "ayush_mar_" in tar.name:
-            tar_names.append(tar.name)
-
-    tar_queue = "iosLoggerDemo/processedTestTars/"
-    tars = bucket.list_blobs(prefix=tar_queue)
-    for tar in tars:
-        if tar.name.endswith(".tar") and "ayush_mar_" in tar.name:
+        if tar.name.endswith(".tar") and "ayush_april_7" in tar.name:
             tar_names.append(tar.name)
 
     return tar_names
@@ -131,18 +125,18 @@ class FirebaseDownloader:
             self.combine_extract_google_cloud_anchors(mapping_phase=False)
         else:
             if (self.local_extraction_location / "mapping-video.mp4").exists():
-                self.extract_ios_logger_video(
-                    self.local_extraction_location / "mapping-video.mp4", True
-                )
+                # self.extract_ios_logger_video(
+                #     self.local_extraction_location / "mapping-video.mp4", True
+                # )
                 self.extract_intrinsics(self.local_extraction_location, True)
                 self.extract_pose(self.local_extraction_location, True)
                 self.extract_april_tags(self.local_extraction_location, True)
                 self.extract_google_cloud_anchors(self.local_extraction_location, True)
 
             if (self.local_extraction_location / "localization-video.mp4").exists():
-                self.extract_ios_logger_video(
-                    self.local_extraction_location / "localization-video.mp4", False
-                )
+                # self.extract_ios_logger_video(
+                #     self.local_extraction_location / "localization-video.mp4", False
+                # )
                 self.extract_intrinsics(self.local_extraction_location, False)
                 self.extract_pose(self.local_extraction_location, False)
                 self.extract_april_tags(self.local_extraction_location, False)

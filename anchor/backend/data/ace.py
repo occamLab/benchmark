@@ -1,9 +1,8 @@
 from pathlib import Path
 from anchor.backend.data.extracted import Extracted
 from anchor.backend.data.firebase import FirebaseDownloader, list_tars
-from anchor.backend.data.error_summarizer import ErrorSummarizer
 from anchor.third_party.ace.ace_network import Regressor
-from torch.utils.mobile_optimizer import optimize_for_mobile, MobileOptimizerType
+from torch.utils.mobile_optimizer import optimize_for_mobile
 import shutil
 import sys
 import subprocess
@@ -65,26 +64,10 @@ def prepare_ace_data(extracted_data: Extracted):
                 )
 
 
-def calculate_google_cloud_anchor_quality(extracted_data: Extracted):
-    error_summarizer = ErrorSummarizer()
-    ground_truth_location = extracted_data.sensors_extracted[
-        Extracted.get_phase_key(True)
-    ]["google_cloud_anchor"]["anchor_host_rotation_matrix"]
-    for value in extracted_data.sensors_extracted[Extracted.get_phase_key(False)][
-        "google_cloud_anchor"
-    ]:
-        error_summarizer.observe_pose(
-            value["anchor_rotation_matrix"], ground_truth_location
-        )
-    error_summarizer.print_statistics()
-
-
-""" 
-    Converts the ACE model for mobile usage
-"""
-
-
 def save_model_for_mobile(ace_encoder_pretrained: Path, trained_weights: Path):
+    """
+    Converts the ACE model for mobile usage
+    """
     encoder_state_dict = torch.load(ace_encoder_pretrained, map_location="cpu")
     head_network_dict = torch.load(trained_weights, map_location="cpu")
 
@@ -104,12 +87,6 @@ def save_model_for_mobile(ace_encoder_pretrained: Path, trained_weights: Path):
     )
 
 
-"""
-Runs the ace evaluator on the trained model. To run paste the following into main:
-run_ace_evaluator(extracted_ace_folder, model_output, visualizer_enabled, render_flipped_portrait, render_target_path)
-"""
-
-
 def run_ace_evaluator(
     extracted_ace_folder: Path,
     model_output: Path,
@@ -118,8 +95,12 @@ def run_ace_evaluator(
     render_target_path: Path,
     frame_exclusion=0,
 ):
+    """
+    Runs the ace evaluator on the trained model. To run paste the following into main:
+    run_ace_evaluator(extracted_ace_folder, model_output, visualizer_enabled, render_flipped_portrait, render_target_path)
+    """
     print("[INFO]: Running ace evaluater on dataset path: ", extracted_ace_folder)
-    # TODO: thsi doesn't handle spaces properly
+
     subprocess.run(
         [
             "./test_ace.py",
@@ -221,6 +202,7 @@ def process_localization_phase(
                     "CLOUD_ANCHOR": list(ca_pose) if ca_pose is not None else [],
                 }
             )
+    # TODO: make this save in the test dir of the trained model, not testing tar dir
     test_data_dir = (
         downloader.local_extraction_location
         / f"ace/test/{datetime.now().strftime('%m:%d:%Y_%H:%M:%S')}"
@@ -230,9 +212,14 @@ def process_localization_phase(
     ace_results_path = test_data_dir / "ace_poses.txt"
 
     with open(pose_data_path, "w") as file:
-        json.dump({"data": poses}, file, indent=4)
+        json.dump(
+            {"data": poses},
+            file,
+            indent=4,
+        )
     shutil.move(ace_test_pose_file, ace_results_path)
 
+    # TODO: organize the json upload similar to the fix earlier
     print("[INFO]: Uploading processed JSON to firebase")
     firebase_processed_json_path: str = (
         Path(combined_path).parent.parent
@@ -269,10 +256,6 @@ def process_training_data(
     output_model_name=None,
 ):
     prepare_ace_data(downloader.extracted_data)
-
-    # TODO: fix cloud anchor analysis
-    # print("[INFO]: Summarizing google cloud anchor observations: ")
-    # calculate_google_cloud_anchor_quality(downloader.extracted_data)
 
     extracted_ace_folder = downloader.local_extraction_location / "ace"
     model_output = extracted_ace_folder / "model.pt"
@@ -361,6 +344,7 @@ def process_training_data(
         print("[INFO]: Moved tar from tarQueue to processedTars directory in firebase")
 
 
+# TODO: move into data_models.py
 @dataclass
 class PoseData:
     frame_num: int
@@ -425,24 +409,14 @@ def process_testing_data(
     return poses
 
 
-# test the benchmark here
+# TODO: ace.py should just be utils, not to be directly run
 if __name__ == "__main__":
     if len(sys.argv) == 2:
         tars = sys.argv[1]
 
     else:
         tars = list_tars()
-
-    # tars = ["training_ua-7c140933b99a14568ee768781fb5c9b2_ayush_mar_4_5_combined"]
-    tars = [
-        # 9:30
-        "testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3.tar",
-        # 12:00
-        "testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3.tar",
-        # Days later
-        "testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3.tar",
-    ]
-
+        
     print("Processing: \n" + "\n".join(tars))
 
     for combined_path in tars:

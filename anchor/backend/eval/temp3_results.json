@@ -1,0 +1,174 @@
+{
+    "training_ua-fde484ecee02694ad6ee5e87e7363785_ayush_april_5": {
+        "testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3": {
+            "num_anchors": {
+                "ace": {
+                    "0": 1780,
+                    "100": 240,
+                    "200": 82,
+                    "500": 0,
+                    "1000": 0
+                },
+                "ca": 4
+            },
+            "trans_err_at_anchor": {
+                "ace": {
+                    "0": 8.469573055844615,
+                    "100": 0.5736015282937869,
+                    "200": 0.1940777073322465,
+                    "500": NaN,
+                    "1000": NaN
+                },
+                "ca": 0.17272544697084039
+            },
+            "first_img": {
+                "ace": {
+                    "0": "anchor/backend/data/.cache/firebase_data/testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3/ace/test/rgb/00000.color.jpg",
+                    "100": "anchor/backend/data/.cache/firebase_data/testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3/ace/test/rgb/00167.color.jpg",
+                    "200": "anchor/backend/data/.cache/firebase_data/testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3/ace/test/rgb/00174.color.jpg",
+                    "500": NaN,
+                    "1000": NaN
+                },
+                "ca": "anchor/backend/data/.cache/firebase_data/testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3/ace/test/rgb/00070.color.jpg"
+            },
+            "rot_err_at_anchor": {
+                "ace": {
+                    "0": 68.45325355184464,
+                    "100": 7.306922454061543,
+                    "200": 2.208403748008747,
+                    "500": NaN,
+                    "1000": NaN
+                },
+                "ca": 5.618011818611864
+            }
+        },
+        "testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3": {
+            "num_anchors": {
+                "ace": {
+                    "0": 1780,
+                    "100": 1398,
+                    "200": 1242,
+                    "500": 900,
+                    "1000": 336
+                },
+                "ca": 8
+            },
+            "trans_err_at_anchor": {
+                "ace": {
+                    "0": 1.4639515579912277,
+                    "100": 0.34203865951710416,
+                    "200": 0.2588566657975353,
+                    "500": 0.17207734770357705,
+                    "1000": 0.1420559214062791
+                },
+                "ca": 0.09633650878024129
+            },
+            "first_img": {
+                "ace": {
+                    "0": "anchor/backend/data/.cache/firebase_data/testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3/ace/test/rgb/00000.color.jpg",
+                    "100": "anchor/backend/data/.cache/firebase_data/testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3/ace/test/rgb/00000.color.jpg",
+                    "200": "anchor/backend/data/.cache/firebase_data/testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3/ace/test/rgb/00000.color.jpg",
+                    "500": "anchor/backend/data/.cache/firebase_data/testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3/ace/test/rgb/00000.color.jpg",
+                    "1000": "anchor/backend/data/.cache/firebase_data/testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3/ace/test/rgb/00043.color.jpg"
+                },
+                "ca": "anchor/backend/data/.cache/firebase_data/testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3/ace/test/rgb/00025.color.jpg"
+            },
+            "rot_err_at_anchor": {
+                "ace": {
+                    "0": 13.434404733093462,
+                    "100": 3.493327613761395,
+                    "200": 2.729580052161357,
+                    "500": 2.280711236733081,
+                    "1000": 1.9312786131275799
+                },
+                "ca": 7.206690907917314
+            }
+        }
+    },
+    "training_ua-2e324ef56fc8bb74e6c2271c4fa64870_ayush_april_7": {
+        "testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3": {
+            "num_anchors": {
+                "ace": {
+                    "0": 1780,
+                    "100": 1351,
+                    "200": 1247,
+                    "500": 988,
+                    "1000": 509
+                },
+                "ca": 4
+            },
+            "trans_err_at_anchor": {
+                "ace": {
+                    "0": 2.309373320503359,
+                    "100": 0.2862129407467201,
+                    "200": 0.2017406612553118,
+                    "500": 0.14437248908952835,
+                    "1000": 0.11840597249687065
+                },
+                "ca": 0.17272544697084039
+            },
+            "first_img": {
+                "ace": {
+                    "0": "anchor/backend/data/.cache/firebase_data/testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3/ace/test/rgb/00000.color.jpg",
+                    "100": "anchor/backend/data/.cache/firebase_data/testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3/ace/test/rgb/00000.color.jpg",
+                    "200": "anchor/backend/data/.cache/firebase_data/testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3/ace/test/rgb/00000.color.jpg",
+                    "500": "anchor/backend/data/.cache/firebase_data/testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3/ace/test/rgb/00000.color.jpg",
+                    "1000": "anchor/backend/data/.cache/firebase_data/testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3/ace/test/rgb/00000.color.jpg"
+                },
+                "ca": "anchor/backend/data/.cache/firebase_data/testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3/ace/test/rgb/00070.color.jpg"
+            },
+            "rot_err_at_anchor": {
+                "ace": {
+                    "0": 23.08138908609511,
+                    "100": 2.5525172324431127,
+                    "200": 1.8647001655781403,
+                    "500": 1.6097187981579404,
+                    "1000": 1.471708184255738
+                },
+                "ca": 5.618011818611864
+            }
+        },
+        "testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3": {
+            "num_anchors": {
+                "ace": {
+                    "0": 1780,
+                    "100": 371,
+                    "200": 233,
+                    "500": 5,
+                    "1000": 0
+                },
+                "ca": 8
+            },
+            "trans_err_at_anchor": {
+                "ace": {
+                    "0": 5.360057545810703,
+                    "100": 0.4053577910513338,
+                    "200": 0.2906878652311641,
+                    "500": 0.2611827426298535,
+                    "1000": NaN
+                },
+                "ca": 0.09633650878024129
+            },
+            "first_img": {
+                "ace": {
+                    "0": "anchor/backend/data/.cache/firebase_data/testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3/ace/test/rgb/00000.color.jpg",
+                    "100": "anchor/backend/data/.cache/firebase_data/testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3/ace/test/rgb/00088.color.jpg",
+                    "200": "anchor/backend/data/.cache/firebase_data/testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3/ace/test/rgb/00481.color.jpg",
+                    "500": "anchor/backend/data/.cache/firebase_data/testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3/ace/test/rgb/01036.color.jpg",
+                    "1000": NaN
+                },
+                "ca": "anchor/backend/data/.cache/firebase_data/testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3/ace/test/rgb/00025.color.jpg"
+            },
+            "rot_err_at_anchor": {
+                "ace": {
+                    "0": 70.18563346501422,
+                    "100": 4.9512021195984595,
+                    "200": 3.6723414747197527,
+                    "500": 3.466481663968633,
+                    "1000": NaN
+                },
+                "ca": 7.206690907917314
+            }
+        }
+    }
+}

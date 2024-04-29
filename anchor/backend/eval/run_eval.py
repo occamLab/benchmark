@@ -93,113 +93,137 @@ def run_analysis():
     # ]
     # test_names = MULTI_MODEL_TEST_METADATA_MAPPINGS.keys()
     test_names = [
-        "training_ua-fde484ecee02694ad6ee5e87e7363785_ayush_april_5",
-        "training_ua-2e324ef56fc8bb74e6c2271c4fa64870_ayush_april_7",
+        # "training_ua-fde484ecee02694ad6ee5e87e7363785_ayush_april_5",
+        # "training_ua-2e324ef56fc8bb74e6c2271c4fa64870_ayush_april_7",
+        "testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3",
+        "testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3",
+    ]
+    model_test_pairs = [
+        # Test 2:00 AM
+        (
+            "testing_79CB3863-8E05-41A4-92D1-9F9C9058AD38_ayush_mar_4",
+            "training_ua-7c140933b99a14568ee768781fb5c9b2_ayush_mar_4",
+        ),
+        # Test 2:00 AM
+        (
+            "testing_233A663A-0B1B-4B31-B6DD-C25570ED3D9C_ayush_mar_5",
+            "training_ua-1bab71c5f9279e0777539be4abd6ae2b_ayush_mar_5",
+        ),
+        # Test 12:00 PM
+        (
+            "testing_E5BD7C45-F682-49B6-A01F-5811DA3FDE5D_ayush_mar_4",
+            "training_ua-7c140933b99a14568ee768781fb5c9b2_ayush_mar_4",
+        ),
+        # Test 12:00 PM
+        (
+            "testing_0666A135-8BB1-4100-97C2-BE2D2C2E38E8_ayush_mar_5",
+            "training_ua-1bab71c5f9279e0777539be4abd6ae2b_ayush_mar_5",
+        ),
     ]
 
     data = {}
 
-    for model in model_names:
-        data[model] = {}
-        for test in test_names:
-            metadata = {}
-            downloader = FirebaseDownloader(None, test)
-            downloader.extract_ios_logger_tar()
-            raw_data = downloader.extracted_data.sensors_extracted["localization_phase"]
-            ca_data = raw_data["google_cloud_anchor"]
-            results_json_path = (
-                Path(__file__).parent.parent
-                / "data/.cache/firebase_data"
-                / model
-                / "ace/test"
-                / test
-                / "results.json"
-            )
-            with open(results_json_path, "r") as file:
-                results = json.load(file)
-            if isinstance(results, dict) and "data" in results:
-                results = results["data"]
-            test_data = TestDatum(
-                frames=[FrameData(**args) for args in results],
-                root_dir=Path(__file__).parent.parent
-                / "data/.cache/firebase_data"
-                / model,
-            )
-            metadata["num_anchors"] = {
-                "ace": test_data.num_ace_frames_by_inliers,
-                "ca": len(ca_data),
-            }
-            try:
-                timestamps = [
-                    math.floor(f.timestamp * 100) / 100 for f in test_data.frames
+    # for model in model_names:
+    #     data[model] = {}
+    #     for test in test_names:
+    for test, model in model_test_pairs:
+        if model not in data:
+            data[model] = {}
+        metadata = {}
+        downloader = FirebaseDownloader(None, test)
+        downloader.extract_ios_logger_tar()
+        raw_data = downloader.extracted_data.sensors_extracted["localization_phase"]
+        ca_data = raw_data["google_cloud_anchor"]
+        results_json_path = (
+            Path(__file__).parent.parent
+            / "data/.cache/firebase_data"
+            / model
+            / "ace/test"
+            / test
+            / "results.json"
+        )
+        with open(results_json_path, "r") as file:
+            results = json.load(file)
+        if isinstance(results, dict) and "data" in results:
+            results = results["data"]
+        test_data = TestDatum(
+            frames=[FrameData(**args) for args in results],
+            root_dir=Path(__file__).parent.parent / "data/.cache/firebase_data" / model,
+        )
+        metadata["num_anchors"] = {
+            "ace": test_data.num_ace_frames_by_inliers,
+            "ca": len(ca_data),
+        }
+        try:
+            timestamps = [math.floor(f.timestamp * 100) / 100 for f in test_data.frames]
+            # TODO: fix cloud anchor indexing
+            ca_indices = np.array(
+                [
+                    timestamps.index(math.floor(x * 100) / 100)
+                    for x in [x["timestamp"] for x in ca_data]
                 ]
-                # TODO: fix cloud anchor indexing
-                ca_indices = np.array(
-                    [
-                        timestamps.index(math.floor(x * 100) / 100)
-                        for x in [x["timestamp"] for x in ca_data]
-                    ]
-                )
-                frame_errs = np.array(
-                    [
-                        test_data.get_cloud_anchor_traslational_err_at_idx(
-                            idx - test_data.cloud_anchor_start_idx
-                        )
-                        for idx in ca_indices
-                    ]
-                )
+            )
+            frame_errs = np.array(
+                [
+                    test_data.get_cloud_anchor_traslational_err_at_idx(
+                        idx - test_data.cloud_anchor_start_idx
+                    )
+                    for idx in ca_indices
+                ]
+            )
 
-                metadata["trans_err_at_anchor"] = {
-                    "ace": test_data.get_ace_avg_translation_errs(),
-                    "ca": np.mean(frame_errs),
-                }
-                metadata["first_img"] = {
-                    "ace": {
-                        num_inliers: (
-                            (
-                                Path(__file__).parent.parent
-                                / "data/.cache/firebase_data"
-                                / test
-                                / "ace/test/rgb"
-                                / f"{int(np.where(test_data.inliers > num_inliers)[0][0]):05}.color.jpg"
-                            )
-                            .relative_to(Path.cwd())
-                            .as_posix()
-                            if len(np.where(test_data.inliers > num_inliers)[0] > 0)
-                            else float("NaN")
-                        )
-                        for num_inliers in [0, 100, 200, 500, 1000]
-                    },
-                    "ca": (
+            metadata["trans_err_at_anchor"] = {
+                "ace": test_data.get_ace_avg_translation_errs(),
+                "ca": np.mean(frame_errs),
+            }
+            metadata["first_img"] = {
+                "ace": {
+                    num_inliers: (
                         (
                             Path(__file__).parent.parent
                             / "data/.cache/firebase_data"
                             / test
                             / "ace/test/rgb"
-                            / f"{ca_indices[0]:05}.color.jpg"
+                            / f"{int(np.where(test_data.inliers > num_inliers)[0][0]):05}.color.jpg"
                         )
                         .relative_to(Path.cwd())
                         .as_posix()
-                    ),
-                }
-                metadata["rot_err_at_anchor"] = {
-                    "ace": test_data.get_ace_average_rotation_errs(),
-                    "ca": test_data.get_cloud_anchor_average_rotation_errs(ca_indices),
-                }
+                        if len(np.where(test_data.inliers > num_inliers)[0] > 0)
+                        else float("NaN")
+                    )
+                    for num_inliers in [0, 100, 200, 500, 1000]
+                },
+                "ca": (
+                    (
+                        Path(__file__).parent.parent
+                        / "data/.cache/firebase_data"
+                        / test
+                        / "ace/test/rgb"
+                        / f"{ca_indices[0]:05}.color.jpg"
+                    )
+                    .relative_to(Path.cwd())
+                    .as_posix()
+                ),
+            }
+            metadata["rot_err_at_anchor"] = {
+                "ace": test_data.get_ace_average_rotation_errs(),
+                "ca": test_data.get_cloud_anchor_average_rotation_errs(ca_indices + 1),
+            }
 
-                data[model][test] = metadata
-                counts, bins = np.histogram(test_data.ace_translational_errors, bins=100, range=[0.0, 1.0])
-                plt.stairs(counts, bins)
-                plt.title(f"Test: {test}, Train: {model}")
-                plt.xlabel("Error (m)")
-                plt.ylabel("Counts")
-                plt.savefig(Path(__file__).parent / f"{model}_{test}")
-                plt.clf()
-            except IndexError as e:
-                breakpoint()
-                continue
-    # with open(Path(__file__).parent / "temp2_results.json", "w") as file:
-        # json.dump(data, file, indent=4)
+            data[model][test] = metadata
+            # breakpoint()
+            # counts, bins = np.histogram(test_data.ace_translational_errors, bins=100, range=[0.0, 1.0])
+            # plt.stairs(counts, bins)
+            # plt.title(f"Test: {test}, Train: {model}")
+            # plt.xlabel("Error (m)")
+            # plt.ylabel("Counts")
+            # plt.savefig(Path(__file__).parent / f"{model}_{test}")
+            # plt.clf()
+        except IndexError as e:
+            breakpoint()
+            continue
+    with open(Path(__file__).parent / "temp4_results.json", "w") as file:
+        json.dump(data, file, indent=4)
 
 
 run_analysis()
