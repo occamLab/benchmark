@@ -47,6 +47,9 @@ class CurrentVideo {
         if(!encoder.startWriting()) {
             print("[ERROR] While starting video encoder")
         }
+    }
+    
+    func startRecording() {
         encoder.startSession(atSourceTime: CMTime.zero)
     }
 }
@@ -61,6 +64,10 @@ class Video: Sensor, SensorProtocol {
     var currentVideo: CurrentVideo = CurrentVideo()
     private var initialTimestamp: Double? = nil
     
+    func startRecording() {
+        // TODO: fix this (inconsistent state)
+        currentVideo.startRecording()
+    }
     
     func collectData(motion: CMDeviceMotion?, frame: ARFrame?, arView: ARSCNView) {
         guard let frame = frame else {return}

@@ -222,7 +222,7 @@ def process_localization_phase(
                 }
             )
 
-    tmp_pose_path = Path(__file__).parent / "jsons/temp_pose_data.json"
+    tmp_pose_path = Path(__file__).parent / ".cache/jsons/temp_pose_data.json"
     with open(tmp_pose_path, "w") as file:
         json.dump({"data": poses}, file, indent=4)
 
@@ -271,21 +271,21 @@ def process_training_data(combined_path: str, downloader: FirebaseDownloader):
 
     print("[INFO]: Running ace training on dataset path: ", extracted_ace_folder)
     os.chdir(Path(__file__).parent.parent.parent / "third_party/ace")
-    subprocess.run(
-        [
-            "./train_ace.py",
-            extracted_ace_folder.as_posix(),
-            model_output.as_posix(),
-            "--render_visualization",
-            str(visualizer_enabled),
-            "--render_flipped_portrait",
-            str(render_flipped_portrait),
-            "--render_target_path",
-            render_target_path.as_posix(),
-            "--epochs",
-            str(training_epochs),
-        ]
-    )
+    # subprocess.run(
+    #     [
+    #         "./train_ace.py",
+    #         extracted_ace_folder.as_posix(),
+    #         model_output.as_posix(),
+    #         "--render_visualization",
+    #         str(visualizer_enabled),
+    #         "--render_flipped_portrait",
+    #         str(render_flipped_portrait),
+    #         "--render_target_path",
+    #         render_target_path.as_posix(),
+    #         "--epochs",
+    #         str(training_epochs),
+    #     ]
+    # )
 
     print("[INFO]: Running ace evaluation on dataset path: ", extracted_ace_folder)
     run_ace_evaluator(
@@ -315,8 +315,7 @@ def process_training_data(combined_path: str, downloader: FirebaseDownloader):
         print("[INFO]: Moved tar from tarQueue to processedTars directory in firebase")
 
     ace_test_pose_file = (
-        Path(tempfile.gettempdir())
-        / f"benchmark/{Path(tar_name).stem}/ace/poses_ace_.txt"
+        downloader.root_download_dir / f"{Path(tar_name).stem}/ace/poses_ace_.txt"
     )
     process_localization_phase(combined_path, downloader, ace_test_pose_file, True)
 
@@ -372,14 +371,20 @@ def process_testing_data(combined_path: str, downloader: FirebaseDownloader):
     extracted_ace_folder = downloader.local_extraction_location / "ace"
     model_name = Path(combined_path).stem.split("training_")[-1]
     model_name = "_".join(model_name.split("_")[2:])
-    model_data_folder = (
-        Path(tempfile.gettempdir()) / f"benchmark/training_{model_name}/ace"
-    )
-    model_weights_path = model_data_folder / "model.pt"
-    if not model_weights_path.exists():
-        downloader.download_file(
-            f"iosLoggerDemo/trainedModels/{model_name}.pt", model_weights_path
-        )
+
+    for (dir, _, _) in os.walk(downloader.root_download_dir):
+        dir_path = Path(dir)
+        if str(dir_path).endswith(model_name) and dir_path.parts[-1].startswith("training_"):
+            model_data_folder = Path(dir) / "ace"
+            model_weights_path = model_data_folder / "model.pt"
+            break
+    else:
+        raise NotImplementedError
+        # if not model_weights_path.exists():
+        #     downloader.download_file(
+        #         f"iosLoggerDemo/trainedModels/{model_name}.pt", model_weights_path
+        #     )
+
     ace_test_pose_file = model_data_folder / "poses_ace_.txt"
     run_ace_evaluator(
         extracted_ace_folder, model_weights_path, False, True, extracted_ace_folder
@@ -418,7 +423,6 @@ if __name__ == "__main__":
         )
 
         downloader.extract_ios_logger_tar()
-
         if Path(combined_path).parts[-1].startswith("training"):
             process_training_data(combined_path, downloader)
         elif Path(combined_path).parts[-1].startswith("testing"):

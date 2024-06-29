@@ -34,9 +34,16 @@ class MotionManager: ObservableObject {
     func setAnchorName(anchorName: String) {
         interactiveLocalize.selectedAnchor = anchorName
     }
+    func startRecordingVideo() {
+        motion?.videoSensor?.startRecording()
+    }
+    func resetGARSession() {
+        motion?.googleCloudAnchor?.resetGARSession()
+    }
+    
     func mappingPhase() {
         motion!.disabledCollection = false
-        DispatchQueue.main.asyncAfter(deadline: .now() + 20) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 30) {
             self.motion!.disabledCollection = true
             self.mappingComplete = true
         }
@@ -48,11 +55,11 @@ class MotionManager: ObservableObject {
     func transitionPhase() async {
         motion!.initMotionSensors()
         motion!.initArSession()
-        self.motion!.disabledCollection = false
     }
+    
     func localizationPhase() {
         motion!.disabledCollection = false
-        DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 30) {
             self.motion!.disabledCollection = true
             self.localizationComplete = true
         }
@@ -96,6 +103,7 @@ enum AppPhase {
     case mappingPhase
     case mappingComplete
     case resetPosePhase2
+    case restartingGARSession
     case localizationPhase
     case localizationComplete
     case enterAnchorName
@@ -143,8 +151,8 @@ struct ContentView: View {
                         motionManager.listFromFirebase() { fileNamesList in
                             self.anchors = fileNamesList
                             for (i, name) in self.anchors[0].enumerated() {
-                                if name.starts(with: "training_ua") {
-                                    let end = name.index(name.startIndex, offsetBy: "training_".count + cloudIDLength + 1)
+                                if name.starts(with: "ua-") {
+                                    let end = name.index(name.startIndex, offsetBy: cloudIDLength + 1)
                                     self.anchors[0][i] = String(name[end...])
                                 }
                             }
@@ -167,8 +175,8 @@ struct ContentView: View {
                             self.anchors = fileNamesList
                             for (i, name) in self.anchors[0].enumerated() {
                                 print("name \(name)")
-                                if name.starts(with: "training_ua") {
-                                    let end = name.index(name.startIndex, offsetBy: "training_".count + cloudIDLength + 1)
+                                if name.starts(with: "ua-") {
+                                    let end = name.index(name.startIndex, offsetBy: cloudIDLength + 1)
                                     self.anchors[0][i] = String(name[end...])
                                 }
                             }
@@ -195,9 +203,9 @@ struct ContentView: View {
                             motionManager.setAnchorName(anchorName: selection)
                             print("selection \(selection)")
                             self.selection = selection
-                            if let cloudAnchorIndexRange = selectionLocation.range(of: "training_ua") {
-                                let start = selectionLocation.index(cloudAnchorIndexRange.lowerBound, offsetBy: "training_".count)
-                                let end = selectionLocation.index(cloudAnchorIndexRange.lowerBound, offsetBy: "training_".count + cloudIDLength)
+                            if let cloudAnchorIndexRange = selectionLocation.range(of: "ua-") {
+                                let start = selectionLocation.index(cloudAnchorIndexRange.lowerBound, offsetBy: 0)
+                                let end = selectionLocation.index(cloudAnchorIndexRange.lowerBound, offsetBy: cloudIDLength)
                                 hostedCloudAnchorID = String(selectionLocation[start..<end])
                             } else {
                                 hostedCloudAnchorID = ""
@@ -255,11 +263,13 @@ struct ContentView: View {
                     .buttonStyle(.borderedProminent)
                     .controlSize(.large)
                 case .mappingPhase:
-                    Text("Mapping phase (20 seconds).")
+                    Text("Mapping phase (30 seconds).")
                     if (showButton) {
                         Button("Begin mapping phase") {
                             showButton = false
                             motionManager.mappingPhase()
+                            motionManager.startRecordingVideo()
+                            AnnouncementManager.shared.announce(announcement: "recording video")
                         }
                         .buttonStyle(.borderedProminent)
                         .controlSize(.large)
@@ -276,19 +286,26 @@ struct ContentView: View {
                     }
                     .buttonStyle(.borderedProminent)
                     .controlSize(.large)
+                case .restartingGARSession:
+                    Text("Waiting for GARSession to restart")
                 case .resetPosePhase2:
                     Text("Walk to a random place to reset the pose.")
-                    Button("Okay, I did") {
-                        self.appPhase = .localizationPhase
+                    Button("Okay, I did") {                        motionManager.resetGARSession()
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                            self.appPhase = .localizationPhase
+                        }
+                        self.appPhase = .restartingGARSession
                     }
                     .buttonStyle(.borderedProminent)
                     .controlSize(.large)
                 case .localizationPhase:
-                    Text("Localization phase (10 seconds).")
+                    Text("Localization phase (30 seconds).")
                     if (showButton) {
                         Button("Begin localization phase") {
                             showButton = false
                             motionManager.localizationPhase()
+                            motionManager.startRecordingVideo()
+                            AnnouncementManager.shared.announce(announcement: "recording video")
                         }
                         .buttonStyle(.borderedProminent)
                         .controlSize(.large)
