@@ -271,21 +271,21 @@ def process_training_data(combined_path: str, downloader: FirebaseDownloader):
 
     print("[INFO]: Running ace training on dataset path: ", extracted_ace_folder)
     os.chdir(Path(__file__).parent.parent.parent / "third_party/ace")
-    subprocess.run(
-        [
-            "./train_ace.py",
-            extracted_ace_folder.as_posix(),
-            model_output.as_posix(),
-            "--render_visualization",
-            str(visualizer_enabled),
-            "--render_flipped_portrait",
-            str(render_flipped_portrait),
-            "--render_target_path",
-            render_target_path.as_posix(),
-            "--epochs",
-            str(training_epochs),
-        ]
-    )
+    # subprocess.run(
+    #     [
+    #         "./train_ace.py",
+    #         extracted_ace_folder.as_posix(),
+    #         model_output.as_posix(),
+    #         "--render_visualization",
+    #         str(visualizer_enabled),
+    #         "--render_flipped_portrait",
+    #         str(render_flipped_portrait),
+    #         "--render_target_path",
+    #         render_target_path.as_posix(),
+    #         "--epochs",
+    #         str(training_epochs),
+    #     ]
+    # )
 
     print("[INFO]: Running ace evaluation on dataset path: ", extracted_ace_folder)
     run_ace_evaluator(

@@ -21,13 +21,13 @@ def list_tars():
         initialize_app(cred)
         FirebaseDownloader.initialized = True
     bucket = storage.bucket(FirebaseDownloader.firebase_bucket_name)
-    tar_queue = "iosLoggerDemo/tarQueue/"
+    tar_queue = "iosLoggerDemo/processedTrainingTars/"
     tars = bucket.list_blobs(prefix=tar_queue)
 
     tar_names = []
 
     for tar in tars:
-        if tar.name.endswith(".tar") and "nov30" in tar.name:
+        if tar.name.endswith(".tar") and "ayush_april_7" in tar.name:
             tar_names.append(tar.name)
 
     return tar_names
@@ -108,18 +108,18 @@ class FirebaseDownloader:
 
         # extract the videos by phase (test videos will not have mapping data so they need to be handled separately)
         if (self.local_extraction_location / "mapping-video.mp4").exists():
-            self.extract_ios_logger_video(
-                self.local_extraction_location / "mapping-video.mp4", True
-            )
+            # self.extract_ios_logger_video(
+            #     self.local_extraction_location / "mapping-video.mp4", True
+            # )
             self.extract_intrinsics(self.local_extraction_location, True)
             self.extract_pose(self.local_extraction_location, True)
             self.extract_april_tags(self.local_extraction_location, True)
             self.extract_google_cloud_anchors(self.local_extraction_location, True)
 
         if (self.local_extraction_location / "localization-video.mp4").exists():
-            self.extract_ios_logger_video(
-                self.local_extraction_location / "localization-video.mp4", False
-            )
+            # self.extract_ios_logger_video(
+            #     self.local_extraction_location / "localization-video.mp4", False
+            # )
             self.extract_intrinsics(self.local_extraction_location, False)
             self.extract_pose(self.local_extraction_location, False)
             self.extract_april_tags(self.local_extraction_location, False)
