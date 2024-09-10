@@ -26,7 +26,7 @@ struct ARViewRepresentable: UIViewRepresentable {
 
 
 class Motion: NSObject, ARSessionDelegate {
-    
+    var didConfigure = false
     public static var arConfiguration = ARWorldTrackingConfiguration()
     public var motionSensors = CMMotionManager()
     public var arView: ARSCNView
@@ -115,6 +115,7 @@ class Motion: NSObject, ARSessionDelegate {
         Motion.arConfiguration.videoFormat = ARWorldTrackingConfiguration.recommendedVideoFormatForHighResolutionFrameCapturing!
         Motion.arConfiguration.planeDetection = [.horizontal, .vertical]
         arView.session.pause()
+        didConfigure = false
         arView.session.run(Motion.arConfiguration, options: [
             ARSession.RunOptions.resetTracking,
             ARSession.RunOptions.resetSceneReconstruction,
@@ -125,6 +126,19 @@ class Motion: NSObject, ARSessionDelegate {
     
     // delegate ARFrame updates to video and other sensor loggers
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
+        if !didConfigure, let captureParameters = ARWorldTrackingConfiguration.configurableCaptureDeviceForPrimaryCamera {
+            didConfigure = true
+            do {
+                try captureParameters.lockForConfiguration()
+                captureParameters.setExposureModeCustom(duration: CMTime(seconds: captureParameters.exposureDuration.seconds/5, preferredTimescale: captureParameters.exposureDuration.timescale), iso: AVCaptureDevice.currentISO) { synchTime in
+                    print("synchTime \(synchTime.seconds)")
+                    captureParameters.unlockForConfiguration()
+                }
+            } catch {
+                
+            }
+
+        }
         if(!disabledCollection) {
             for sensor in sensors {
                 sensor.collectData(motion: nil, frame: frame, arView: arView)

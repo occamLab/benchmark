@@ -13,6 +13,7 @@ import FirebaseAuth
 
 class MotionManager: ObservableObject {
     public var arView: ARSCNView = ARSCNView(frame: .zero)
+    static let clipDuration: Double = 300
     @Published var interactiveLocalize: InteractiveLocalizer
     @Published var motion: Motion?
     @Published var isPresentingUploadConfirmation: Bool = false
@@ -43,7 +44,7 @@ class MotionManager: ObservableObject {
     
     func mappingPhase() {
         motion!.disabledCollection = false
-        DispatchQueue.main.asyncAfter(deadline: .now() + 30) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + Self.clipDuration) {
             self.motion!.disabledCollection = true
             self.mappingComplete = true
         }
@@ -59,7 +60,7 @@ class MotionManager: ObservableObject {
     
     func localizationPhase() {
         motion!.disabledCollection = false
-        DispatchQueue.main.asyncAfter(deadline: .now() + 30) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + Self.clipDuration) {
             self.motion!.disabledCollection = true
             self.localizationComplete = true
         }
@@ -263,7 +264,7 @@ struct ContentView: View {
                     .buttonStyle(.borderedProminent)
                     .controlSize(.large)
                 case .mappingPhase:
-                    Text("Mapping phase (30 seconds).")
+                    Text("Mapping phase (\(MotionManager.clipDuration) seconds).")
                     if (showButton) {
                         Button("Begin mapping phase") {
                             showButton = false
@@ -299,7 +300,7 @@ struct ContentView: View {
                     .buttonStyle(.borderedProminent)
                     .controlSize(.large)
                 case .localizationPhase:
-                    Text("Localization phase (30 seconds).")
+                    Text("Localization phase (\(MotionManager.clipDuration) seconds).")
                     if (showButton) {
                         Button("Begin localization phase") {
                             showButton = false
