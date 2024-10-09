@@ -29,13 +29,7 @@ def list_tars():
     tar_names = []
 
     for tar in tars:
-        if tar.name.endswith(".tar") and "ayush_mar_" in tar.name:
-            tar_names.append(tar.name)
-
-    tar_queue = "iosLoggerDemo/processedTestTars/"
-    tars = bucket.list_blobs(prefix=tar_queue)
-    for tar in tars:
-        if tar.name.endswith(".tar") and "ayush_mar_" in tar.name:
+        if tar.name.endswith(".tar") and "ayush_mar_3" in tar.name:
             tar_names.append(tar.name)
 
     return tar_names

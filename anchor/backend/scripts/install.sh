@@ -29,5 +29,6 @@ conda install av -c conda-forge
 pip install "fastapi[all]"
 
 # download our deps
-pip install firebase-admin==6.1.0
-pip install opencv-python~=4.7
+python -m pip install firebase-admin==6.1.0
+python -m pip install av==10.0.0
+python -m pip install tqdm

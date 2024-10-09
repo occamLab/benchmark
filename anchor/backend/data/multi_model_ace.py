@@ -140,7 +140,7 @@ def main():
 def main2():
     for test_name in test_datasets:
         downloader = FirebaseDownloader(
-            Path(test_name).parent, Path(test_name).parts[-1]
+            "iosLoggerDemo/processedTestTars", Path(test_name).parts[-1]
         )
         downloader.extract_ios_logger_tar()
 
