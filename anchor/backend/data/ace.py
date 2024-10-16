@@ -433,16 +433,6 @@ if __name__ == "__main__":
     else:
         tars = list_tars()
 
-    # tars = ["training_ua-7c140933b99a14568ee768781fb5c9b2_ayush_mar_4_5_combined"]
-    tars = [
-        # 9:30
-        "testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3.tar",
-        # 12:00
-        "testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3.tar",
-        # Days later
-        "testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3.tar",
-    ]
-
     print("Processing: \n" + "\n".join(tars))
 
     for combined_path in tars:
