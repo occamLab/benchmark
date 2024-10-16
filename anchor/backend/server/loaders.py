@@ -13,7 +13,7 @@ from typing import List, Dict
 import re
 
 TMP_FILE = tempfile.NamedTemporaryFile()
-    
+
 
 class ModelLoader:
     def __init__(self) -> None:

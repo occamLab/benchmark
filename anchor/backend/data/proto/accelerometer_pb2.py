@@ -6,214 +6,318 @@ from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
 from google.protobuf import reflection as _reflection
 from google.protobuf import symbol_database as _symbol_database
+
 # @@protoc_insertion_point(imports)
 
 _sym_db = _symbol_database.Default()
 
 
-
-
 DESCRIPTOR = _descriptor.FileDescriptor(
-  name='accelerometer.proto',
-  package='',
-  syntax='proto3',
-  serialized_options=None,
-  create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x13\x61\x63\x63\x65lerometer.proto\"p\n\x16\x41\x63\x63\x65lerometerTimestamp\x12\x11\n\ttimestamp\x18\x01 \x01(\x01\x12\x15\n\rxAcceleration\x18\x02 \x01(\x01\x12\x15\n\ryAcceleration\x18\x03 \x01(\x01\x12\x15\n\rzAcceleration\x18\x04 \x01(\x01\"\x8e\x02\n\x11\x41\x63\x63\x65lerometerData\x12\x35\n\x0cmappingPhase\x18\x01 \x01(\x0b\x32\x1f.AccelerometerData.MappingPhase\x12?\n\x11localizationPhase\x18\x02 \x01(\x0b\x32$.AccelerometerData.LocalizationPhase\x1a=\n\x0cMappingPhase\x12-\n\x0cmeasurements\x18\x01 \x03(\x0b\x32\x17.AccelerometerTimestamp\x1a\x42\n\x11LocalizationPhase\x12-\n\x0cmeasurements\x18\x01 \x03(\x0b\x32\x17.AccelerometerTimestampb\x06proto3'
+    name="accelerometer.proto",
+    package="",
+    syntax="proto3",
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+    serialized_pb=b'\n\x13\x61\x63\x63\x65lerometer.proto"p\n\x16\x41\x63\x63\x65lerometerTimestamp\x12\x11\n\ttimestamp\x18\x01 \x01(\x01\x12\x15\n\rxAcceleration\x18\x02 \x01(\x01\x12\x15\n\ryAcceleration\x18\x03 \x01(\x01\x12\x15\n\rzAcceleration\x18\x04 \x01(\x01"\x8e\x02\n\x11\x41\x63\x63\x65lerometerData\x12\x35\n\x0cmappingPhase\x18\x01 \x01(\x0b\x32\x1f.AccelerometerData.MappingPhase\x12?\n\x11localizationPhase\x18\x02 \x01(\x0b\x32$.AccelerometerData.LocalizationPhase\x1a=\n\x0cMappingPhase\x12-\n\x0cmeasurements\x18\x01 \x03(\x0b\x32\x17.AccelerometerTimestamp\x1a\x42\n\x11LocalizationPhase\x12-\n\x0cmeasurements\x18\x01 \x03(\x0b\x32\x17.AccelerometerTimestampb\x06proto3',
 )
 
 
-
-
 _ACCELEROMETERTIMESTAMP = _descriptor.Descriptor(
-  name='AccelerometerTimestamp',
-  full_name='AccelerometerTimestamp',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='timestamp', full_name='AccelerometerTimestamp.timestamp', index=0,
-      number=1, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='xAcceleration', full_name='AccelerometerTimestamp.xAcceleration', index=1,
-      number=2, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='yAcceleration', full_name='AccelerometerTimestamp.yAcceleration', index=2,
-      number=3, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='zAcceleration', full_name='AccelerometerTimestamp.zAcceleration', index=3,
-      number=4, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=23,
-  serialized_end=135,
+    name="AccelerometerTimestamp",
+    full_name="AccelerometerTimestamp",
+    filename=None,
+    file=DESCRIPTOR,
+    containing_type=None,
+    create_key=_descriptor._internal_create_key,
+    fields=[
+        _descriptor.FieldDescriptor(
+            name="timestamp",
+            full_name="AccelerometerTimestamp.timestamp",
+            index=0,
+            number=1,
+            type=1,
+            cpp_type=5,
+            label=1,
+            has_default_value=False,
+            default_value=float(0),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.FieldDescriptor(
+            name="xAcceleration",
+            full_name="AccelerometerTimestamp.xAcceleration",
+            index=1,
+            number=2,
+            type=1,
+            cpp_type=5,
+            label=1,
+            has_default_value=False,
+            default_value=float(0),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.FieldDescriptor(
+            name="yAcceleration",
+            full_name="AccelerometerTimestamp.yAcceleration",
+            index=2,
+            number=3,
+            type=1,
+            cpp_type=5,
+            label=1,
+            has_default_value=False,
+            default_value=float(0),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.FieldDescriptor(
+            name="zAcceleration",
+            full_name="AccelerometerTimestamp.zAcceleration",
+            index=3,
+            number=4,
+            type=1,
+            cpp_type=5,
+            label=1,
+            has_default_value=False,
+            default_value=float(0),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+    ],
+    extensions=[],
+    nested_types=[],
+    enum_types=[],
+    serialized_options=None,
+    is_extendable=False,
+    syntax="proto3",
+    extension_ranges=[],
+    oneofs=[],
+    serialized_start=23,
+    serialized_end=135,
 )
 
 
 _ACCELEROMETERDATA_MAPPINGPHASE = _descriptor.Descriptor(
-  name='MappingPhase',
-  full_name='AccelerometerData.MappingPhase',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='measurements', full_name='AccelerometerData.MappingPhase.measurements', index=0,
-      number=1, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=279,
-  serialized_end=340,
+    name="MappingPhase",
+    full_name="AccelerometerData.MappingPhase",
+    filename=None,
+    file=DESCRIPTOR,
+    containing_type=None,
+    create_key=_descriptor._internal_create_key,
+    fields=[
+        _descriptor.FieldDescriptor(
+            name="measurements",
+            full_name="AccelerometerData.MappingPhase.measurements",
+            index=0,
+            number=1,
+            type=11,
+            cpp_type=10,
+            label=3,
+            has_default_value=False,
+            default_value=[],
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+    ],
+    extensions=[],
+    nested_types=[],
+    enum_types=[],
+    serialized_options=None,
+    is_extendable=False,
+    syntax="proto3",
+    extension_ranges=[],
+    oneofs=[],
+    serialized_start=279,
+    serialized_end=340,
 )
 
 _ACCELEROMETERDATA_LOCALIZATIONPHASE = _descriptor.Descriptor(
-  name='LocalizationPhase',
-  full_name='AccelerometerData.LocalizationPhase',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='measurements', full_name='AccelerometerData.LocalizationPhase.measurements', index=0,
-      number=1, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=342,
-  serialized_end=408,
+    name="LocalizationPhase",
+    full_name="AccelerometerData.LocalizationPhase",
+    filename=None,
+    file=DESCRIPTOR,
+    containing_type=None,
+    create_key=_descriptor._internal_create_key,
+    fields=[
+        _descriptor.FieldDescriptor(
+            name="measurements",
+            full_name="AccelerometerData.LocalizationPhase.measurements",
+            index=0,
+            number=1,
+            type=11,
+            cpp_type=10,
+            label=3,
+            has_default_value=False,
+            default_value=[],
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+    ],
+    extensions=[],
+    nested_types=[],
+    enum_types=[],
+    serialized_options=None,
+    is_extendable=False,
+    syntax="proto3",
+    extension_ranges=[],
+    oneofs=[],
+    serialized_start=342,
+    serialized_end=408,
 )
 
 _ACCELEROMETERDATA = _descriptor.Descriptor(
-  name='AccelerometerData',
-  full_name='AccelerometerData',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='mappingPhase', full_name='AccelerometerData.mappingPhase', index=0,
-      number=1, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='localizationPhase', full_name='AccelerometerData.localizationPhase', index=1,
-      number=2, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[_ACCELEROMETERDATA_MAPPINGPHASE, _ACCELEROMETERDATA_LOCALIZATIONPHASE, ],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=138,
-  serialized_end=408,
+    name="AccelerometerData",
+    full_name="AccelerometerData",
+    filename=None,
+    file=DESCRIPTOR,
+    containing_type=None,
+    create_key=_descriptor._internal_create_key,
+    fields=[
+        _descriptor.FieldDescriptor(
+            name="mappingPhase",
+            full_name="AccelerometerData.mappingPhase",
+            index=0,
+            number=1,
+            type=11,
+            cpp_type=10,
+            label=1,
+            has_default_value=False,
+            default_value=None,
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.FieldDescriptor(
+            name="localizationPhase",
+            full_name="AccelerometerData.localizationPhase",
+            index=1,
+            number=2,
+            type=11,
+            cpp_type=10,
+            label=1,
+            has_default_value=False,
+            default_value=None,
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+    ],
+    extensions=[],
+    nested_types=[
+        _ACCELEROMETERDATA_MAPPINGPHASE,
+        _ACCELEROMETERDATA_LOCALIZATIONPHASE,
+    ],
+    enum_types=[],
+    serialized_options=None,
+    is_extendable=False,
+    syntax="proto3",
+    extension_ranges=[],
+    oneofs=[],
+    serialized_start=138,
+    serialized_end=408,
 )
 
-_ACCELEROMETERDATA_MAPPINGPHASE.fields_by_name['measurements'].message_type = _ACCELEROMETERTIMESTAMP
+_ACCELEROMETERDATA_MAPPINGPHASE.fields_by_name[
+    "measurements"
+].message_type = _ACCELEROMETERTIMESTAMP
 _ACCELEROMETERDATA_MAPPINGPHASE.containing_type = _ACCELEROMETERDATA
-_ACCELEROMETERDATA_LOCALIZATIONPHASE.fields_by_name['measurements'].message_type = _ACCELEROMETERTIMESTAMP
+_ACCELEROMETERDATA_LOCALIZATIONPHASE.fields_by_name[
+    "measurements"
+].message_type = _ACCELEROMETERTIMESTAMP
 _ACCELEROMETERDATA_LOCALIZATIONPHASE.containing_type = _ACCELEROMETERDATA
-_ACCELEROMETERDATA.fields_by_name['mappingPhase'].message_type = _ACCELEROMETERDATA_MAPPINGPHASE
-_ACCELEROMETERDATA.fields_by_name['localizationPhase'].message_type = _ACCELEROMETERDATA_LOCALIZATIONPHASE
-DESCRIPTOR.message_types_by_name['AccelerometerTimestamp'] = _ACCELEROMETERTIMESTAMP
-DESCRIPTOR.message_types_by_name['AccelerometerData'] = _ACCELEROMETERDATA
+_ACCELEROMETERDATA.fields_by_name[
+    "mappingPhase"
+].message_type = _ACCELEROMETERDATA_MAPPINGPHASE
+_ACCELEROMETERDATA.fields_by_name[
+    "localizationPhase"
+].message_type = _ACCELEROMETERDATA_LOCALIZATIONPHASE
+DESCRIPTOR.message_types_by_name["AccelerometerTimestamp"] = _ACCELEROMETERTIMESTAMP
+DESCRIPTOR.message_types_by_name["AccelerometerData"] = _ACCELEROMETERDATA
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
-AccelerometerTimestamp = _reflection.GeneratedProtocolMessageType('AccelerometerTimestamp', (_message.Message,), {
-  'DESCRIPTOR' : _ACCELEROMETERTIMESTAMP,
-  '__module__' : 'accelerometer_pb2'
-  # @@protoc_insertion_point(class_scope:AccelerometerTimestamp)
-  })
+AccelerometerTimestamp = _reflection.GeneratedProtocolMessageType(
+    "AccelerometerTimestamp",
+    (_message.Message,),
+    {
+        "DESCRIPTOR": _ACCELEROMETERTIMESTAMP,
+        "__module__": "accelerometer_pb2"
+        # @@protoc_insertion_point(class_scope:AccelerometerTimestamp)
+    },
+)
 _sym_db.RegisterMessage(AccelerometerTimestamp)
 
-AccelerometerData = _reflection.GeneratedProtocolMessageType('AccelerometerData', (_message.Message,), {
-
-  'MappingPhase' : _reflection.GeneratedProtocolMessageType('MappingPhase', (_message.Message,), {
-    'DESCRIPTOR' : _ACCELEROMETERDATA_MAPPINGPHASE,
-    '__module__' : 'accelerometer_pb2'
-    # @@protoc_insertion_point(class_scope:AccelerometerData.MappingPhase)
-    })
-  ,
-
-  'LocalizationPhase' : _reflection.GeneratedProtocolMessageType('LocalizationPhase', (_message.Message,), {
-    'DESCRIPTOR' : _ACCELEROMETERDATA_LOCALIZATIONPHASE,
-    '__module__' : 'accelerometer_pb2'
-    # @@protoc_insertion_point(class_scope:AccelerometerData.LocalizationPhase)
-    })
-  ,
-  'DESCRIPTOR' : _ACCELEROMETERDATA,
-  '__module__' : 'accelerometer_pb2'
-  # @@protoc_insertion_point(class_scope:AccelerometerData)
-  })
+AccelerometerData = _reflection.GeneratedProtocolMessageType(
+    "AccelerometerData",
+    (_message.Message,),
+    {
+        "MappingPhase": _reflection.GeneratedProtocolMessageType(
+            "MappingPhase",
+            (_message.Message,),
+            {
+                "DESCRIPTOR": _ACCELEROMETERDATA_MAPPINGPHASE,
+                "__module__": "accelerometer_pb2"
+                # @@protoc_insertion_point(class_scope:AccelerometerData.MappingPhase)
+            },
+        ),
+        "LocalizationPhase": _reflection.GeneratedProtocolMessageType(
+            "LocalizationPhase",
+            (_message.Message,),
+            {
+                "DESCRIPTOR": _ACCELEROMETERDATA_LOCALIZATIONPHASE,
+                "__module__": "accelerometer_pb2"
+                # @@protoc_insertion_point(class_scope:AccelerometerData.LocalizationPhase)
+            },
+        ),
+        "DESCRIPTOR": _ACCELEROMETERDATA,
+        "__module__": "accelerometer_pb2"
+        # @@protoc_insertion_point(class_scope:AccelerometerData)
+    },
+)
 _sym_db.RegisterMessage(AccelerometerData)
 _sym_db.RegisterMessage(AccelerometerData.MappingPhase)
 _sym_db.RegisterMessage(AccelerometerData.LocalizationPhase)

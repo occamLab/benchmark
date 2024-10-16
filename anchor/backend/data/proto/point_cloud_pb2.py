@@ -6,200 +6,280 @@ from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
 from google.protobuf import reflection as _reflection
 from google.protobuf import symbol_database as _symbol_database
+
 # @@protoc_insertion_point(imports)
 
 _sym_db = _symbol_database.Default()
 
 
-
-
 DESCRIPTOR = _descriptor.FileDescriptor(
-  name='point_cloud.proto',
-  package='',
-  syntax='proto3',
-  serialized_options=None,
-  create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x11point_cloud.proto\"?\n\x13PointCloudTimestamp\x12\x11\n\ttimestamp\x18\x01 \x01(\x01\x12\x15\n\rpointsInCloud\x18\x02 \x01(\r\"\xff\x01\n\x0ePointCloudData\x12\x32\n\x0cmappingPhase\x18\x01 \x01(\x0b\x32\x1c.PointCloudData.MappingPhase\x12<\n\x11localizationPhase\x18\x02 \x01(\x0b\x32!.PointCloudData.LocalizationPhase\x1a:\n\x0cMappingPhase\x12*\n\x0cmeasurements\x18\x01 \x03(\x0b\x32\x14.PointCloudTimestamp\x1a?\n\x11LocalizationPhase\x12*\n\x0cmeasurements\x18\x01 \x03(\x0b\x32\x14.PointCloudTimestampb\x06proto3'
+    name="point_cloud.proto",
+    package="",
+    syntax="proto3",
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+    serialized_pb=b'\n\x11point_cloud.proto"?\n\x13PointCloudTimestamp\x12\x11\n\ttimestamp\x18\x01 \x01(\x01\x12\x15\n\rpointsInCloud\x18\x02 \x01(\r"\xff\x01\n\x0ePointCloudData\x12\x32\n\x0cmappingPhase\x18\x01 \x01(\x0b\x32\x1c.PointCloudData.MappingPhase\x12<\n\x11localizationPhase\x18\x02 \x01(\x0b\x32!.PointCloudData.LocalizationPhase\x1a:\n\x0cMappingPhase\x12*\n\x0cmeasurements\x18\x01 \x03(\x0b\x32\x14.PointCloudTimestamp\x1a?\n\x11LocalizationPhase\x12*\n\x0cmeasurements\x18\x01 \x03(\x0b\x32\x14.PointCloudTimestampb\x06proto3',
 )
 
 
-
-
 _POINTCLOUDTIMESTAMP = _descriptor.Descriptor(
-  name='PointCloudTimestamp',
-  full_name='PointCloudTimestamp',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='timestamp', full_name='PointCloudTimestamp.timestamp', index=0,
-      number=1, type=1, cpp_type=5, label=1,
-      has_default_value=False, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='pointsInCloud', full_name='PointCloudTimestamp.pointsInCloud', index=1,
-      number=2, type=13, cpp_type=3, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=21,
-  serialized_end=84,
+    name="PointCloudTimestamp",
+    full_name="PointCloudTimestamp",
+    filename=None,
+    file=DESCRIPTOR,
+    containing_type=None,
+    create_key=_descriptor._internal_create_key,
+    fields=[
+        _descriptor.FieldDescriptor(
+            name="timestamp",
+            full_name="PointCloudTimestamp.timestamp",
+            index=0,
+            number=1,
+            type=1,
+            cpp_type=5,
+            label=1,
+            has_default_value=False,
+            default_value=float(0),
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.FieldDescriptor(
+            name="pointsInCloud",
+            full_name="PointCloudTimestamp.pointsInCloud",
+            index=1,
+            number=2,
+            type=13,
+            cpp_type=3,
+            label=1,
+            has_default_value=False,
+            default_value=0,
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+    ],
+    extensions=[],
+    nested_types=[],
+    enum_types=[],
+    serialized_options=None,
+    is_extendable=False,
+    syntax="proto3",
+    extension_ranges=[],
+    oneofs=[],
+    serialized_start=21,
+    serialized_end=84,
 )
 
 
 _POINTCLOUDDATA_MAPPINGPHASE = _descriptor.Descriptor(
-  name='MappingPhase',
-  full_name='PointCloudData.MappingPhase',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='measurements', full_name='PointCloudData.MappingPhase.measurements', index=0,
-      number=1, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=219,
-  serialized_end=277,
+    name="MappingPhase",
+    full_name="PointCloudData.MappingPhase",
+    filename=None,
+    file=DESCRIPTOR,
+    containing_type=None,
+    create_key=_descriptor._internal_create_key,
+    fields=[
+        _descriptor.FieldDescriptor(
+            name="measurements",
+            full_name="PointCloudData.MappingPhase.measurements",
+            index=0,
+            number=1,
+            type=11,
+            cpp_type=10,
+            label=3,
+            has_default_value=False,
+            default_value=[],
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+    ],
+    extensions=[],
+    nested_types=[],
+    enum_types=[],
+    serialized_options=None,
+    is_extendable=False,
+    syntax="proto3",
+    extension_ranges=[],
+    oneofs=[],
+    serialized_start=219,
+    serialized_end=277,
 )
 
 _POINTCLOUDDATA_LOCALIZATIONPHASE = _descriptor.Descriptor(
-  name='LocalizationPhase',
-  full_name='PointCloudData.LocalizationPhase',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='measurements', full_name='PointCloudData.LocalizationPhase.measurements', index=0,
-      number=1, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=279,
-  serialized_end=342,
+    name="LocalizationPhase",
+    full_name="PointCloudData.LocalizationPhase",
+    filename=None,
+    file=DESCRIPTOR,
+    containing_type=None,
+    create_key=_descriptor._internal_create_key,
+    fields=[
+        _descriptor.FieldDescriptor(
+            name="measurements",
+            full_name="PointCloudData.LocalizationPhase.measurements",
+            index=0,
+            number=1,
+            type=11,
+            cpp_type=10,
+            label=3,
+            has_default_value=False,
+            default_value=[],
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+    ],
+    extensions=[],
+    nested_types=[],
+    enum_types=[],
+    serialized_options=None,
+    is_extendable=False,
+    syntax="proto3",
+    extension_ranges=[],
+    oneofs=[],
+    serialized_start=279,
+    serialized_end=342,
 )
 
 _POINTCLOUDDATA = _descriptor.Descriptor(
-  name='PointCloudData',
-  full_name='PointCloudData',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='mappingPhase', full_name='PointCloudData.mappingPhase', index=0,
-      number=1, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='localizationPhase', full_name='PointCloudData.localizationPhase', index=1,
-      number=2, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[_POINTCLOUDDATA_MAPPINGPHASE, _POINTCLOUDDATA_LOCALIZATIONPHASE, ],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=87,
-  serialized_end=342,
+    name="PointCloudData",
+    full_name="PointCloudData",
+    filename=None,
+    file=DESCRIPTOR,
+    containing_type=None,
+    create_key=_descriptor._internal_create_key,
+    fields=[
+        _descriptor.FieldDescriptor(
+            name="mappingPhase",
+            full_name="PointCloudData.mappingPhase",
+            index=0,
+            number=1,
+            type=11,
+            cpp_type=10,
+            label=1,
+            has_default_value=False,
+            default_value=None,
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.FieldDescriptor(
+            name="localizationPhase",
+            full_name="PointCloudData.localizationPhase",
+            index=1,
+            number=2,
+            type=11,
+            cpp_type=10,
+            label=1,
+            has_default_value=False,
+            default_value=None,
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+    ],
+    extensions=[],
+    nested_types=[
+        _POINTCLOUDDATA_MAPPINGPHASE,
+        _POINTCLOUDDATA_LOCALIZATIONPHASE,
+    ],
+    enum_types=[],
+    serialized_options=None,
+    is_extendable=False,
+    syntax="proto3",
+    extension_ranges=[],
+    oneofs=[],
+    serialized_start=87,
+    serialized_end=342,
 )
 
-_POINTCLOUDDATA_MAPPINGPHASE.fields_by_name['measurements'].message_type = _POINTCLOUDTIMESTAMP
+_POINTCLOUDDATA_MAPPINGPHASE.fields_by_name[
+    "measurements"
+].message_type = _POINTCLOUDTIMESTAMP
 _POINTCLOUDDATA_MAPPINGPHASE.containing_type = _POINTCLOUDDATA
-_POINTCLOUDDATA_LOCALIZATIONPHASE.fields_by_name['measurements'].message_type = _POINTCLOUDTIMESTAMP
+_POINTCLOUDDATA_LOCALIZATIONPHASE.fields_by_name[
+    "measurements"
+].message_type = _POINTCLOUDTIMESTAMP
 _POINTCLOUDDATA_LOCALIZATIONPHASE.containing_type = _POINTCLOUDDATA
-_POINTCLOUDDATA.fields_by_name['mappingPhase'].message_type = _POINTCLOUDDATA_MAPPINGPHASE
-_POINTCLOUDDATA.fields_by_name['localizationPhase'].message_type = _POINTCLOUDDATA_LOCALIZATIONPHASE
-DESCRIPTOR.message_types_by_name['PointCloudTimestamp'] = _POINTCLOUDTIMESTAMP
-DESCRIPTOR.message_types_by_name['PointCloudData'] = _POINTCLOUDDATA
+_POINTCLOUDDATA.fields_by_name[
+    "mappingPhase"
+].message_type = _POINTCLOUDDATA_MAPPINGPHASE
+_POINTCLOUDDATA.fields_by_name[
+    "localizationPhase"
+].message_type = _POINTCLOUDDATA_LOCALIZATIONPHASE
+DESCRIPTOR.message_types_by_name["PointCloudTimestamp"] = _POINTCLOUDTIMESTAMP
+DESCRIPTOR.message_types_by_name["PointCloudData"] = _POINTCLOUDDATA
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
-PointCloudTimestamp = _reflection.GeneratedProtocolMessageType('PointCloudTimestamp', (_message.Message,), {
-  'DESCRIPTOR' : _POINTCLOUDTIMESTAMP,
-  '__module__' : 'point_cloud_pb2'
-  # @@protoc_insertion_point(class_scope:PointCloudTimestamp)
-  })
+PointCloudTimestamp = _reflection.GeneratedProtocolMessageType(
+    "PointCloudTimestamp",
+    (_message.Message,),
+    {
+        "DESCRIPTOR": _POINTCLOUDTIMESTAMP,
+        "__module__": "point_cloud_pb2"
+        # @@protoc_insertion_point(class_scope:PointCloudTimestamp)
+    },
+)
 _sym_db.RegisterMessage(PointCloudTimestamp)
 
-PointCloudData = _reflection.GeneratedProtocolMessageType('PointCloudData', (_message.Message,), {
-
-  'MappingPhase' : _reflection.GeneratedProtocolMessageType('MappingPhase', (_message.Message,), {
-    'DESCRIPTOR' : _POINTCLOUDDATA_MAPPINGPHASE,
-    '__module__' : 'point_cloud_pb2'
-    # @@protoc_insertion_point(class_scope:PointCloudData.MappingPhase)
-    })
-  ,
-
-  'LocalizationPhase' : _reflection.GeneratedProtocolMessageType('LocalizationPhase', (_message.Message,), {
-    'DESCRIPTOR' : _POINTCLOUDDATA_LOCALIZATIONPHASE,
-    '__module__' : 'point_cloud_pb2'
-    # @@protoc_insertion_point(class_scope:PointCloudData.LocalizationPhase)
-    })
-  ,
-  'DESCRIPTOR' : _POINTCLOUDDATA,
-  '__module__' : 'point_cloud_pb2'
-  # @@protoc_insertion_point(class_scope:PointCloudData)
-  })
+PointCloudData = _reflection.GeneratedProtocolMessageType(
+    "PointCloudData",
+    (_message.Message,),
+    {
+        "MappingPhase": _reflection.GeneratedProtocolMessageType(
+            "MappingPhase",
+            (_message.Message,),
+            {
+                "DESCRIPTOR": _POINTCLOUDDATA_MAPPINGPHASE,
+                "__module__": "point_cloud_pb2"
+                # @@protoc_insertion_point(class_scope:PointCloudData.MappingPhase)
+            },
+        ),
+        "LocalizationPhase": _reflection.GeneratedProtocolMessageType(
+            "LocalizationPhase",
+            (_message.Message,),
+            {
+                "DESCRIPTOR": _POINTCLOUDDATA_LOCALIZATIONPHASE,
+                "__module__": "point_cloud_pb2"
+                # @@protoc_insertion_point(class_scope:PointCloudData.LocalizationPhase)
+            },
+        ),
+        "DESCRIPTOR": _POINTCLOUDDATA,
+        "__module__": "point_cloud_pb2"
+        # @@protoc_insertion_point(class_scope:PointCloudData)
+    },
+)
 _sym_db.RegisterMessage(PointCloudData)
 _sym_db.RegisterMessage(PointCloudData.MappingPhase)
 _sym_db.RegisterMessage(PointCloudData.LocalizationPhase)

@@ -9,20 +9,11 @@ import json
 from tqdm import tqdm
 import google
 
-combined_model_name = (
-    "training_ua-7c140933b99a14568ee768781fb5c9b2_ayush_mar_4_5_combined"
-)
 individual_model_names = [
-    "training_ua-7c140933b99a14568ee768781fb5c9b2_ayush_mar_4",
-    "training_ua-1bab71c5f9279e0777539be4abd6ae2b_ayush_mar_5",
+    "training_ua-90ff6414f8f3669b1d685adc3f651e3d_ayush_mar_3",
 ]
 test_datasets = [
-    # 9:30
     "testing_FE49EDB3-4A95-4B60-A942-5E41463DAEEF_ayush_mar_3.tar",
-    # 12:00
-    "testing_7AAC6056-FEA5-4712-8134-26B13499316C_ayush_mar_3.tar",
-    # Days later
-    "testing_2E4723D2-57C7-4AA1-B3B3-CE276ABF0DC7_ayush_mar_3.tar",
 ]
 OUTPUT_BASE_DIR = Path(__file__).parent / ".cache/multi_model_results"
 
@@ -90,12 +81,10 @@ def main():
         )
         assert len(images) == len(intrinsics)
 
-        results_by_model = {
-            name: [] for name in [combined_model_name] + individual_model_names
-        }
+        results_by_model = {name: [] for name in individual_model_names}
 
         for idx in tqdm(range(len(images))):
-            for model_name in [combined_model_name] + individual_model_names:
+            for model_name in individual_model_names:
                 pose, inlier_counts, best_model = send_localization_from_path(
                     model_name, Path(images[idx]), Path(intrinsics[idx])
                 )
@@ -145,7 +134,7 @@ def main2():
         downloader.extract_ios_logger_tar()
 
         results_by_model = {}
-        for model_name in [combined_model_name] + individual_model_names:
+        for model_name in individual_model_names:
             results_by_model[model_name] = process_testing_data(
                 test_name,
                 downloader,
