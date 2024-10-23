@@ -32,3 +32,4 @@ pip install "fastapi[all]"
 python -m pip install firebase-admin==6.1.0
 python -m pip install av==10.0.0
 python -m pip install tqdm
+python -m pip install slugify
