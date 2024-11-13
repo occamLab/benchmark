@@ -13,7 +13,7 @@ import FirebaseAuth
 
 class MotionManager: ObservableObject {
     public var arView: ARSCNView = ARSCNView(frame: .zero)
-    static let clipDuration: Double = 300
+    @Published var clipDuration: Int = 30
     @Published var interactiveLocalize: InteractiveLocalizer
     @Published var motion: Motion?
     @Published var isPresentingUploadConfirmation: Bool = false
@@ -44,7 +44,7 @@ class MotionManager: ObservableObject {
     
     func mappingPhase() {
         motion!.disabledCollection = false
-        DispatchQueue.main.asyncAfter(deadline: .now() + Self.clipDuration) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + Double(clipDuration)) {
             self.motion!.disabledCollection = true
             self.mappingComplete = true
         }
@@ -60,7 +60,7 @@ class MotionManager: ObservableObject {
     
     func localizationPhase() {
         motion!.disabledCollection = false
-        DispatchQueue.main.asyncAfter(deadline: .now() + Self.clipDuration) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + Double(clipDuration)) {
             self.motion!.disabledCollection = true
             self.localizationComplete = true
         }
@@ -250,6 +250,12 @@ struct ContentView: View {
                     // Record new anchor route
                 case .alignmentPhase:
                     Text("Align phone to starting position! Hold vertically against table edge (camera straight on).")
+                    TextField("Clip Duration", value: $motionManager.clipDuration, formatter: NumberFormatter()).padding(4)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 14)
+                                .stroke(Color.green, lineWidth: 2)
+                        )
+                        .padding()
                     Button("Phone is aligned") {
                         motionManager.setUpMotion()
                         self.appPhase = .resetPosePhase
@@ -264,7 +270,7 @@ struct ContentView: View {
                     .buttonStyle(.borderedProminent)
                     .controlSize(.large)
                 case .mappingPhase:
-                    Text("Mapping phase (\(MotionManager.clipDuration) seconds).")
+                    Text("Mapping phase (\(motionManager.clipDuration) seconds).")
                     if (showButton) {
                         Button("Begin mapping phase") {
                             showButton = false
@@ -300,7 +306,7 @@ struct ContentView: View {
                     .buttonStyle(.borderedProminent)
                     .controlSize(.large)
                 case .localizationPhase:
-                    Text("Localization phase (\(MotionManager.clipDuration) seconds).")
+                    Text("Localization phase (\(motionManager.clipDuration) seconds).")
                     if (showButton) {
                         Button("Begin localization phase") {
                             showButton = false

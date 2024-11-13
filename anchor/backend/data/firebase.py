@@ -21,15 +21,12 @@ def list_tars():
         initialize_app(cred)
         FirebaseDownloader.initialized = True
     bucket = storage.bucket(FirebaseDownloader.firebase_bucket_name)
-    # database = db.reference(url="https://stepnavigation-default-rtdb.firebaseio.com/")
-    # breakpoint()
-    tar_queue = "iosLoggerDemo/processedTrainingTars/"
+    tar_queue = "iosLoggerDemo/tarQueue/"
     tars = bucket.list_blobs(prefix=tar_queue)
-
     tar_names = []
 
     for tar in tars:
-        if tar.name.endswith(".tar") and "ayush_mar_3" in tar.name:
+        if tar.name.endswith(".tar") and "ayush_oct_2" in tar.name:
             tar_names.append(tar.name)
 
     return tar_names
