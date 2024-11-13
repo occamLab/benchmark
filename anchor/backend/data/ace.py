@@ -15,6 +15,7 @@ import numpy as np
 import json
 from datetime import datetime
 
+RENDER_VISUALIZATION = True
 
 def prepare_ace_data(extracted_data: Extracted):
     map_phase_to_ace_folder = {"mapping_phase": "train", "localization_phase": "test"}
@@ -102,12 +103,6 @@ def save_model_for_mobile(ace_encoder_pretrained: Path, trained_weights: Path):
     optimized_model._save_for_lite_interpreter(
         (trained_weights.parent / "mobile.model.ptl").as_posix()
     )
-
-
-"""
-Runs the ace evaluator on the trained model. To run paste the following into main:
-run_ace_evaluator(extracted_ace_folder, model_output, visualizer_enabled, render_flipped_portrait, render_target_path)
-"""
 
 
 def run_ace_evaluator(
@@ -284,7 +279,6 @@ def process_training_data(
         / "ace"
         / "ace_encoder_pretrained.pt"
     )
-    visualizer_enabled = False
     render_flipped_portrait = False
     training_epochs = 8
 
@@ -296,7 +290,7 @@ def process_training_data(
             extracted_ace_folder.as_posix(),
             model_output.as_posix(),
             "--render_visualization",
-            str(visualizer_enabled),
+            str(RENDER_VISUALIZATION),
             "--render_flipped_portrait",
             str(render_flipped_portrait),
             "--render_target_path",
@@ -309,14 +303,14 @@ def process_training_data(
     if run_tests:
         print("[INFO]: Running ace evaluation on dataset path: ", extracted_ace_folder)
         run_ace_evaluator(
-            extracted_ace_folder, model_output, False, True, extracted_ace_folder
+            extracted_ace_folder, model_output, RENDER_VISUALIZATION, True, extracted_ace_folder
         )
         ace_test_pose_file = (
             downloader.root_download_dir / f"{Path(tar_name).stem}/ace/poses_ace_.txt"
         )
         process_localization_phase(combined_path, downloader, ace_test_pose_file, True)
 
-        if visualizer_enabled:
+        if RENDER_VISUALIZATION:
             subprocess.run(
                 [
                     "/usr/bin/ffmpeg",
@@ -419,7 +413,7 @@ def process_testing_data(
 
     ace_test_pose_file = model_data_folder / "poses_ace_.txt"
     run_ace_evaluator(
-        extracted_ace_folder, model_weights_path, False, True, extracted_ace_folder
+        extracted_ace_folder, model_weights_path, RENDER_VISUALIZATION, True, extracted_ace_folder
     )
     poses = process_localization_phase(combined_path, downloader, ace_test_pose_file)
     return poses

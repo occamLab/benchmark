@@ -1,1 +1,1 @@
-scp benchmark.zip ubuntu@150.136.67.254:/home/ubuntu/es-east-1/benchmark.zip
+scp benchmark.zip ubuntu@$1:/home/ubuntu/$2/benchmark.zip
