@@ -15,7 +15,7 @@ import numpy as np
 import json
 from datetime import datetime
 
-RENDER_VISUALIZATION = True
+RENDER_VISUALIZATION = False
 
 def prepare_ace_data(extracted_data: Extracted):
     map_phase_to_ace_folder = {"mapping_phase": "train", "localization_phase": "test"}
@@ -216,11 +216,13 @@ def process_localization_phase(
                     "CLOUD_ANCHOR": list(ca_pose) if ca_pose is not None else [],
                 }
             )
+
+    model_name = Path(ace_test_pose_file).parent.parent.parts[-1]
     test_data_dir = (
         downloader.local_extraction_location
-        / f"ace/test/{datetime.now().strftime('%m:%d:%Y_%H:%M:%S')}"
+        / f"ace/test/{model_name}/{datetime.now().strftime('%m:%d:%Y_%H:%M:%S')}"
     )
-    os.mkdir(test_data_dir)
+    test_data_dir.mkdir(parents=True)
     pose_data_path = test_data_dir / "mapped_poses.json"
     ace_results_path = test_data_dir / "ace_poses.txt"
 

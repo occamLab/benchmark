@@ -10,7 +10,9 @@ from utils.data_models import (
 )
 
 import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 import argparse
+import numpy as np
 import os
 
 DATASET_INFO_PATH = Path(__file__).parent / "utils/dataset.json"
@@ -45,30 +47,66 @@ def append_test_stats():
 
     for map_name, map_data in json_data.items():
         for idx, test in enumerate(map_data["tests"]):
-            try:
-                if "error" in test:
-                    del test["error"]
-                test_info = TestInfo(data=None, error=None, **test)
-                test_info.load_data()
-                error = {
-                    "ca_error": test_info.data.get_cloud_anchor_avg_translation_err(),
-                    "ace_error": {
-                        "raw": test_info.data.get_ace_avg_translation_errs(),
-                        "smooth": test_info.data.get_ace_avg_translation_errs_smooth(),
-                    },
-                }
-                num_frames = {
-                    "ca_frames": test_info.data.num_cloud_anchor_poses,
-                    "ace_frames": {
-                        "raw": test_info.data.num_ace_frames_by_inliers,
-                        "smooth": test_info.data.num_ace_frames_by_inliers_smooth,
-                    },
-                }
-                json_data[map_name]["tests"][idx]["error"] = error
-                json_data[map_name]["tests"][idx]["num_frames"] = num_frames
-            except Exception as e:
-                print(e)
-                continue
+            if "error" in test:
+                del test["error"]
+            test_info = TestInfo(data=None, error=None, map_name=map_name, **test)
+            test_info.load_data()
+            error = {
+                "ca_error": test_info.data.get_cloud_anchor_avg_translation_err(),
+                "ace_error": {
+                    "raw": test_info.data.get_ace_avg_translation_errs(),
+                    "smooth": test_info.data.get_ace_avg_translation_errs_smooth(),
+                },
+            }
+            num_frames = {
+                "ca_frames": test_info.data.num_cloud_anchor_poses,
+                "ace_frames": {
+                    "raw": test_info.data.num_ace_frames_by_inliers,
+                    "smooth": test_info.data.num_ace_frames_by_inliers_smooth,
+                },
+            }
+            json_data[map_name]["tests"][idx]["error"] = error
+            json_data[map_name]["tests"][idx]["num_frames"] = num_frames
+
+            output_dir = test_info.test_data_dir / "artifacts"
+            output_dir.mkdir(exist_ok=True)
+
+            # Time series error data
+            plt.plot(test_info.data.ace_translational_errors)
+            plt.ylim([0, 10])
+            plt.xlabel("Frame Number")
+            plt.ylabel("Translational Error (m)")
+            plt.savefig(output_dir / "time_series_t_err.png")
+
+            # Error histograms
+            fig, ax = plt.subplots()
+            num_bins = max(20, int(max(test_info.data.ace_translational_errors / 0.5)))
+            counts, bin_edges = np.histogram(test_info.data.ace_translational_errors, bins=num_bins)
+            bars = ax.bar(bin_edges[:-1], counts, width=np.diff(bin_edges), edgecolor="black", align="edge")
+            bars = list(bars)
+
+            def update(inlier_count):
+                idx = test_info.data.inliers > inlier_count
+                error = test_info.data.ace_translational_errors[idx]
+                if len(error) == 0:
+                    num_bins = 20
+                else:
+                    num_bins = max(20, int(max(error / 0.5)))
+                counts, bin_edges = np.histogram(error, bins=num_bins)
+                for bar in bars:
+                    bar.remove()
+                bars[:] = ax.bar(bin_edges[:-1], counts, width=np.diff(bin_edges), edgecolor="black", align="edge")
+                ax.set_xlabel("Error Buckets (m)")
+                ax.set_ylabel("Counts")
+                ax.set_title(f"Ace Error at {inlier_count} Inliers. {len(error)}/{len(idx)} Frames")
+                ax.set_xlim(min(bin_edges), max(bin_edges))
+
+                return bars
+
+            # Step 5: Create the animation
+            ani = animation.FuncAnimation(fig, update, frames=range(0, 1000, 10), interval=1000, blit=False)
+            ani.save(output_dir / 't_err_by_inlier_thresh.mp4', writer='ffmpeg')
+                
 
     with open(DATASET_INFO_PATH, "w") as file:
         json.dump(json_data, file, indent=4)

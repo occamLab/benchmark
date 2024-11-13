@@ -118,7 +118,7 @@ class Extracted:
             ]
 
             # ArFrames feed at roughly 30fps, so we can filter with a 1ms cutoff window to match frames
-            if abs(frame_timestamp - sensor_timestamp) < 0.001:
+            if abs(frame_timestamp - sensor_timestamp) < 0.01:
                 self.sensors_extracted[phase]["video"][frame_idx][
                     match_against
                 ] = self.sensors_extracted[phase][match_against][sensor_idx]
