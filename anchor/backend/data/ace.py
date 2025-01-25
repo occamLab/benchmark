@@ -3,6 +3,7 @@ from anchor.backend.data.extracted import Extracted
 from anchor.backend.data.firebase import FirebaseDownloader, list_tars
 from anchor.backend.data.error_summarizer import ErrorSummarizer
 from anchor.third_party.ace.ace_network import Regressor
+from anchor.backend.data.supplements.anchor_maps import get_anchor_maps_data
 from torch.utils.mobile_optimizer import optimize_for_mobile, MobileOptimizerType
 import shutil
 import sys
@@ -16,6 +17,7 @@ import json
 from datetime import datetime
 
 RENDER_VISUALIZATION = True
+
 
 def prepare_ace_data(extracted_data: Extracted):
     map_phase_to_ace_folder = {"mapping_phase": "train", "localization_phase": "test"}
@@ -64,25 +66,6 @@ def prepare_ace_data(extracted_data: Extracted):
                     + f"{pose_data[2]} {pose_data[6]} {pose_data[10]} {pose_data[14]}\n"
                     + f"{pose_data[3]} {pose_data[7]} {pose_data[11]} {pose_data[15]}"
                 )
-
-
-def calculate_google_cloud_anchor_quality(extracted_data: Extracted):
-    error_summarizer = ErrorSummarizer()
-    ground_truth_location = extracted_data.sensors_extracted[
-        Extracted.get_phase_key(True)
-    ]["google_cloud_anchor"]["anchor_host_rotation_matrix"]
-    for value in extracted_data.sensors_extracted[Extracted.get_phase_key(False)][
-        "google_cloud_anchor"
-    ]:
-        error_summarizer.observe_pose(
-            value["anchor_rotation_matrix"], ground_truth_location
-        )
-    error_summarizer.print_statistics()
-
-
-""" 
-    Converts the ACE model for mobile usage
-"""
 
 
 def save_model_for_mobile(ace_encoder_pretrained: Path, trained_weights: Path):
@@ -220,7 +203,7 @@ def process_localization_phase(
         downloader.local_extraction_location
         / f"ace/test/{datetime.now().strftime('%m_%d_%Y_%H_%M_%S')}"
     )
-    os.mkdir(test_data_dir)
+    test_data_dir.mkdir(parents=True)
     pose_data_path = test_data_dir / "mapped_poses.json"
     ace_results_path = test_data_dir / "ace_poses.txt"
 
@@ -263,11 +246,7 @@ def process_training_data(
     run_tests=True,
     output_model_name=None,
 ):
-    prepare_ace_data(downloader.extracted_data)
-
-    # TODO: fix cloud anchor analysis
-    # print("[INFO]: Summarizing google cloud anchor observations: ")
-    # calculate_google_cloud_anchor_quality(downloader.extracted_data)
+    # prepare_ace_data(downloader.extracted_data)
 
     extracted_ace_folder = downloader.local_extraction_location / "ace"
     model_output = extracted_ace_folder / "model.pt"
@@ -303,7 +282,11 @@ def process_training_data(
     if run_tests:
         print("[INFO]: Running ace evaluation on dataset path: ", extracted_ace_folder)
         run_ace_evaluator(
-            extracted_ace_folder, model_output, RENDER_VISUALIZATION, True, extracted_ace_folder
+            extracted_ace_folder,
+            model_output,
+            RENDER_VISUALIZATION,
+            True,
+            extracted_ace_folder,
         )
         ace_test_pose_file = (
             downloader.root_download_dir / f"{Path(tar_name).stem}/ace/poses_ace_.txt"
@@ -387,7 +370,7 @@ def process_testing_data(
     downloader: FirebaseDownloader,
     model_data_folder: Path = None,
 ):
-    prepare_ace_data(downloader.extracted_data)
+    # prepare_ace_data(downloader.extracted_data)
     os.chdir(Path(__file__).parent.parent.parent / "third_party/ace")
     extracted_ace_folder = downloader.local_extraction_location / "ace"
     model_name = Path(combined_path).stem.split("training_")[-1]
@@ -413,7 +396,11 @@ def process_testing_data(
 
     ace_test_pose_file = model_data_folder / "poses_ace_.txt"
     run_ace_evaluator(
-        extracted_ace_folder, model_weights_path, RENDER_VISUALIZATION, True, extracted_ace_folder
+        extracted_ace_folder,
+        model_weights_path,
+        RENDER_VISUALIZATION,
+        True,
+        extracted_ace_folder,
     )
     poses = process_localization_phase(combined_path, downloader, ace_test_pose_file)
     return poses
