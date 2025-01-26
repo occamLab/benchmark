@@ -16,7 +16,9 @@ import numpy as np
 import json
 from datetime import datetime
 
-RENDER_VISUALIZATION = True
+RENDER_VISUALIZATION = False
+
+TEST_RESULT_DIR = Path(__file__).parent / ".cache/test_data"
 
 
 def prepare_ace_data(extracted_data: Extracted):
@@ -98,7 +100,7 @@ def run_ace_evaluator(
 ):
     print("[INFO]: Running ace evaluater on dataset path: ", extracted_ace_folder)
     # TODO: thsi doesn't handle spaces properly
-    subprocess.run(
+    ret = subprocess.run(
         [
             "./test_ace.py",
             extracted_ace_folder.as_posix(),
@@ -182,11 +184,12 @@ def process_localization_phase(
             data = line.strip("\n").split(" ")
             data[0] = int(data[0].split(".")[0])
             ace_pose_data = PoseData(**{header[i]: data[i] for i in range(len(header))})
+            # TODO: these should be localization_phase
             timestamp = downloader.extracted_data.sensors_extracted[
-                "localization_phase"
+                "mapping_phase"
             ]["poses"][data[0]]["timestamp"]
             arkit_pose = downloader.extracted_data.sensors_extracted[
-                "localization_phase"
+                "mapping_phase"
             ]["poses"][data[0]]["rotation_matrix"]
             ca_pose = ca_poses_by_timestamp.get(timestamp)
             poses.append(
@@ -200,8 +203,8 @@ def process_localization_phase(
                 }
             )
     test_data_dir = (
-        downloader.local_extraction_location
-        / f"ace/test/{datetime.now().strftime('%m_%d_%Y_%H_%M_%S')}"
+        TEST_RESULT_DIR
+        / f"{datetime.now().strftime('%m_%d_%Y_%H_%M_%S')}"
     )
     test_data_dir.mkdir(parents=True)
     pose_data_path = test_data_dir / "mapped_poses.json"
@@ -211,33 +214,33 @@ def process_localization_phase(
         json.dump({"data": poses}, file, indent=4)
     shutil.move(ace_test_pose_file, ace_results_path)
 
-    print("[INFO]: Uploading processed JSON to firebase")
-    firebase_processed_json_path: str = (
-        Path(combined_path).parent.parent
-        / f"processedJsons/{Path(downloader.tar_name).stem}.json"
-    )
-    downloader.upload_file(firebase_processed_json_path.as_posix(), pose_data_path)
+    # print("[INFO]: Uploading processed JSON to firebase")
+    # firebase_processed_json_path: str = (
+    #     Path(combined_path).parent.parent
+    #     / f"processedJsons/{Path(downloader.tar_name).stem}.json"
+    # )
+    # downloader.upload_file(firebase_processed_json_path.as_posix(), pose_data_path)
 
-    if len(sys.argv) != 2 and not from_mapping:
-        firebase_tar_queue_path: str = Path(combined_path).parent
-        firebase_processed_tar_path: str = str(
-            Path(combined_path).parent.parent
-            / f"processedTestTars/{downloader.tar_name}"
-        )
-        try:
-            downloader.delete_file(
-                (Path(firebase_tar_queue_path) / downloader.tar_name).as_posix()
-            )
-            downloader.upload_file(
-                remote_location=firebase_processed_tar_path,
-                local_location=downloader.local_tar_location,
-            )
-            print(
-                "[INFO]: Moved tar from tarQueue to processedTestTars directory in firebase"
-            )
-        except:
-            print("[WARNING] Unable to Move tar")
-    return poses
+    # if len(sys.argv) != 2 and not from_mapping:
+    #     firebase_tar_queue_path: str = Path(combined_path).parent
+    #     firebase_processed_tar_path: str = str(
+    #         Path(combined_path).parent.parent
+    #         / f"processedTestTars/{downloader.tar_name}"
+    #     )
+    #     try:
+    #         downloader.delete_file(
+    #             (Path(firebase_tar_queue_path) / downloader.tar_name).as_posix()
+    #         )
+    #         downloader.upload_file(
+    #             remote_location=firebase_processed_tar_path,
+    #             local_location=downloader.local_tar_location,
+    #         )
+    #         print(
+    #             "[INFO]: Moved tar from tarQueue to processedTestTars directory in firebase"
+    #         )
+    #     except:
+    #         print("[WARNING] Unable to Move tar")
+    return test_data_dir
 
 
 def process_training_data(
@@ -311,31 +314,31 @@ def process_training_data(
                 ]
             )
 
-    print("[INFO]: Converting ACE model for mobile use")
-    save_model_for_mobile(pretrained_model, model_output)
+    # print("[INFO]: Converting ACE model for mobile use")
+    # save_model_for_mobile(pretrained_model, model_output)
 
-    firebase_upload_dir = "iosLoggerDemo/trainedModels/"
-    if not output_model_name:
-        vid_name = Path(tar_name)
-        vid_name = vid_name.stem.split("training_")[-1] + ".pt"
-    else:
-        vid_name = output_model_name
+    # firebase_upload_dir = "iosLoggerDemo/trainedModels/"
+    # if not output_model_name:
+    #     vid_name = Path(tar_name)
+    #     vid_name = vid_name.stem.split("training_")[-1] + ".pt"
+    # else:
+    #     vid_name = output_model_name
 
-    firebase_upload_path = Path(firebase_upload_dir) / Path(vid_name)
-    print("[INFO]: Saving model to firebase as {}".format(firebase_upload_path))
-    downloader.upload_file(firebase_upload_path.as_posix(), model_output)
+    # firebase_upload_path = Path(firebase_upload_dir) / Path(vid_name)
+    # print("[INFO]: Saving model to firebase as {}".format(firebase_upload_path))
+    # downloader.upload_file(firebase_upload_path.as_posix(), model_output)
 
-    if len(sys.argv) != 2:
-        firebase_tar_queue_path: str = Path(combined_path).parent
-        firebase_processed_tar_path: str = str(
-            Path(combined_path).parent.parent / f"processedTrainingTars/{tar_name}"
-        )
-        downloader.delete_file((Path(firebase_tar_queue_path) / tar_name).as_posix())
-        downloader.upload_file(
-            remote_location=firebase_processed_tar_path,
-            local_location=downloader.local_tar_location,
-        )
-        print("[INFO]: Moved tar from tarQueue to processedTars directory in firebase")
+    # if len(sys.argv) != 2:
+    #     firebase_tar_queue_path: str = Path(combined_path).parent
+    #     firebase_processed_tar_path: str = str(
+    #         Path(combined_path).parent.parent / f"processedTrainingTars/{tar_name}"
+    #     )
+    #     downloader.delete_file((Path(firebase_tar_queue_path) / tar_name).as_posix())
+    #     downloader.upload_file(
+    #         remote_location=firebase_processed_tar_path,
+    #         local_location=downloader.local_tar_location,
+    #     )
+    #     print("[INFO]: Moved tar from tarQueue to processedTars directory in firebase")
 
 
 @dataclass
@@ -402,8 +405,8 @@ def process_testing_data(
         True,
         extracted_ace_folder,
     )
-    poses = process_localization_phase(combined_path, downloader, ace_test_pose_file)
-    return poses
+    results_dir = process_localization_phase(combined_path, downloader, ace_test_pose_file)
+    return results_dir
 
 
 # test the benchmark here

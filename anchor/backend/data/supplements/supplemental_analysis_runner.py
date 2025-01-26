@@ -1,22 +1,44 @@
-from anchor_maps import get_anchor_maps_data
-# from anchor.backend.data.supplements.anchor_maps import get_anchor_maps_data
+from anchor.backend.data.supplements.anchor_maps import get_anchor_maps_data
 from pathlib import Path
 from anchor.backend.data.firebase import FirebaseDownloader
-from anchor.backend.data.ace import prepare_ace_data, process_testing_data, process_training_data
+from anchor.backend.data.ace import (
+    prepare_ace_data,
+    process_testing_data,
+    process_training_data,
+)
+from pydantic import BaseModel
+import json
+import os
 
 TEST_RESULT_DIR = Path(__file__).parent.parent / ".cache/test_data"
 FIREBASE_DATA_DIR = Path(__file__).parent.parent / ".cache/firebase_data"
 
+
 def load_test_results():
-    # TODO: actual logic lol
-    return {}
+    results = {}
+    for result_dir in os.listdir(TEST_RESULT_DIR):
+        with open(TEST_RESULT_DIR / f"{result_dir}/parameters.json", "r") as jsonfile:
+            data = json.load(jsonfile)
+            results[(data["model_name"], data["scene_name"])] = TEST_RESULT_DIR / result_dir
+        
+    return results
+
+
+class TestParameters(BaseModel):
+    model_name: str
+    scene_name: str
+    encoder_name: str
+    sift_filtering: bool
+
 
 def main():
     same_scene_anchors = get_anchor_maps_data()
     test_results = load_test_results()
 
     for scene_anchors in same_scene_anchors:
-        model_name_scene_name_iterations = scene_anchors.get_model_name_scene_name_pairs()
+        model_name_scene_name_iterations = (
+            scene_anchors.get_model_name_scene_name_pairs()
+        )
 
         for model_name, scene_name in model_name_scene_name_iterations:
             # Check if the test iteration has already been conducted
@@ -27,28 +49,55 @@ def main():
             # downloaded
             local_model_dir = FIREBASE_DATA_DIR / model_name
             if not local_model_dir.exists():
-                model_downloader = FirebaseDownloader("ACEAnchors/tarQueue", f"{model_name}.tar")
+                model_downloader = FirebaseDownloader(
+                    "ACEAnchors/tarQueue", f"{model_name}.tar"
+                )
                 model_downloader.extract_ios_logger_tar()
                 prepare_ace_data(model_downloader.extracted_data)
 
-            local_scene_dir = FIREBASE_DATA_DIR / model_name
+            local_scene_dir = FIREBASE_DATA_DIR / scene_name
             if not local_scene_dir.exists():
-                scene_downloader = FirebaseDownloader("ACEAnchors/tarQueue", f"{scene_name}.tar")
+                scene_downloader = FirebaseDownloader(
+                    "ACEAnchors/tarQueue", f"{scene_name}.tar"
+                )
                 scene_downloader.extract_ios_logger_tar()
                 prepare_ace_data(scene_downloader.extracted_data)
 
             # Next, check if the model has already been created. If it hasn't,
             # then run the ACE trainer
-            model_path = local_model_dir / "model.pt"
+            model_path = local_model_dir / "ace/model.pt"
             if not model_path.exists():
-                training_downloader = FirebaseDownloader("ACEAnchors/tarQueue", f"{model_name}.tar")
+                training_downloader = FirebaseDownloader(
+                    "ACEAnchors/tarQueue", f"{model_name}.tar"
+                )
                 process_training_data(
-                    f"ACEAnchors/tarQueue/{model_name}.tar", training_downloader
+                    f"ACEAnchors/tarQueue/{model_name}.tar",
+                    training_downloader,
+                    run_tests=False,
                 )
 
             # Finally, run the localization test
-            test_downloader = FirebaseDownloader("ACEAnchors/tarQueue", f"{scene_name}.tar")
-            process_testing_data(f"{scene_name}.tar", test_downloader, FIREBASE_DATA_DIR / f"{model_name}/ace")
+            test_downloader = FirebaseDownloader(
+                "ACEAnchors/tarQueue", f"{scene_name}.tar"
+            )
+            test_downloader.extract_pose(
+                test_downloader.local_extraction_location, True
+            )
+            results_dir = process_testing_data(
+                f"{scene_name}.tar",
+                test_downloader,
+                FIREBASE_DATA_DIR / f"{model_name}/ace",
+            )
+            test_parameters = TestParameters(
+                model_name=model_name,
+                scene_name=scene_name,
+                encoder_name="superpoint",
+                sift_filtering=True,
+            )
+
+            with open(results_dir / "parameters.json", "w") as jsonfile:
+                json.dump(test_parameters.__dict__, jsonfile, indent=4)
+
 
 if __name__ == "__main__":
     main()

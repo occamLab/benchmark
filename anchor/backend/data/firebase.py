@@ -143,7 +143,7 @@ class FirebaseDownloader:
         self.extracted_data.match_all_sensor()
 
         return self.local_extraction_location / "extracted"
-
+    
     def combine_extract_ios_logger_video(self, mapping_phase: bool):
         all_frames = []
         offset = 0
@@ -392,6 +392,10 @@ class FirebaseDownloader:
         """
         print(f"[INFO]: Reading april tag protobuf {extract_path}")
         april_path = extract_path / "april_tag.proto"
+        if not april_path.exists():
+            print(f"[WARNING] April Tag Proto File not found, continuing without it")
+            return
+
         april_data = AprilTag.AprilTagData()
         with open(april_path, "rb") as fd:
             april_data.ParseFromString(fd.read())
@@ -450,6 +454,10 @@ class FirebaseDownloader:
         """
         print(f"[INFO]: Reading google cloud anchor protobuf {extract_path}")
         google_cloud_anchor_path = extract_path / "google_cloud_anchor.proto"
+        if not google_cloud_anchor_path.exists():
+            print("[WARNING] Google CA Proto File not found, continuing without it")
+            return
+
         google_cloud_anchor_data = GCloudAnchor.GoogleCloudAnchorData()
         with open(google_cloud_anchor_path, "rb") as fd:
             google_cloud_anchor_data.ParseFromString(fd.read())
