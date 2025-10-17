@@ -11,6 +11,7 @@ class Extracted:
                 "april_tags": [],
                 "video": [],
                 "google_cloud_anchor": {},
+                "point_cloud": [],
             },
             "localization_phase": {
                 "intrinsics": [],
@@ -18,6 +19,7 @@ class Extracted:
                 "april_tags": [],
                 "video": [],
                 "google_cloud_anchor": [],
+                "point_cloud": [],
             },
         }
         self.extract_root = extract_root
@@ -53,6 +55,10 @@ class Extracted:
         phase = Extracted.get_phase_key(mapping_phase)
         self.sensors_extracted[phase]["poses"].append(pose_object)
 
+    def append_point_cloud_data(self, pc_object: any, mapping_phase: bool):
+        phase = Extracted.get_phase_key(mapping_phase)
+        self.sensors_extracted[phase]["point_cloud"].append(pc_object)
+
     # append april tag detection
     def append_april_tag(
         self, timestamp: float, rotation_matrix: [float], mapping_phase: bool
@@ -83,6 +89,42 @@ class Extracted:
             "anchor_host_rotation_matrix": anchor_host_rotation_matrix
         }
         self.sensors_extracted[phase]["google_cloud_anchor"] = cloud_anchor_detection
+
+    def match_point_cloud(self, phase: str):
+        self.sensors_extracted[phase]["video"].sort(key=lambda x: x["timestamp"])
+        self.sensors_extracted[phase]["point_cloud"].sort(key=lambda x: x["timestamp"])
+
+        frame_idx = 0
+        sensor_idx = 0
+        match_count = 0
+
+        while frame_idx < len(
+            self.sensors_extracted[phase]["video"]
+        ) and sensor_idx < len(self.sensors_extracted[phase]["point_cloud"]):
+            frame_timestamp = self.sensors_extracted[phase]["video"][frame_idx][
+                "timestamp"
+            ]
+            sensor_timestamp = self.sensors_extracted[phase]["point_cloud"][sensor_idx][
+                "timestamp"
+            ]
+
+            # ArFrames feed at roughly 30fps, so we can filter with a 1ms cutoff window to match frames
+            if abs(frame_timestamp - sensor_timestamp) < 0.0333:
+                self.sensors_extracted[phase]["video"][frame_idx][
+                    "point_cloud"
+                ] = self.sensors_extracted[phase]["point_cloud"][sensor_idx]
+                sensor_idx += 1
+                frame_idx += 1
+                match_count += 1
+            elif frame_timestamp > sensor_timestamp:
+                sensor_idx += 1
+            else:
+                frame_idx += 1
+
+        print(
+            f'[INFO]: Matched {match_count} point clouds out of {len(self.sensors_extracted[phase]["point_cloud"])} total frames in {phase}'
+        )
+        assert match_count == len(self.sensors_extracted[phase]["point_cloud"]), "failed to match all point clouds"
 
     def match_given_sensor(self, phase: str, match_against: str):
         """
@@ -118,7 +160,7 @@ class Extracted:
             ]
 
             # ArFrames feed at roughly 30fps, so we can filter with a 1ms cutoff window to match frames
-            if abs(frame_timestamp - sensor_timestamp) < 0.01:
+            if abs(frame_timestamp - sensor_timestamp) < 0.0333:
                 self.sensors_extracted[phase]["video"][frame_idx][
                     match_against
                 ] = self.sensors_extracted[phase][match_against][sensor_idx]
@@ -140,8 +182,10 @@ class Extracted:
     def match_all_sensor(self):
         for phase in self.sensors_extracted:
             for sensor in self.sensors_extracted[phase]:
-                if sensor not in ["video", "april_tags", "google_cloud_anchor"]:
+                if sensor not in ["video", "april_tags", "google_cloud_anchor", "point_cloud"]:
                     self.match_given_sensor(phase, sensor)
+
+            self.match_point_cloud(phase)
 
     def transform_poses_in_global_frame(self):
         """

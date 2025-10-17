@@ -3,6 +3,7 @@ from anchor.backend.data.extracted import Extracted
 from anchor.backend.data.firebase import FirebaseDownloader, list_tars
 from anchor.backend.data.error_summarizer import ErrorSummarizer
 from anchor.third_party.ace.ace_network import Regressor
+from anchor.backend.data.supplements.anchor_maps import get_anchor_maps_data
 from torch.utils.mobile_optimizer import optimize_for_mobile, MobileOptimizerType
 import shutil
 import sys
@@ -16,6 +17,9 @@ import json
 from datetime import datetime
 
 RENDER_VISUALIZATION = False
+
+TEST_RESULT_DIR = Path(__file__).parent / ".cache/test_data"
+
 
 def prepare_ace_data(extracted_data: Extracted):
     map_phase_to_ace_folder = {"mapping_phase": "train", "localization_phase": "test"}
@@ -66,25 +70,6 @@ def prepare_ace_data(extracted_data: Extracted):
                 )
 
 
-def calculate_google_cloud_anchor_quality(extracted_data: Extracted):
-    error_summarizer = ErrorSummarizer()
-    ground_truth_location = extracted_data.sensors_extracted[
-        Extracted.get_phase_key(True)
-    ]["google_cloud_anchor"]["anchor_host_rotation_matrix"]
-    for value in extracted_data.sensors_extracted[Extracted.get_phase_key(False)][
-        "google_cloud_anchor"
-    ]:
-        error_summarizer.observe_pose(
-            value["anchor_rotation_matrix"], ground_truth_location
-        )
-    error_summarizer.print_statistics()
-
-
-""" 
-    Converts the ACE model for mobile usage
-"""
-
-
 def save_model_for_mobile(ace_encoder_pretrained: Path, trained_weights: Path):
     encoder_state_dict = torch.load(ace_encoder_pretrained, map_location="cpu")
     head_network_dict = torch.load(trained_weights, map_location="cpu")
@@ -115,7 +100,7 @@ def run_ace_evaluator(
 ):
     print("[INFO]: Running ace evaluater on dataset path: ", extracted_ace_folder)
     # TODO: thsi doesn't handle spaces properly
-    subprocess.run(
+    ret = subprocess.run(
         [
             "./test_ace.py",
             extracted_ace_folder.as_posix(),
@@ -130,6 +115,7 @@ def run_ace_evaluator(
             str(frame_exclusion),
         ]
     )
+    ret.check_returncode()
 
 
 def process_localization_phase(
@@ -199,28 +185,31 @@ def process_localization_phase(
             data = line.strip("\n").split(" ")
             data[0] = int(data[0].split(".")[0])
             ace_pose_data = PoseData(**{header[i]: data[i] for i in range(len(header))})
-            timestamp = downloader.extracted_data.sensors_extracted[
-                "localization_phase"
-            ]["poses"][data[0]]["timestamp"]
-            arkit_pose = downloader.extracted_data.sensors_extracted[
-                "localization_phase"
-            ]["poses"][data[0]]["rotation_matrix"]
-            ca_pose = ca_poses_by_timestamp.get(timestamp)
-            poses.append(
-                {
-                    "frame_num": data[0],
-                    "timestamp": timestamp,
-                    "ACE": list(ace_pose_data.as_matrix),
-                    "ACE_INLIER_COUNT": ace_pose_data.inlier_count,
-                    "ARKIT": list(arkit_pose),
-                    "CLOUD_ANCHOR": list(ca_pose) if ca_pose is not None else [],
-                }
-            )
-
-    model_name = Path(ace_test_pose_file).parent.parent.parts[-1]
+            # TODO: these should be localization_phase
+            try:
+                timestamp = downloader.extracted_data.sensors_extracted[
+                    "mapping_phase"
+                ]["poses"][data[0]]["timestamp"]
+                arkit_pose = downloader.extracted_data.sensors_extracted[
+                    "mapping_phase"
+                ]["poses"][data[0]]["rotation_matrix"]
+                ca_pose = ca_poses_by_timestamp.get(timestamp)
+                poses.append(
+                    {
+                        "frame_num": data[0],
+                        "timestamp": timestamp,
+                        "ACE": list(ace_pose_data.as_matrix),
+                        "ACE_INLIER_COUNT": ace_pose_data.inlier_count,
+                        "ARKIT": list(arkit_pose),
+                        "CLOUD_ANCHOR": list(ca_pose) if ca_pose is not None else [],
+                    }
+                )
+            except Exception as e:
+                print(f"[WARNING] Pose dropped due to {e}")
+                continue
     test_data_dir = (
-        downloader.local_extraction_location
-        / f"ace/test/{model_name}/{datetime.now().strftime('%m:%d:%Y_%H:%M:%S')}"
+        TEST_RESULT_DIR
+        / f"{datetime.now().strftime('%m_%d_%Y_%H_%M_%S')}"
     )
     test_data_dir.mkdir(parents=True)
     pose_data_path = test_data_dir / "mapped_poses.json"
@@ -230,33 +219,33 @@ def process_localization_phase(
         json.dump({"data": poses}, file, indent=4)
     shutil.move(ace_test_pose_file, ace_results_path)
 
-    print("[INFO]: Uploading processed JSON to firebase")
-    firebase_processed_json_path: str = (
-        Path(combined_path).parent.parent
-        / f"processedJsons/{Path(downloader.tar_name).stem}.json"
-    )
-    downloader.upload_file(firebase_processed_json_path.as_posix(), pose_data_path)
+    # print("[INFO]: Uploading processed JSON to firebase")
+    # firebase_processed_json_path: str = (
+    #     Path(combined_path).parent.parent
+    #     / f"processedJsons/{Path(downloader.tar_name).stem}.json"
+    # )
+    # downloader.upload_file(firebase_processed_json_path.as_posix(), pose_data_path)
 
-    if len(sys.argv) != 2 and not from_mapping:
-        firebase_tar_queue_path: str = Path(combined_path).parent
-        firebase_processed_tar_path: str = str(
-            Path(combined_path).parent.parent
-            / f"processedTestTars/{downloader.tar_name}"
-        )
-        try:
-            downloader.delete_file(
-                (Path(firebase_tar_queue_path) / downloader.tar_name).as_posix()
-            )
-            downloader.upload_file(
-                remote_location=firebase_processed_tar_path,
-                local_location=downloader.local_tar_location,
-            )
-            print(
-                "[INFO]: Moved tar from tarQueue to processedTestTars directory in firebase"
-            )
-        except:
-            print("[WARNING] Unable to Move tar")
-    return poses
+    # if len(sys.argv) != 2 and not from_mapping:
+    #     firebase_tar_queue_path: str = Path(combined_path).parent
+    #     firebase_processed_tar_path: str = str(
+    #         Path(combined_path).parent.parent
+    #         / f"processedTestTars/{downloader.tar_name}"
+    #     )
+    #     try:
+    #         downloader.delete_file(
+    #             (Path(firebase_tar_queue_path) / downloader.tar_name).as_posix()
+    #         )
+    #         downloader.upload_file(
+    #             remote_location=firebase_processed_tar_path,
+    #             local_location=downloader.local_tar_location,
+    #         )
+    #         print(
+    #             "[INFO]: Moved tar from tarQueue to processedTestTars directory in firebase"
+    #         )
+    #     except:
+    #         print("[WARNING] Unable to Move tar")
+    return test_data_dir
 
 
 def process_training_data(
@@ -265,11 +254,7 @@ def process_training_data(
     run_tests=True,
     output_model_name=None,
 ):
-    prepare_ace_data(downloader.extracted_data)
-
-    # TODO: fix cloud anchor analysis
-    # print("[INFO]: Summarizing google cloud anchor observations: ")
-    # calculate_google_cloud_anchor_quality(downloader.extracted_data)
+    # prepare_ace_data(downloader.extracted_data)
 
     extracted_ace_folder = downloader.local_extraction_location / "ace"
     model_output = extracted_ace_folder / "model.pt"
@@ -282,11 +267,11 @@ def process_training_data(
         / "ace_encoder_pretrained.pt"
     )
     render_flipped_portrait = False
-    training_epochs = 8
+    training_epochs = 64
 
     print("[INFO]: Running ace training on dataset path: ", extracted_ace_folder)
     os.chdir(Path(__file__).parent.parent.parent / "third_party/ace")
-    subprocess.run(
+    ret = subprocess.run(
         [
             "./train_ace.py",
             extracted_ace_folder.as_posix(),
@@ -301,11 +286,16 @@ def process_training_data(
             str(training_epochs),
         ]
     )
+    ret.check_returncode()
 
     if run_tests:
         print("[INFO]: Running ace evaluation on dataset path: ", extracted_ace_folder)
         run_ace_evaluator(
-            extracted_ace_folder, model_output, RENDER_VISUALIZATION, True, extracted_ace_folder
+            extracted_ace_folder,
+            model_output,
+            RENDER_VISUALIZATION,
+            True,
+            extracted_ace_folder,
         )
         ace_test_pose_file = (
             downloader.root_download_dir / f"{Path(tar_name).stem}/ace/poses_ace_.txt"
@@ -330,31 +320,31 @@ def process_training_data(
                 ]
             )
 
-    print("[INFO]: Converting ACE model for mobile use")
-    save_model_for_mobile(pretrained_model, model_output)
+    # print("[INFO]: Converting ACE model for mobile use")
+    # save_model_for_mobile(pretrained_model, model_output)
 
-    firebase_upload_dir = "iosLoggerDemo/trainedModels/"
-    if not output_model_name:
-        vid_name = Path(tar_name)
-        vid_name = vid_name.stem.split("training_")[-1] + ".pt"
-    else:
-        vid_name = output_model_name
+    # firebase_upload_dir = "iosLoggerDemo/trainedModels/"
+    # if not output_model_name:
+    #     vid_name = Path(tar_name)
+    #     vid_name = vid_name.stem.split("training_")[-1] + ".pt"
+    # else:
+    #     vid_name = output_model_name
 
-    firebase_upload_path = Path(firebase_upload_dir) / Path(vid_name)
-    print("[INFO]: Saving model to firebase as {}".format(firebase_upload_path))
-    downloader.upload_file(firebase_upload_path.as_posix(), model_output)
+    # firebase_upload_path = Path(firebase_upload_dir) / Path(vid_name)
+    # print("[INFO]: Saving model to firebase as {}".format(firebase_upload_path))
+    # downloader.upload_file(firebase_upload_path.as_posix(), model_output)
 
-    if len(sys.argv) != 2:
-        firebase_tar_queue_path: str = Path(combined_path).parent
-        firebase_processed_tar_path: str = str(
-            Path(combined_path).parent.parent / f"processedTrainingTars/{tar_name}"
-        )
-        downloader.delete_file((Path(firebase_tar_queue_path) / tar_name).as_posix())
-        downloader.upload_file(
-            remote_location=firebase_processed_tar_path,
-            local_location=downloader.local_tar_location,
-        )
-        print("[INFO]: Moved tar from tarQueue to processedTars directory in firebase")
+    # if len(sys.argv) != 2:
+    #     firebase_tar_queue_path: str = Path(combined_path).parent
+    #     firebase_processed_tar_path: str = str(
+    #         Path(combined_path).parent.parent / f"processedTrainingTars/{tar_name}"
+    #     )
+    #     downloader.delete_file((Path(firebase_tar_queue_path) / tar_name).as_posix())
+    #     downloader.upload_file(
+    #         remote_location=firebase_processed_tar_path,
+    #         local_location=downloader.local_tar_location,
+    #     )
+    #     print("[INFO]: Moved tar from tarQueue to processedTars directory in firebase")
 
 
 @dataclass
@@ -389,7 +379,7 @@ def process_testing_data(
     downloader: FirebaseDownloader,
     model_data_folder: Path = None,
 ):
-    prepare_ace_data(downloader.extracted_data)
+    # prepare_ace_data(downloader.extracted_data)
     os.chdir(Path(__file__).parent.parent.parent / "third_party/ace")
     extracted_ace_folder = downloader.local_extraction_location / "ace"
     model_name = Path(combined_path).stem.split("training_")[-1]
@@ -415,10 +405,14 @@ def process_testing_data(
 
     ace_test_pose_file = model_data_folder / "poses_ace_.txt"
     run_ace_evaluator(
-        extracted_ace_folder, model_weights_path, RENDER_VISUALIZATION, True, extracted_ace_folder
+        extracted_ace_folder,
+        model_weights_path,
+        RENDER_VISUALIZATION,
+        True,
+        extracted_ace_folder,
     )
-    poses = process_localization_phase(combined_path, downloader, ace_test_pose_file)
-    return poses
+    results_dir = process_localization_phase(combined_path, downloader, ace_test_pose_file)
+    return results_dir
 
 
 # test the benchmark here

@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # run this script with source ./install.sh so that the environment can be propagated to the parent shell
 
@@ -14,7 +15,7 @@ conda env update -f anchor/third_party/ace/environment.yml --name anchor --prune
 conda activate anchor
 
 # install ace subdependency
-pip install -e anchor/third_party/ace/dsacstar
+pip install -e anchor/third_party/ace/dsacstar --use-pep517 --no-build-isolation
 # create debug videos of training process in ace
 sudo apt install ffmpeg -y
 
@@ -29,6 +30,7 @@ conda install av -c conda-forge
 pip install "fastapi[all]"
 
 # download our deps
-pip install firebase-admin==6.1.0
-pip install opencv-python~=4.7
-pip install slugify
+python -m pip install firebase-admin==6.1.0
+python -m pip install av==10.0.0
+python -m pip install tqdm
+python -m pip install slugify

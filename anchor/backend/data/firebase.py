@@ -4,7 +4,9 @@ import anchor.backend.data.proto.pose_pb2 as Pose
 import anchor.backend.data.proto.intrinsics_pb2 as Intrinsics
 import anchor.backend.data.proto.video_pb2 as video_pb2
 import anchor.backend.data.proto.april_tag_pb2 as AprilTag
+import anchor.backend.data.proto.point_cloud_pb2 as PointCloud
 import anchor.backend.data.proto.google_cloud_anchor_pb2 as GCloudAnchor
+from anchor.backend.data.supplements.cab_remote import BASE_CAB_REMOTE_URL, download_zip
 from multiprocessing.pool import ThreadPool as Pool
 
 from pathlib import Path
@@ -13,6 +15,8 @@ import tempfile
 import av
 import copy
 import os
+import numpy as np
+from scipy.spatial.transform import Rotation as R
 
 
 def list_tars():
@@ -93,6 +97,115 @@ class FirebaseDownloader:
         blob = bucket.blob(remote_location)
         blob.upload_from_filename(local_location)
 
+    def unpack_cab_data(self, subsession_name_or_url: str):
+        if BASE_CAB_REMOTE_URL in subsession_name_or_url:
+            # need to download the CAB data from the ETHZ server
+            subsession_name = subsession_name_or_url.split("/")[-1]
+            remote_data_base_dir = Path(__file__).parent / ".cache/firebase_data/CAB_remote/sessions"
+            remote_data_base_dir.mkdir(parents=True, exist_ok=True)
+            subsession_dir = remote_data_base_dir / subsession_name
+            if not subsession_dir.exists():
+                download_zip(str(subsession_name_or_url) + ".zip", str(subsession_dir) + ".zip", remote_data_base_dir, extract=True)
+            else:
+                print(f"[INFO]: Skipping download of CAB data {subsession_name} as it already exists")
+            cab_base_dir = subsession_dir
+            source_image_dir = cab_base_dir / "raw_data" / "images"
+        else:
+            cab_base_dir = Path(__file__).parent / ".cache/firebase_data/CAB/sessions/query_phone"
+            source_image_dir = cab_base_dir / "raw_data" / subsession_name / "images"
+
+
+        print("[INFO]: constructing look up tables for poses and intrinsics")
+        # craft all the lookup tables per timestamp
+        with open(cab_base_dir / "trajectories.txt", "r") as txtfile:
+            raw_data = txtfile.readlines()
+            pose_lookup = {}
+
+            skip_first = True
+            for datum in raw_data:
+                if skip_first:
+                    skip_first = False
+                    continue
+                timestamp, device_id, qw, qx, qy, qz, tx, ty, tz = datum.strip().split(", ")
+                # Convert quaternion (qw, qx, qy, qz) to rotation matrix using scipy
+                # qw, qx, qy, qz = map(float, [qw, qx, qy, qz])
+                # scipy expects [x, y, z, w] order
+                rot = R.from_quat([qx, qy, qz, qw])
+                rot_matrix = rot.as_matrix()  # 3x3 numpy array
+                pose = np.zeros((4, 4))
+                pose[:3, :3] = rot_matrix
+                pose[:3, 3] = [float(tx), float(ty), float(tz)]
+                pose[3, 3] = 1.0
+                pose_lookup[int(timestamp)] = pose
+        
+        with open(cab_base_dir / "sensors.txt", "r") as txtfile:
+            raw_data = txtfile.readlines()
+            intrinsics_lookup = {}
+
+            skip_first = True
+            for datum in raw_data:
+                if skip_first:
+                    skip_first = False
+                    continue
+
+                if "PINHOLE" not in datum or "phone camera" not in datum:
+                    continue
+
+                w, h, fx, fy, cx, cy = datum.strip().split(", ")[-6:]
+                timestamp = datum.strip().split(", ")[-9].split(" ")[-1]
+                intrinsics_lookup[int(timestamp)] = np.array([
+                    [float(fx), 0, float(cx)],
+                    [0, float(fy), float(cy)],
+                    [0, 0, 1]
+                ])
+
+        print("[INFO]: copying data to ACE format")
+        ace_cab_dir = Path(__file__).parent / f".cache/firebase_data/{subsession_name}"
+        poses_dir = ace_cab_dir / "ace/train/poses"
+        images_dir = ace_cab_dir / "ace/train/rgb"
+        calibration_dir = ace_cab_dir / "ace/train/calibration"
+
+        frame_num = 0
+        for image_name in sorted(os.listdir(source_image_dir)):
+            timestamp = int(image_name.split(".")[0])
+            source_image_fp = source_image_dir / image_name
+            pose = pose_lookup[timestamp]
+            intrinsics = intrinsics_lookup[timestamp]
+
+            dest_image_path = images_dir / f"{frame_num:05}.color.jpg"
+            dest_pose_path = poses_dir / f"{frame_num:05}.pose.txt"
+            dest_intrinsics_path = calibration_dir / f"{frame_num:05}.calibration.txt"
+
+            dest_image_path.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(source_image_fp, dest_image_path)
+
+            dest_pose_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(dest_pose_path, "w") as pose_file:
+                pose_file.write(
+                    f"{pose[0,0]} {pose[0,1]} {pose[0,2]} {pose[0,3]}\n"
+                    + f"{pose[1,0]} {pose[1,1]} {pose[1,2]} {pose[1,3]}\n"
+                    + f"{pose[2,0]} {pose[2,1]} {pose[2,2]} {pose[2,3]}\n"
+                    + f"{pose[3,0]} {pose[3,1]} {pose[3,2]} {pose[3,3]}"
+                )
+            self.extracted_data.append_pose_data(
+                {
+                    "timestamp": timestamp,
+                    "rotation_matrix": pose.reshape([16], order="F")
+                },
+                True
+            )
+
+            dest_intrinsics_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(dest_intrinsics_path, "w") as intrinsics_file:
+                intrinsics_file.write(
+                    f"{intrinsics[0,0]} 0 {intrinsics[0,2]}\n"
+                    + f"0 {intrinsics[1,1]} {intrinsics[1,2]}\n"
+                    + f"0 0 1\n"
+                )
+
+            frame_num += 1
+        print("[INFO]: CAB data preparation finished")
+
     def extract_ios_logger_tar(self) -> Path:
         FirebaseDownloader.root_download_dir.mkdir(parents=True, exist_ok=True)
         if self.local_tar_location.exists():
@@ -139,11 +252,22 @@ class FirebaseDownloader:
                 self.extract_april_tags(self.local_extraction_location, False)
                 self.extract_google_cloud_anchors(self.local_extraction_location, False)
 
+            if (self.local_extraction_location / "video.mp4").exists():
+                self.extract_ios_logger_video(
+                    self.local_extraction_location / "video.mp4", True
+                )
+                self.extract_intrinsics(self.local_extraction_location, True)
+                self.extract_pose(self.local_extraction_location, True)
+                self.extract_april_tags(self.local_extraction_location, True)
+                self.extract_google_cloud_anchors(self.local_extraction_location, True)
+                # self.extract_point_cloud(self.local_extraction_location, True)
+
+
         self.extracted_data.transform_poses_in_global_frame()
         self.extracted_data.match_all_sensor()
 
         return self.local_extraction_location / "extracted"
-
+    
     def combine_extract_ios_logger_video(self, mapping_phase: bool):
         all_frames = []
         offset = 0
@@ -231,13 +355,31 @@ class FirebaseDownloader:
         video_folder_path.mkdir(parents=True, exist_ok=True)
 
         all_frames = []
+        recorded_indices = []
+        skipped_frames = 0
+        total_frames = 0
         for frame in container.decode():
+            total_frames += 1
             image_timestamp = video_start + float(frame.pts * frame.time_base)
             frame_path: Path = video_folder_path / f"{frame.index}.jpg"
             frame = frame
+
+            if frame.index > 890:
+                continue
+
+            if frame.index in recorded_indices:
+                skipped_frames += 1
+                continue
+
+            recorded_indices.append(frame.index)
             if frame_path.exists():
                 continue
+
             all_frames += [(image_timestamp, frame_path, frame)]
+
+        # applying an arbitrary 10% threshold
+        if skipped_frames > .1 * total_frames:
+            raise ValueError(f"{skipped_frames} duplicate frames found out of {total_frames} total frames.")
 
         def write_frame(frame_info):
             image_timestamp = frame_info[0]
@@ -329,6 +471,32 @@ class FirebaseDownloader:
                     }
                     self.extracted_data.append_pose_data(pose, mapping_phase)
 
+    def extract_point_cloud(self, extract_path: Path, mapping_phase: bool):
+        print(f"[INFO]: Reading point cloud protobuf {extract_path}")
+
+        point_cloud_path = extract_path / "pointcloud.proto"
+        if not point_cloud_path.exists():
+            print("[WARNING] Point Cloud Proto not found, continuing without it")
+            return
+        point_cloud_data = PointCloud.PointCloudData()
+        with open(point_cloud_path, "rb") as fd:
+            point_cloud_data.ParseFromString(fd.read())
+            for value in FirebaseDownloader.proto_with_phase(
+                point_cloud_data, mapping_phase
+            ).measurements:
+                t = value.timestamp
+                depth = value.depth
+                width = value.width
+                height = value.height
+                point_cloud = {
+                    "timestamp": t,
+                    "depth": depth,
+                    "width": width,
+                    "height": height,
+                }
+                self.extracted_data.append_point_cloud_data(point_cloud, mapping_phase)
+
+
     def extract_pose(self, extract_path: Path, mapping_phase: bool):
         """
         Args:
@@ -392,6 +560,10 @@ class FirebaseDownloader:
         """
         print(f"[INFO]: Reading april tag protobuf {extract_path}")
         april_path = extract_path / "april_tag.proto"
+        if not april_path.exists():
+            print(f"[WARNING] April Tag Proto File not found, continuing without it")
+            return
+
         april_data = AprilTag.AprilTagData()
         with open(april_path, "rb") as fd:
             april_data.ParseFromString(fd.read())
@@ -450,6 +622,10 @@ class FirebaseDownloader:
         """
         print(f"[INFO]: Reading google cloud anchor protobuf {extract_path}")
         google_cloud_anchor_path = extract_path / "google_cloud_anchor.proto"
+        if not google_cloud_anchor_path.exists():
+            print("[WARNING] Google CA Proto File not found, continuing without it")
+            return
+
         google_cloud_anchor_data = GCloudAnchor.GoogleCloudAnchorData()
         with open(google_cloud_anchor_path, "rb") as fd:
             google_cloud_anchor_data.ParseFromString(fd.read())
